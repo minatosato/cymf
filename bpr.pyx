@@ -91,13 +91,22 @@ def train_bpr(integral[:] users, integral[:] positives, np.ndarray[floating, ndi
     
     cdef list description_list
 
+    cdef integral[:] negative_samples
+    cdef list negatives = []
+    for l in tqdm(range(N), ncols=100):
+        u = users[l]
+        negative_samples = np.random.choice((X[u]-1).nonzero()[0], iterations).astype(np.int32)
+        negatives.append(negative_samples)
+
+
     with tqdm(total=iterations, leave=True, ncols=100) as progress:
         for iteration in range(iterations):
             acc_loss = 0.0
             for l in range(N):
                 u = users[l]
                 i = positives[l]
-                j = np.random.choice((X[u]-1).nonzero()[0])
+                negative_samples = negatives[l]
+                j = negative_samples[iteration]
 
                 x_uij = 0.0
                 for k in range(K):
