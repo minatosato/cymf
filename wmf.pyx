@@ -88,7 +88,8 @@ def fit_wmf(integral[:] users,
     cdef floating[:] w_uk = np.zeros(N)
     cdef floating[:] l2_norm = np.zeros(N)
     cdef floating[:] diff = np.zeros(N)
-    cdef floating acc_loss, loss
+    cdef floating[:] loss = np.zeros(N)
+    cdef floating acc_loss
     
     cdef list description_list
 
@@ -112,12 +113,12 @@ def fit_wmf(integral[:] users,
                     W[users[l], k] += learning_rate * diff[l] * H[items[l], k]
                     H[items[l], k] += learning_rate * diff[l] * w_uk[l]
                 
-                loss = square(diff[l])
+                loss[l] = square(diff[l])
                 if ratings[l] != 0.0:
-                    loss = loss * weight
-                loss += weight_decay * l2_norm[l]
+                    loss[l] = loss[l] * weight
+                loss[l] += weight_decay * l2_norm[l]
                 
-                acc_loss += loss
+                acc_loss += loss[l]
 
             description_list = []
             description_list.append(f"ITER={iteration+1:{len(str(iterations))}}")
