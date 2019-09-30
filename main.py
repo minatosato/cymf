@@ -31,3 +31,12 @@ from metrics import precision_at_k
 
 print(precision_at_k(model, dataset.test, k=5).mean())
 
+from wmf import WMF
+model = WMF(num_components=args.num_components, learning_rate=args.lr, weight_decay=args.weight_decay)
+model.fit(dataset.train, num_iterations=1, num_threads=args.threads, verbose=True)
+
+from metrics import auc
+from metrics import precision_at_k
+
+print(precision_at_k(model, dataset.test, k=5).mean())
+
