@@ -1,3 +1,10 @@
+# 
+# Copyright (c) 2019 Minato Sato
+# All rights reserved.
+#
+# This source code is licensed under the license found in the
+# LICENSE file in the root directory of this source tree.
+#
 
 import numpy as np
 from sklearn.metrics import roc_auc_score
