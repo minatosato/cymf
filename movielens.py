@@ -10,7 +10,6 @@ from collections import Counter
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
-import nnabla.logger as L
 import numpy as np
 import pandas as pd
 from scipy import sparse
@@ -26,12 +25,12 @@ class MovieLens(Dataset):
 
         if not self.dir_path.exists():
             import os
-            L.info("movielens file does not exist, downloading ...")
+            print("movielens file does not exist, downloading ...")
             os.system(f"wget http://files.grouplens.org/datasets/movielens/{self.dir_path.name}.zip")
             os.system(f"unzip {self.dir_path.name}.zip")
-            L.info("done.")
+            print("done.")
 
-        L.info("loading movielens...")
+        print("loading movielens...")
         rating_file: Path
         df_all: pd.DataFrame
         if self.dir_path.name == "ml-100k":

@@ -45,8 +45,8 @@ class BPR(object):
                   unsigned int num_iterations,
                   unsigned int num_threads,
                   bool verbose = False):
-        W = np.random.uniform(low=-0.1, high=0.1, size=(X.shape[0], self.num_components))
-        H = np.random.uniform(low=-0.1, high=0.1, size=(X.shape[1], self.num_components))
+        self.W = np.random.uniform(low=-0.1, high=0.1, size=(X.shape[0], self.num_components))
+        self.H = np.random.uniform(low=-0.1, high=0.1, size=(X.shape[1], self.num_components))
 
         users, positives = utils.shuffle(*(X.nonzero()))
         dense = np.array(X.todense())
@@ -54,8 +54,8 @@ class BPR(object):
         fit_bpr(users, 
                 positives,
                 dense,
-                W,
-                H,
+                self.W,
+                self.H,
                 num_iterations,
                 self.learning_rate,
                 self.weight_decay,

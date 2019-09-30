@@ -20,7 +20,7 @@ parser.add_argument('--threads', type=int, default=4)
 
 args = parser.parse_args()
 
-dataset: Dataset = MovieLens()
+dataset: Dataset = MovieLens("ml-100k")
 
 from bpr import BPR
 bpr = BPR(num_components=args.num_components, learning_rate=args.lr, weight_decay=args.weight_decay)

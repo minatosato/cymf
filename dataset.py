@@ -12,8 +12,7 @@ import pandas as pd
 from scipy import sparse
 from tqdm import tqdm
 
-import nnabla.logger as L
-
+from typing import Tuple
 from typing import Optional
 
 class Dataset(object):
@@ -32,23 +31,21 @@ class Dataset(object):
     valid: sparse.lil_matrix
     test: sparse.lil_matrix
 
-    def __init__(self, dir_name: str, min_rating: float = 4.0, gamma: float = 0.2):
+    def __init__(self, dir_name: str, min_rating: float = 4.0, gamma: float = 0.2) -> None:
         self.dir_path: Path = Path(dir_name)
         self.min_rating: float = min_rating
 
-    def to_matrix(self, df: pd.DataFrame):
+    def to_matrix(self, df: pd.DataFrame) -> sparse.lil_matrix:
         matrix = sparse.lil_matrix((self.num_user, self.num_item))
-        for i in range(len(df)):
-            row = df.iloc[i]
-            u, i, r = row["user"], row["item"], row["rating"]
+        for u, i, r in zip(df["user"].values, df["item"].values, df["rating"].values):
             matrix[u, i] = r
         return matrix
     
-    def to_dataframe(self, matrix: sparse.lil_matrix):
+    def to_dataframe(self, matrix: sparse.lil_matrix) -> pd.DataFrame:
         df = pd.DataFrame(matrix.toarray()).stack().reset_index()
         df.columns = ("user", "item", "rating")
         df = df[df["rating"] >= 0]
         return df
 
-    def split(self, df):
+    def split(self, df) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
         return df.user.values, df.item.values, df.rating.values[:, None]
