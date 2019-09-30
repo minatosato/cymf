@@ -7,7 +7,6 @@
 #
 
 import numpy as np
-from scipy.special import digamma
 import cython
 from cython cimport floating
 from cython cimport integral
@@ -35,36 +34,33 @@ cdef inline floating sqare(floating x) nogil:
     return x * x
 
 class BPR(object):
-    def __init__(self, unsigned int latent_dims,
-                       unsigned int num_iterations,
-                       floating learning_rate,
-                       floating weight_decay,
-                       unsigned int num_threads):
-        self.latent_dims = latent_dims
-        self.num_iterations = num_iterations
+    def __init__(self, unsigned int num_components,
+                       floating learning_rate = 0.01,
+                       floating weight_decay = 0.01):
+        self.num_components = num_components
         self.learning_rate = learning_rate
         self.weight_decay = weight_decay
-        self.num_threads = min(num_threads, multiprocessing.cpu_count())
 
-    def fit(self, X, bool verbose = False):
-        W = np.random.uniform(low=-0.1, high=0.1, size=(X.shape[0], self.latent_dims))
-        H = np.random.uniform(low=-0.1, high=0.1, size=(X.shape[1], self.latent_dims))
+    def fit(self, X, 
+                  unsigned int num_iterations,
+                  unsigned int num_threads,
+                  bool verbose = False):
+        W = np.random.uniform(low=-0.1, high=0.1, size=(X.shape[0], self.num_components))
+        H = np.random.uniform(low=-0.1, high=0.1, size=(X.shape[1], self.num_components))
 
         users, positives = utils.shuffle(*(X.nonzero()))
         dense = np.array(X.todense())
-        fit_bpr(users,
+        num_threads = min(num_threads, multiprocessing.cpu_count())
+        fit_bpr(users, 
                 positives,
                 dense,
                 W,
                 H,
-                self.num_iterations,
+                num_iterations,
                 self.learning_rate,
                 self.weight_decay,
-                self.num_threads,
+                num_threads,
                 verbose)
-
-        
-
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
