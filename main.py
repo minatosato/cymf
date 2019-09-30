@@ -12,7 +12,7 @@ from dataset import Dataset
 import argparse
 parser = argparse.ArgumentParser(description='')
 parser.add_argument('--limit', type=int, default=20)
-parser.add_argument('--iter', type=int, default=300)
+parser.add_argument('--iter', type=int, default=30)
 parser.add_argument('--num_components', type=int, default=30)
 parser.add_argument('--lr', type=float, default=0.01)
 parser.add_argument('--weight_decay', type=float, default=0.01)
@@ -23,5 +23,11 @@ args = parser.parse_args()
 dataset: Dataset = MovieLens("ml-100k")
 
 from bpr import BPR
-bpr = BPR(num_components=args.num_components, learning_rate=args.lr, weight_decay=args.weight_decay)
-bpr.fit(dataset.train, num_iterations=args.iter, num_threads=args.threads, verbose=True)
+model = BPR(num_components=args.num_components, learning_rate=args.lr, weight_decay=args.weight_decay)
+model.fit(dataset.train, num_iterations=args.iter, num_threads=args.threads, verbose=True)
+
+from metrics import auc
+from metrics import precision_at_k
+
+print(precision_at_k(model, dataset.test, k=5).mean())
+
