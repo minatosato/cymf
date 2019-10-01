@@ -22,8 +22,8 @@ def to_cooccurrences(sentences: List[List[int]], vocab_size: int, window_size: i
         for i, word_id in enumerate(sentence):
             contexts = sentence[max(0, i - window_size): i]
             for j, context_id in enumerate(contexts):
-                #distance = len(contexts) - j
-                matrix[word_id, context_id] += 1# / distance
+                distance = len(contexts) - j
+                matrix[word_id, context_id] += 1. / distance
                 # matrix[context_id, word_id] += 1 / distance
     return matrix
 
