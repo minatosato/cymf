@@ -36,10 +36,8 @@ class Dataset(object):
         self.min_rating: float = min_rating
 
     def to_matrix(self, df: pd.DataFrame) -> sparse.lil_matrix:
-        matrix = sparse.lil_matrix((self.num_user, self.num_item))
-        for u, i, r in zip(df["user"].values, df["item"].values, df["rating"].values):
-            matrix[u, i] = r
-        return matrix
+        matrix = df.pivot_table(values="rating", index="user", columns="item").fillna(0) 
+        return sparse.lil_matrix(matrix.values)
     
     def to_dataframe(self, matrix: sparse.lil_matrix) -> pd.DataFrame:
         df = pd.DataFrame(matrix.toarray()).stack().reset_index()

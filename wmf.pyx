@@ -15,6 +15,7 @@ from libcpp.vector cimport vector
 import multiprocessing
 from libcpp cimport bool
 from sklearn import utils
+import pandas as pd
 from cython.parallel import prange
 from threading import Thread
 from cython.parallel import threadid
@@ -50,8 +51,16 @@ class WMF(object):
         self.W = np.random.uniform(low=-0.1, high=0.1, size=(X.shape[0], self.num_components))
         self.H = np.random.uniform(low=-0.1, high=0.1, size=(X.shape[1], self.num_components))
 
-        tmp = np.array([[u, i, X[u, i]] for u in range(X.shape[0]) for i in range(X.shape[1])])
-        users, items, ratings = utils.shuffle(tmp[:, 0], tmp[:, 1], tmp[:, 2])
+        # tmp = np.array([[u, i, X[u, i]] for u in range(X.shape[0]) for i in range(X.shape[1])])
+        # users, items, ratings = utils.shuffle(tmp[:, 0], tmp[:, 1], tmp[:, 2])
+        tmp = pd.DataFrame(X.todense()).stack().reset_index()
+        tmp.columns = ("user", "item", "rating")
+        users = tmp["user"].values
+        items = tmp["item"].values
+        ratings = tmp["rating"].values
+
+        users, items, ratings = utils.shuffle(users, items, ratings)
+
         users = users.astype(np.int32)
         items = items.astype(np.int32)
         num_threads = min(num_threads, multiprocessing.cpu_count())
@@ -117,7 +126,8 @@ def fit_wmf(integral[:] users,
                 if ratings[l] != 0.0:
                     loss[l] = loss[l] * weight
                 loss[l] += weight_decay * l2_norm[l]
-                
+
+            for l in range(N):                
                 acc_loss += loss[l]
 
             description_list = []

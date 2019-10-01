@@ -30,7 +30,7 @@ cdef extern from "math.h":
 cdef inline floating sigmoid(floating x) nogil:
     return 1.0 / (1.0 + exp(-x))
 
-cdef inline floating sqare(floating x) nogil:
+cdef inline floating square(floating x) nogil:
     return x * x
 
 class BPR(object):
@@ -82,7 +82,8 @@ def fit_bpr(integral[:] users,
     cdef floating[:] w_uk = np.zeros(N)
     cdef floating[:] l2_norm = np.zeros(N)
     cdef floating[:] gradient_base = np.zeros(N)
-    cdef floating acc_loss, loss
+    cdef floating[:] loss = np.zeros(N)
+    cdef floating acc_loss
     
     cdef list description_list
 
@@ -101,9 +102,9 @@ def fit_bpr(integral[:] users,
                 l2_norm[l] = 0.0
                 for k in range(K):
                     x_uij[l] += W[users[l], k] * (H[positives[l], k] - H[negatives[l][iteration], k])
-                    l2_norm[l] += sqare(W[users[l], k])
-                    l2_norm[l] += sqare(H[positives[l], k])
-                    l2_norm[l] += sqare(H[negatives[l][iteration], k])
+                    l2_norm[l] += square(W[users[l], k])
+                    l2_norm[l] += square(H[positives[l], k])
+                    l2_norm[l] += square(H[negatives[l][iteration], k])
 
                 gradient_base[l] = (1.0 / (1.0 + exp(x_uij[l])))
 
@@ -113,8 +114,10 @@ def fit_bpr(integral[:] users,
                     H[positives[l], k] += learning_rate * (gradient_base[l] * w_uk[l] - weight_decay * H[positives[l], k])
                     H[negatives[l][iteration], k] += learning_rate * (gradient_base[l] * (-w_uk[l]) - weight_decay * H[negatives[l][iteration], k])
 
-                loss = - log(sigmoid(x_uij[l])) + weight_decay * l2_norm[l]
-                acc_loss += loss
+                loss[l] = - log(sigmoid(x_uij[l])) + weight_decay * l2_norm[l]
+
+            for l in range(N):
+                acc_loss += loss[l]
 
             description_list = []
             description_list.append(f"ITER={iteration+1:{len(str(iterations))}}")
