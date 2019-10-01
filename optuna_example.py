@@ -23,6 +23,7 @@ args = parser.parse_args()
 dataset: Dataset = MovieLens("ml-100k")
 
 from bpr import BPR
+from wmf import WMF
 from metrics import auc
 from metrics import precision_at_k
 
@@ -40,4 +41,18 @@ print(study.best_params)
 
 model = BPR(num_components=args.num_components, learning_rate=args.lr, weight_decay=args.weight_decay)
 model.fit(dataset.train, num_iterations=study.best_params["iterations"], num_threads=args.threads, verbose=True)
-print(precision_at_k(model, dataset.valid, k=5).mean())
+print(precision_at_k(model, dataset.test, k=5).mean())
+
+def objective2(trial: optuna.Trial):
+    iterations = trial.suggest_int("iterations", 1, 10)
+    model = WMF(num_components=args.num_components, learning_rate=args.lr, weight_decay=args.weight_decay)
+    model.fit(dataset.train, num_iterations=iterations, num_threads=args.threads, verbose=False)
+    return -precision_at_k(model, dataset.valid, k=5).mean()
+
+study = optuna.create_study()
+study.optimize(objective2, n_trials=10)
+print(study.best_params)
+
+model = WMF(num_components=args.num_components, learning_rate=args.lr, weight_decay=args.weight_decay)
+model.fit(dataset.train, num_iterations=study.best_params["iterations"], num_threads=args.threads, verbose=True)
+print(precision_at_k(model, dataset.test, k=5).mean())

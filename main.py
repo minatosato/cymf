@@ -6,8 +6,14 @@
 # LICENSE file in the root directory of this source tree.
 #
 
+from bpr import BPR
+from wmf import WMF
+
 from movielens import MovieLens
 from dataset import Dataset
+
+from metrics import auc
+from metrics import precision_at_k
 
 import argparse
 parser = argparse.ArgumentParser(description='')
@@ -22,21 +28,13 @@ args = parser.parse_args()
 
 dataset: Dataset = MovieLens("ml-100k")
 
-from bpr import BPR
 model = BPR(num_components=args.num_components, learning_rate=args.lr, weight_decay=args.weight_decay)
 model.fit(dataset.train, num_iterations=args.iter, num_threads=args.threads, verbose=True)
 
-from metrics import auc
-from metrics import precision_at_k
-
 print(precision_at_k(model, dataset.test, k=5).mean())
 
-from wmf import WMF
 model = WMF(num_components=args.num_components, learning_rate=args.lr, weight_decay=args.weight_decay)
 model.fit(dataset.train, num_iterations=3, num_threads=args.threads, verbose=True)
-
-from metrics import auc
-from metrics import precision_at_k
 
 print(precision_at_k(model, dataset.test, k=5).mean())
 
