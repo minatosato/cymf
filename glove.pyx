@@ -20,6 +20,9 @@ from threading import Thread
 from cython.parallel import threadid
 from tqdm import tqdm
 
+from libcpp.vector cimport vector
+from libcpp.unordered_map cimport unordered_map
+
 cdef extern from "math.h":
     double exp(double x) nogil
     double log(double x) nogil
@@ -50,20 +53,18 @@ class GloVe(object):
                   unsigned int num_iterations,
                   unsigned int num_threads,
                   bool verbose = False):
-        self.W = np.random.uniform(low=-0.1, high=0.1, size=(X.shape[0], self.num_components))
-        self.bias = np.random.uniform(low=-0.1, high=0.1, size=(X.shape[0],))
-        self._W = np.random.uniform(low=-0.1, high=0.1, size=(X.shape[1], self.num_components))
-        self._bias = np.random.uniform(low=-0.1, high=0.1, size=(X.shape[0],))
+        self.W = np.random.uniform(low=-0.5, high=0.5, size=(X.shape[0], self.num_components)) / self.num_components
+        self.bias = np.random.uniform(low=-0.5, high=0.5, size=(X.shape[0],)) / self.num_components
+        self._W = np.random.uniform(low=-0.5, high=0.5, size=(X.shape[1], self.num_components)) / self.num_components
+        self._bias = np.random.uniform(low=-0.5, high=0.5, size=(X.shape[0],)) / self.num_components
 
         # central_words = X.nonzero()[0]
         # context_words = X.nonzero()[1]
         # counts = X.data
-        central_words, context_words, counts = utils.shuffle(central_words, context_words, counts)
+        # central_words, context_words, counts = utils.shuffle(central_words, context_words, counts)
         num_threads = min(num_threads, multiprocessing.cpu_count())
 
-        fit_glove(central_words,
-                  context_words,
-                  counts,
+        fit_glove(*utils.shuffle(central_words, context_words, counts),
                   self.W,
                   self.bias,
                   self._W,
@@ -117,8 +118,8 @@ def fit_glove(integral[:] central_words,
                 l2_norm[l] = 0.0
                 for k in range(N_K):
                     diff[l] += central_W[central_words[l], k] * context_W[context_words[l], k]
-                    l2_norm[l] += square(central_W[central_words[l], k])
-                    l2_norm[l] += square(context_W[context_words[l], k])
+                    # l2_norm[l] += square(central_W[central_words[l], k])
+                    # l2_norm[l] += square(context_W[context_words[l], k])
                 diff[l] += central_bias[central_words[l]] + context_bias[context_words[l]] - log(counts[l])
                 weight[l] = weight_func(counts[l], 10)
                 loss[l] = weight[l] * square(diff[l])
@@ -147,3 +148,13 @@ def fit_glove(integral[:] central_words,
             progress.set_description(', '.join(description_list))
             progress.update(1)
 
+
+# @cython.boundscheck(False)
+# @cython.wraparound(False)
+# def to_comatrix(vector[vector[int]] a):
+#     cdef int sum = 0
+#     cdef unsigned int i, j
+#     for i in range(len(a)):
+#         for j in range(len(a[i])):
+#             sum += a[i][j]
+#     return sum
