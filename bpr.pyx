@@ -45,8 +45,9 @@ class BPR(object):
                   unsigned int num_iterations,
                   unsigned int num_threads,
                   bool verbose = False):
-        self.W = np.random.uniform(low=-0.1, high=0.1, size=(X.shape[0], self.num_components))
-        self.H = np.random.uniform(low=-0.1, high=0.1, size=(X.shape[1], self.num_components))
+
+        self.W = np.random.uniform(low=-0.1, high=0.1, size=(X.shape[0], self.num_components)) / self.num_components
+        self.H = np.random.uniform(low=-0.1, high=0.1, size=(X.shape[1], self.num_components)) / self.num_components
 
         users, positives = utils.shuffle(*(X.nonzero()))
         dense = np.array(X.todense())
@@ -61,6 +62,30 @@ class BPR(object):
                 self.weight_decay,
                 num_threads,
                 verbose)
+
+    def fit_partial(self, X, 
+                          unsigned int num_iterations,
+                          unsigned int num_threads,
+                          bool verbose = False):
+
+        if not hasattr(self, "W"):
+            self.W = np.random.uniform(low=-0.1, high=0.1, size=(X.shape[0], self.num_components)) / self.num_components
+        if not hasattr(self, "H"):
+            self.H = np.random.uniform(low=-0.1, high=0.1, size=(X.shape[1], self.num_components)) / self.num_components
+
+        users, positives = (X.nonzero())
+        dense = np.array(X.todense())
+        num_threads = min(num_threads, multiprocessing.cpu_count())
+        return fit_bpr(users, 
+                       positives,
+                       dense,
+                       self.W,
+                       self.H,
+                       num_iterations,
+                       self.learning_rate,
+                       self.weight_decay,
+                       num_threads,
+                       verbose)
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
@@ -124,4 +149,6 @@ def fit_bpr(integral[:] users,
             description_list.append(f"LOSS: {np.round(acc_loss/N, 4):.4f}")
             progress.set_description(', '.join(description_list))
             progress.update(1)
+
+    return acc_loss / N
 

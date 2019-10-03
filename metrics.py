@@ -15,16 +15,24 @@ def auc(model, X):
     scores = model.W.dot(model.H.T)
     return np.array([roc_auc_score(user_ratings, score) if len(set(user_ratings)) == 2 else 0 for score, user_ratings in zip(scores, X)])
 
-def precision_at_k(model, X, k=5):
+def precision_at_k(model, X, k=10):
     if not isinstance(X, np.ndarray):
         X = X.toarray()
     scores = model.W.dot(model.H.T)
     return np.array([user_ratings[indices].mean() for indices, user_ratings in zip(scores.argsort(axis=1)[:,::-1][:,:k], X)])
 
-def recall_at_k(model, X, k=5):
+def recall_at_k(model, X, k=10):
     if not isinstance(X, np.ndarray):
         X = X.toarray()
     scores = model.W.dot(model.H.T)
     bunbo = X.sum(axis=1)
     bunbo[bunbo == 0] = 1
     return np.array([user_ratings[indices].sum() for indices, user_ratings in zip(scores.argsort(axis=1)[:,::-1][:,:k], X)]) / bunbo
+
+def dcg_at_k(model, X, k=10):
+    if not isinstance(X, np.ndarray):
+        X = X.toarray()
+    scores = model.W.dot(model.H.T)
+    bunbo = np.array([((np.ones(len(indices)) / np.log2(np.arange(2, k+2)))).sum() for indices, user_ratings in zip(scores.argsort(axis=1)[:,::-1][:,:k], X)])
+    return np.array([(user_ratings[indices] / np.log2(np.arange(2, k+2))).sum() for indices, user_ratings in zip(scores.argsort(axis=1)[:,::-1][:,:k], X)]) / bunbo
+    
