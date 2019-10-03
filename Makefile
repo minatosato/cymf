@@ -4,4 +4,3 @@ clean:
 	rm *.so
 	rm -rf ./build
 	rm *.cpp
-	rm *.c
