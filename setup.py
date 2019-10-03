@@ -11,12 +11,15 @@ from distutils.extension import Extension
 from Cython.Distutils import build_ext
 import numpy as np
 
+cmpl_args = ['-Xpreprocessor', '-fopenmp', '-O3']
+lnk_args = ['-lomp']
+
 setup(
     cmdclass = {'build_ext': build_ext},
     ext_modules = [
-        Extension("bpr", ["bpr.pyx"], extra_compile_args=['-Xpreprocessor', '-fopenmp', '-O3'], extra_link_args=['-lomp'], language="c++"),
-        Extension("wmf", ["wmf.pyx"], extra_compile_args=['-Xpreprocessor', '-fopenmp', '-O3'], extra_link_args=['-lomp'], language="c++"),
-        Extension("glove", ["glove.pyx"], extra_compile_args=['-Xpreprocessor', '-fopenmp', '-O3'], extra_link_args=['-lomp'], language="c++")
+        Extension("bpr", ["bpr.pyx"], extra_compile_args=cmpl_args, extra_link_args=lnk_args, language="c++"),
+        Extension("wmf", ["wmf.pyx"], extra_compile_args=cmpl_args, extra_link_args=lnk_args, language="c++"),
+        Extension("glove", ["glove.pyx"], extra_compile_args=cmpl_args, extra_link_args=lnk_args, language="c++")
         # -lcblas
     ],
     include_dirs= [np.get_include()]

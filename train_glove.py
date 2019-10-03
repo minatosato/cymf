@@ -1,31 +1,41 @@
 
-
+from gensim.models import KeyedVectors
 from scipy import sparse
-import nnabla.logger as L
+from pathlib import Path
 from glove import GloVe
 from glove import read_text
 
-L.info("text読み込み開始")
-X, i2w = read_text("ptb.train.txt", min_count=5)
-L.info("text読み込み完了")
+import argparse
+parser = argparse.ArgumentParser(description='')
+parser.add_argument('--min_count', type=int, default=5)
+parser.add_argument('--iter', type=int, default=15)
+parser.add_argument('--num_components', type=int, default=50)
+parser.add_argument('--lr', type=float, default=0.05)
+parser.add_argument('--alpha', type=float, default=0.75)
+parser.add_argument('--x_max', type=float, default=10.0)
+parser.add_argument('--threads', type=int, default=8)
+
+args = parser.parse_args()
+
+print("text読み込み開始")
+X, i2w = read_text("ptb.train.txt", min_count=args.min_count)
+print("text読み込み完了")
 
 vocab_size = len(i2w)
 embedding_size = 50
 
-L.info("sparse matrix 変換開始")
+print("sparse matrix 変換開始")
 sparse_X = sparse.csr_matrix(X)
-L.info("sparse matrix 変換完了")
+print("sparse matrix 変換完了")
 
-model = GloVe(num_components=embedding_size, learning_rate=0.05, weight_decay=0.01)
-model.fit(sparse_X, num_iterations=15, num_threads=1, verbose=True)
+model = GloVe(num_components=args.num_components, learning_rate=args.lr, alpha=args.alpha, x_max=args.x_max)
+model.fit(sparse_X, num_iterations=args.iter, num_threads=args.threads, verbose=True)
 
-
-from pathlib import Path
 output: Path = Path("./vectors.txt")
 with output.open("w") as f:
     f.write(f"{model.W.shape[0]} {embedding_size}\n")
     for i in range(model.W.shape[0]):
         f.write(f"{i2w[i]} " + " ".join(list(map(str, model.W[i]))) + "\n")
 
-import gensim
-w2v = gensim.models.KeyedVectors.load_word2vec_format("./vectors.txt")
+w2v = KeyedVectors.load_word2vec_format("./vectors.txt")
+

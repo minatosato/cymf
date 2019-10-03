@@ -36,8 +36,8 @@ cdef inline floating sigmoid(floating x) nogil:
 cdef inline floating square(floating x) nogil:
     return x * x
 
-cdef inline floating weight_func(floating x, floating x_max) nogil:
-    return fmin(pow(x / x_max, 0.75), 1.0)
+cdef inline floating weight_func(floating x, floating x_max, floating alpha) nogil:
+    return fmin(pow(x / x_max, alpha), 1.0)
 
 cdef inline integral imax(integral a, integral b) nogil:
     if (a > b):
@@ -54,9 +54,13 @@ cdef inline integral iabs(integral a) nogil:
 class GloVe(object):
     def __init__(self, unsigned int num_components,
                        floating learning_rate = 0.01,
+                       floating alpha = 0.75,
+                       floating x_max = 10.0,
                        floating weight_decay = 0.01):
         self.num_components = num_components
         self.learning_rate = learning_rate
+        self.alpha = alpha
+        self.x_max = x_max
         self.weight_decay = weight_decay
 
     def fit(self, X,
@@ -80,6 +84,8 @@ class GloVe(object):
                   _bias,
                   num_iterations,
                   self.learning_rate,
+                  self.x_max,
+                  self.alpha,
                   self.weight_decay,
                   num_threads,
                   verbose)
@@ -98,6 +104,8 @@ def fit_glove(integral[:] central_words,
               floating[:] context_bias,
               unsigned int num_iterations, 
               floating learning_rate,
+              floating x_max,
+              floating alpha,
               floating weight_decay,
               unsigned int num_threads,
               bool verbose):
@@ -130,7 +138,7 @@ def fit_glove(integral[:] central_words,
                 for k in range(N_K):
                     diff[l] += central_W[central_words[l], k] * context_W[context_words[l], k]
                 diff[l] += central_bias[central_words[l]] + context_bias[context_words[l]] - log(counts[l])
-                weight[l] = weight_func(counts[l], 10)
+                weight[l] = weight_func(counts[l], x_max, alpha)
                 loss[l] = weight[l] * square(diff[l])
 
                 for k in range(N_K):
