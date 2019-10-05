@@ -35,4 +35,22 @@ def dcg_at_k(model, X, k=10):
     scores = model.W.dot(model.H.T)
     bunbo = np.array([((np.ones(len(indices)) / np.log2(np.arange(2, k+2)))).sum() for indices, user_ratings in zip(scores.argsort(axis=1)[:,::-1][:,:k], X)])
     return np.array([(user_ratings[indices] / np.log2(np.arange(2, k+2))).sum() for indices, user_ratings in zip(scores.argsort(axis=1)[:,::-1][:,:k], X)]) / bunbo
-    
+
+
+def precision(scores, X, k=10):
+    if not isinstance(X, np.ndarray):
+        X = X.toarray()
+    return np.array([user_ratings[indices].mean() for indices, user_ratings in zip(scores.argsort(axis=1)[:,::-1][:,:k], X)])
+
+def recall(scores, X, k=10):
+    if not isinstance(X, np.ndarray):
+        X = X.toarray()
+    bunbo = X.sum(axis=1)
+    bunbo[bunbo == 0] = 1
+    return np.array([user_ratings[indices].sum() for indices, user_ratings in zip(scores.argsort(axis=1)[:,::-1][:,:k], X)]) / bunbo
+
+def dcg(scores, X, k=10):
+    if not isinstance(X, np.ndarray):
+        X = X.toarray()
+    bunbo = np.array([(np.ones(k) / np.log2(np.arange(2, k+2))).sum() for i in range(len(X))])
+    return np.array([(user_ratings[indices] / np.log2(np.arange(2, k+2))).sum() for indices, user_ratings in zip(scores.argsort(axis=1)[:,::-1][:,:k], X)]) / bunbo

@@ -24,9 +24,9 @@ import matplotlib.pyplot as plt
 import argparse
 parser = argparse.ArgumentParser(description='')
 parser.add_argument('--limit', type=int, default=20)
-parser.add_argument('--iter', type=int, default=200)
+parser.add_argument('--iter', type=int, default=100)
 parser.add_argument('--num_components', type=int, default=30)
-parser.add_argument('--lr', type=float, default=0.01)
+parser.add_argument('--lr', type=float, default=0.05)
 parser.add_argument('--weight_decay', type=float, default=0.01)
 parser.add_argument('--threads', type=int, default=8)
 
@@ -35,26 +35,10 @@ args = parser.parse_args()
 dataset: Dataset = MovieLens("ml-100k")
 
 model = BPR(num_components=args.num_components, learning_rate=args.lr, weight_decay=args.weight_decay)
-history = model.fit(dataset.train, dataset.valid, num_iterations=args.iter, num_threads=args.threads, verbose=True)
+history = model.fit(dataset.train, dataset.valid, dataset.test, num_iterations=args.iter, num_threads=args.threads, verbose=True)
 
-
-# loss: float
-# with tqdm(total=args.iter, ncols=200) as progress:
-#     for i in range(args.iter):
-#         loss = model.fit_partial(dataset.train, num_iterations=1, num_threads=args.threads, verbose=False)
-#         description = f"ITER={i}, LOSS={loss:.4f}, NDCG@10={dcg_at_k(model, dataset.test, k=10).mean():.4f}, "
-#         description += f"Recall@10={recall_at_k(model, dataset.test, k=10).mean():.4f}"
-#         progress.set_description(description)
-#         progress.update(1)
-
-print(precision_at_k(model, dataset.test, k=10).mean())
-print(dcg_at_k(model, dataset.test, k=10).mean())
-
-pd.DataFrame(history).plot()
+df = pd.DataFrame(history)
+df.columns = list(map(lambda x: x.decode("utf-8"), df.columns))
+df.plot()
+plt.grid()
 plt.show()
-
-# model = WMF(num_components=args.num_components, learning_rate=args.lr, weight_decay=args.weight_decay)
-# model.fit(dataset.train, num_iterations=3, num_threads=args.threads, verbose=True)
-
-# print(precision_at_k(model, dataset.test, k=10).mean())
-# print(dcg_at_k(model, dataset.test, k=10).mean())
