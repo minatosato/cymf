@@ -12,11 +12,6 @@ from wmf import WMF
 from movielens import MovieLens
 from dataset import Dataset
 
-from metrics import auc
-from metrics import precision_at_k
-from metrics import recall_at_k
-from metrics import dcg_at_k
-
 from tqdm import tqdm
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -26,7 +21,7 @@ parser = argparse.ArgumentParser(description='')
 parser.add_argument('--limit', type=int, default=20)
 parser.add_argument('--iter', type=int, default=100)
 parser.add_argument('--num_components', type=int, default=30)
-parser.add_argument('--lr', type=float, default=0.05)
+parser.add_argument('--lr', type=float, default=0.01)
 parser.add_argument('--weight_decay', type=float, default=0.01)
 parser.add_argument('--threads', type=int, default=8)
 

@@ -27,6 +27,7 @@ cdef extern from "math.h":
     double exp(double x) nogil
     double log(double x) nogil
     double log2(double x) nogil
+    double sqrt(double x) nogil
     double pow(double x, double y) nogil
 
 @cython.boundscheck(False)
@@ -64,14 +65,13 @@ class BPR(object):
             users_valid, positives_valid = X_valid.nonzero()
             dense_valid = np.array(X_valid.todense())
 
-            
         return fit_bpr(users, 
                        positives,
                        dense,
                        users_valid,
                        positives_valid,
                        dense_valid,
-                       X_test.toarray(),
+                       X_test.toarray() if X_test is not None else None,
                        self.W,
                        self.H,
                        num_iterations,
@@ -100,10 +100,6 @@ def fit_bpr(integral[:] users,
     cdef int N = users.shape[0]
     cdef int K = W.shape[1]
     cdef int u, i, j, k, l, iteration
-    cdef floating[:] x_uij = np.zeros(N)
-    cdef floating[:] w_uk = np.zeros(N)
-    cdef floating[:] l2_norm = np.zeros(N)
-    cdef floating[:] gradient_base = np.zeros(N)
     cdef floating[:] loss = np.zeros(N)
 
     cdef unordered_map[string, double] metrics
@@ -115,6 +111,8 @@ def fit_bpr(integral[:] users,
     cdef integral[:,:] negatives_valid = None
 
     cdef vector[unordered_map[string, double]] history = []
+
+    cdef BprAdamUpdater updater = BprAdamUpdater(W, H, learning_rate, weight_decay)
 
     for l in range(N):
         u = users[l]
@@ -132,24 +130,7 @@ def fit_bpr(integral[:] users,
         for iteration in range(iterations):
             metrics[b"loss"] = 0.0
             for l in prange(N, nogil=True, num_threads=num_threads):
-                x_uij[l] = 0.0
-                l2_norm[l] = 0.0
-                for k in range(K):
-                    x_uij[l] += W[users[l], k] * (H[positives[l], k] - H[negatives[l, iteration], k])
-                    l2_norm[l] += square(W[users[l], k])
-                    l2_norm[l] += square(H[positives[l], k])
-                    l2_norm[l] += square(H[negatives[l, iteration], k])
-
-                loss[l] = - log(sigmoid(x_uij[l])) + weight_decay * l2_norm[l]
-
-
-                gradient_base[l] = (1.0 / (1.0 + exp(x_uij[l])))
-                for k in range(K):
-                    w_uk[l] = W[users[l], k]
-                    W[users[l], k] += learning_rate * (gradient_base[l] * (H[positives[l], k] - H[negatives[l, iteration], k]) - weight_decay * W[users[l], k])
-                    H[positives[l], k] += learning_rate * (gradient_base[l] * w_uk[l] - weight_decay * H[positives[l], k])
-                    H[negatives[l, iteration], k] += learning_rate * (gradient_base[l] * (-w_uk[l]) - weight_decay * H[negatives[l, iteration], k])
-
+                loss[l] = updater.loss(users[l], positives[l], negatives[l, iteration], update=True)
 
             for l in range(N):
                 metrics[b"loss"] += loss[l]
@@ -158,15 +139,7 @@ def fit_bpr(integral[:] users,
             if X_valid is not None:
                 metrics[b"val_loss"] = 0.0
                 for l in prange(users_valid.shape[0], nogil=True, num_threads=num_threads):
-                    x_uij[l] = 0.0
-                    l2_norm[l] = 0.0
-                    for k in range(K):
-                        x_uij[l] += W[users_valid[l], k] * (H[positives_valid[l], k] - H[negatives_valid[l, iteration], k])
-                        l2_norm[l] += square(W[users_valid[l], k])
-                        l2_norm[l] += square(H[positives_valid[l], k])
-                        l2_norm[l] += square(H[negatives_valid[l, iteration], k])
-
-                    loss[l] = - log(sigmoid(x_uij[l])) + weight_decay * l2_norm[l]
+                    loss[l] = updater.loss(users_valid[l], positives_valid[l], negatives_valid[l, iteration], update=False)
                 for l in range(users_valid.shape[0]):
                     metrics[b"val_loss"] += loss[l]
                 metrics[b"val_loss"] /= users_valid.shape[0]
@@ -178,25 +151,151 @@ def fit_bpr(integral[:] users,
                 description_list.append(f"VAL_LOSS: {np.round(metrics[b'val_loss'], 4):.4f}")
 
             if X_test is not None:
-                metrics = evaluate(W, H, X_test, metrics, num_threads=num_threads)
+                metrics = evaluate(W, H, X_test, metrics)
             progress.set_description(', '.join(description_list))
             progress.update(1)
 
             history.push_back(metrics)
     return history
 
+
+cdef class BprAdamUpdater(object):
+    cdef public double[:,:] W
+    cdef public double[:,:] H
+    cdef public double[:,:] M_W
+    cdef public double[:,:] V_W
+    cdef public double[:,:] M_H
+    cdef public double[:,:] V_H
+    cdef public double alpha
+    cdef public double beta1
+    cdef public double beta2
+    cdef public double epsilon
+    cdef public double weight_decay
+    def __init__(self, double[:,:] W, double[:,:] H, double learning_rate, double weight_decay):
+        self.W = W
+        self.H = H
+        self.M_W = np.zeros(shape=(W.shape[0], W.shape[1]))
+        self.V_W = np.zeros(shape=(W.shape[0], W.shape[1]))
+        self.M_H = np.zeros(shape=(H.shape[0], H.shape[1]))
+        self.V_H = np.zeros(shape=(H.shape[0], H.shape[1]))
+        
+        self.weight_decay = weight_decay
+        self.alpha = learning_rate
+        self.beta1 = 0.9
+        self.beta2 = 0.999
+        self.epsilon = 1e-8
+
+
+    @cython.boundscheck(False)
+    @cython.wraparound(False)
+    cdef double loss(self, int u, int i, int j, bool update = True) nogil:
+        cdef double x_uij, tmp, loss, l2_norm
+        cdef int K = self.W.shape[1]
+        cdef int k
+        cdef double grad_wuk
+        cdef double grad_hik
+        cdef double grad_hjk
+
+        x_uij = 0.0
+        l2_norm = 0.0
+        for k in range(K):
+            x_uij += self.W[u, k] * (self.H[i, k] - self.H[j, k])
+            l2_norm += square(self.W[u, k]) + square(self.H[i, k]) + square(self.H[j, k])
+
+        loss = - log(sigmoid(x_uij)) + self.weight_decay * l2_norm
+        
+        if not update:
+            return loss
+        
+        x_uij = (1.0 / (1.0 + exp(x_uij)))
+
+        for k in range(K):
+            grad_wuk = - (x_uij * (self.H[i, k] - self.H[j, k]) - self.weight_decay * self.W[u, k])
+            grad_hik = - (x_uij *  self.W[u, k] - self.weight_decay * self.H[i, k])
+            grad_hjk = - (x_uij * (-self.W[u, k]) - self.weight_decay * self.H[j, k])
+
+            self.M_W[u, k] = self.beta1 * self.M_W[u, k] + (1 - self.beta1) * grad_wuk
+            self.M_H[i, k] = self.beta1 * self.M_H[i, k] + (1 - self.beta1) * grad_hik
+            self.M_H[j, k] = self.beta1 * self.M_H[j, k] + (1 - self.beta1) * grad_hjk
+
+            self.V_W[u, k] = self.beta2 * self.V_W[u, k] + (1 - self.beta2) * square(grad_wuk)
+            self.V_H[i, k] = self.beta2 * self.V_H[i, k] + (1 - self.beta2) * square(grad_hik)
+            self.V_H[j, k] = self.beta2 * self.V_H[j, k] + (1 - self.beta2) * square(grad_hjk)
+
+            self.W[u, k] -= self.alpha * (self.M_W[u, k] / (1 - self.beta1)) / (sqrt(self.V_W[u, k] / (1 - self.beta2)) + self.epsilon)
+            self.H[i, k] -= self.alpha * (self.M_H[i, k] / (1 - self.beta1)) / (sqrt(self.V_H[i, k] / (1 - self.beta2)) + self.epsilon)
+            self.H[j, k] -= self.alpha * (self.M_H[j, k] / (1 - self.beta1)) / (sqrt(self.V_H[j, k] / (1 - self.beta2)) + self.epsilon)
+        
+        return loss
+                   
+
+cdef class BprAdaGradUpdater(object):
+    cdef public double[:,:] W
+    cdef public double[:,:] H
+    cdef public double[:,:] grad_accum_W
+    cdef public double[:,:] grad_accum_H
+    cdef public double weight_decay
+    cdef public double learning_rate
+
+
+    def __init__(self, double[:,:] W, double[:,:] H, double learning_rate, double weight_decay):
+        self.W = W
+        self.H = H
+        self.grad_accum_W = np.ones(shape=(W.shape[0], W.shape[1]))
+        self.grad_accum_H = np.ones(shape=(H.shape[0], H.shape[1]))
+        self.weight_decay = weight_decay
+        self.learning_rate = learning_rate
+
+    @cython.boundscheck(False)
+    @cython.wraparound(False)
+    cdef double loss(self, int u, int i, int j, bool update = True) nogil:
+        cdef double x_uij, tmp, loss, l2_norm
+        cdef int K = self.W.shape[1]
+        cdef int k
+        cdef double grad_wuk
+        cdef double grad_hik
+        cdef double grad_hjk
+
+        x_uij = 0.0
+        l2_norm = 0.0
+        for k in range(K):
+            x_uij += self.W[u, k] * (self.H[i, k] - self.H[j, k])
+            l2_norm += square(self.W[u, k]) + square(self.H[i, k]) + square(self.H[j, k])
+
+        loss = - log(sigmoid(x_uij)) + self.weight_decay * l2_norm
+        
+        if not update:
+            return loss
+        
+        x_uij = (1.0 / (1.0 + exp(x_uij)))
+
+        for k in range(K):
+            grad_wuk = - (x_uij * (self.H[i, k] - self.H[j, k]) - self.weight_decay * self.W[u, k])
+            grad_hik = - (x_uij *  self.W[u, k] - self.weight_decay * self.H[i, k])
+            grad_hjk = - (x_uij * (-self.W[u, k]) - self.weight_decay * self.H[j, k])
+
+            self.grad_accum_W[u, k] += square(grad_wuk)
+            self.grad_accum_H[i, k] += square(grad_hik)
+            self.grad_accum_H[j, k] += square(grad_hjk)
+
+            self.W[u, k] -= self.learning_rate * grad_wuk / sqrt(self.grad_accum_W[u, k])
+            self.H[i, k] -= self.learning_rate * grad_hik / sqrt(self.grad_accum_H[i, k])
+            self.H[j, k] -= self.learning_rate * grad_hjk / sqrt(self.grad_accum_H[j, k])
+        
+        return loss
+                   
+
 @cython.boundscheck(False)
 @cython.wraparound(False)
 def evaluate(floating[:,:] W,
              floating[:,:] H,
              np.ndarray[floating, ndim=2] X,
-             unordered_map[string, double] stores,
-             int num_threads = 1):
+             unordered_map[string, double] stores):
     cdef np.ndarray[floating, ndim=2] scores = np.dot(np.array(W), np.array(H).T)
     cdef np.ndarray[np.int_t, ndim=2] argsorted_scores = scores.argsort(axis=1)[:,::-1][:,:10]
-    stores[b"Reacall@10"] = recall(argsorted_scores, X, k=10, num_threads=num_threads).mean()
-    stores[b"nDCG@10"] = ndcg(argsorted_scores, X, k=10, num_threads=num_threads).mean()
-    stores[b"MAP@10"] = ap(argsorted_scores, X, k=10, num_threads=num_threads).mean()
+    stores[b"Reacall@10"] = recall(argsorted_scores, X, k=10).mean()
+    stores[b"nDCG@10"] = ndcg(argsorted_scores, X, k=10).mean()
+    stores[b"MAP@10"] = ap(argsorted_scores, X, k=10).mean()
     return stores
 
 @cython.boundscheck(False)
@@ -208,7 +307,7 @@ def recall(integral[:,:] argsorted_scores, floating[:,:] X, int k = 10, int num_
 
     cdef floating[:] ret = np.zeros(shape=(N,))
 
-    for i in prange(N, nogil=True, num_threads=num_threads):
+    for i in range(N):
         if _sum[i] == 0:
             ret[i] = 0.0
             continue
@@ -228,7 +327,7 @@ def ndcg(integral[:,:] argsorted_scores, floating[:,:] X, int k = 10, int num_th
 
     cdef floating[:] ret = np.zeros(shape=(N,))
 
-    for i in prange(N, nogil=True, num_threads=num_threads):
+    for i in range(N):
         if _sum[i] == 0:
             ret[i] = 0.0
             continue
@@ -255,7 +354,7 @@ def ap(integral[:,:] argsorted_scores, floating[:,:] X, int k = 10, int num_thre
 
     cdef floating[:] ret = np.zeros(shape=(N,))
 
-    for i in prange(N, nogil=True, num_threads=num_threads):
+    for i in range(N):
         counter[i] = 0.0
 
         for j in range(k):
