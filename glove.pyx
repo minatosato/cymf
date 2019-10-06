@@ -6,6 +6,8 @@
 # LICENSE file in the root directory of this source tree.
 #
 
+# cython: language_level=3
+
 import cython
 import multiprocessing
 import numpy as np
@@ -39,7 +41,7 @@ cdef inline floating square(floating x) nogil:
 cdef inline floating weight_func(floating x, floating x_max, floating alpha) nogil:
     return fmin(pow(x / x_max, alpha), 1.0)
 
-cdef inline integral imax(integral a, integral b) nogil:
+cdef inline int imax(int a, int b) nogil:
     if (a > b):
         return a
     else:
@@ -52,7 +54,7 @@ cdef inline integral iabs(integral a) nogil:
         return a
 
 class GloVe(object):
-    def __init__(self, unsigned int num_components,
+    def __init__(self, int num_components,
                        floating learning_rate = 0.01,
                        floating alpha = 0.75,
                        floating x_max = 10.0,
@@ -64,8 +66,8 @@ class GloVe(object):
         self.weight_decay = weight_decay
 
     def fit(self, X,
-                  unsigned int num_iterations,
-                  unsigned int num_threads,
+                  int num_iterations,
+                  int num_threads,
                   bool verbose = False):
                   
         self.W = np.random.uniform(low=-0.5, high=0.5, size=(X.shape[0], self.num_components)) / self.num_components
@@ -102,18 +104,18 @@ def fit_glove(integral[:] central_words,
               floating[:] central_bias,
               floating[:,:] context_W,
               floating[:] context_bias,
-              unsigned int num_iterations, 
+              int num_iterations, 
               floating learning_rate,
               floating x_max,
               floating alpha,
               floating weight_decay,
-              unsigned int num_threads,
+              int num_threads,
               bool verbose):
-    cdef unsigned int iterations = num_iterations
-    cdef unsigned int N = central_words.shape[0]
-    cdef unsigned int N_W = central_W.shape[0]
-    cdef unsigned int N_K = central_W.shape[1]
-    cdef unsigned int u, i, j, k, l, iteration
+    cdef int iterations = num_iterations
+    cdef int N = central_words.shape[0]
+    cdef int N_W = central_W.shape[0]
+    cdef int N_K = central_W.shape[1]
+    cdef int u, i, j, k, l, iteration
     cdef floating[:] diff = np.zeros(N)
     cdef floating[:] loss = np.zeros(N)
     cdef floating[:] l2_norm = np.zeros(N)
@@ -168,14 +170,14 @@ def fit_glove(integral[:] central_words,
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-def read_text(str fname, unsigned int min_count = 5, unsigned int window_size = 10):
+def read_text(str fname, int min_count = 5, int window_size = 10):
     cdef dict w2i, i2w, count
     cdef str raw
     cdef list words
     cdef list lines
     cdef vector[vector[int]] x = []
     cdef vector[int] tmp = []
-    cdef unsigned int i, j, k, index, vocab_size
+    cdef int i, j, k, index, vocab_size
     cdef double[:,:] matrix
     with open(fname) as f:
         raw = f.read()

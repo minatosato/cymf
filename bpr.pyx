@@ -6,6 +6,8 @@
 # LICENSE file in the root directory of this source tree.
 #
 
+# cython: language_level=3
+
 import cython
 import multiprocessing
 import numpy as np
@@ -30,8 +32,6 @@ cdef extern from "math.h":
     double sqrt(double x) nogil
     double pow(double x, double y) nogil
 
-@cython.boundscheck(False)
-@cython.wraparound(False)
 cdef inline floating sigmoid(floating x) nogil:
     return 1.0 / (1.0 + exp(-x))
 

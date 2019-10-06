@@ -6,6 +6,8 @@
 # LICENSE file in the root directory of this source tree.
 #
 
+# cython: language_level=3
+
 import numpy as np
 import cython
 from cython cimport floating
@@ -35,7 +37,7 @@ cdef inline floating square(floating x) nogil:
     return x * x
 
 class WMF(object):
-    def __init__(self, unsigned int num_components,
+    def __init__(self, int num_components,
                        floating learning_rate = 0.01,
                        floating weight_decay = 0.01,
                        floating weight = 5.0):
@@ -45,8 +47,8 @@ class WMF(object):
         self.weight = weight
 
     def fit(self, X, 
-                  unsigned int num_iterations,
-                  unsigned int num_threads,
+                  int num_iterations,
+                  int num_threads,
                   bool verbose = False):
         self.W = np.random.uniform(low=-0.1, high=0.1, size=(X.shape[0], self.num_components))
         self.H = np.random.uniform(low=-0.1, high=0.1, size=(X.shape[1], self.num_components))
@@ -83,16 +85,16 @@ def fit_wmf(integral[:] users,
             floating[:] ratings,
             floating[:,:] W, 
             floating[:,:] H, 
-            unsigned int num_iterations, 
+            int num_iterations, 
             floating learning_rate,
             floating weight_decay,
             floating weight,
-            unsigned int num_threads,
+            int num_threads,
             bool verbose):
-    cdef unsigned int iterations = num_iterations
-    cdef unsigned int N = users.shape[0]
-    cdef unsigned int K = W.shape[1]
-    cdef unsigned int u, i, j, k, l, iteration
+    cdef int iterations = num_iterations
+    cdef int N = users.shape[0]
+    cdef int K = W.shape[1]
+    cdef int u, i, j, k, l, iteration
     cdef floating[:] prediction = np.zeros(N)
     cdef floating[:] w_uk = np.zeros(N)
     cdef floating[:] l2_norm = np.zeros(N)
