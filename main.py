@@ -34,6 +34,8 @@ history = model.fit(dataset.train, dataset.valid, dataset.test, num_iterations=a
 
 df = pd.DataFrame(history)
 df.columns = list(map(lambda x: x.decode("utf-8"), df.columns))
+df.index += 1
+df.index.name = "epoch"
 df.plot()
 plt.grid()
 plt.show()

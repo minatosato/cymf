@@ -112,7 +112,7 @@ def fit_bpr(integral[:] users,
 
     cdef vector[unordered_map[string, double]] history = []
 
-    cdef BprAdamUpdater updater = BprAdamUpdater(W, H, learning_rate, weight_decay)
+    cdef BprModel bpr_model = BprModel(W, H, learning_rate, weight_decay, num_iterations)
 
     for l in range(N):
         u = users[l]
@@ -130,7 +130,8 @@ def fit_bpr(integral[:] users,
         for iteration in range(iterations):
             metrics[b"loss"] = 0.0
             for l in prange(N, nogil=True, num_threads=num_threads):
-                loss[l] = updater.loss(users[l], positives[l], negatives[l, iteration], update=True)
+                loss[l] = bpr_model.forward(users[l], positives[l], negatives[l, iteration])
+                bpr_model.backward(users[l], positives[l], negatives[l, iteration])
 
             for l in range(N):
                 metrics[b"loss"] += loss[l]
@@ -139,7 +140,7 @@ def fit_bpr(integral[:] users,
             if X_valid is not None:
                 metrics[b"val_loss"] = 0.0
                 for l in prange(users_valid.shape[0], nogil=True, num_threads=num_threads):
-                    loss[l] = updater.loss(users_valid[l], positives_valid[l], negatives_valid[l, iteration], update=False)
+                    loss[l] = bpr_model.forward(users_valid[l], positives_valid[l], negatives_valid[l, iteration])
                 for l in range(users_valid.shape[0]):
                     metrics[b"val_loss"] += loss[l]
                 metrics[b"val_loss"] /= users_valid.shape[0]
@@ -157,6 +158,92 @@ def fit_bpr(integral[:] users,
 
             history.push_back(metrics)
     return history
+
+
+cdef class BprModel(object):
+    cdef public double[:,:] W
+    cdef public double[:,:] H
+    cdef public double[:,:] M_W
+    cdef public double[:,:] V_W
+    cdef public double[:,:] M_H
+    cdef public double[:,:] V_H
+    cdef public double alpha
+    cdef public double beta1
+    cdef public double beta2
+    cdef public double epsilon
+    cdef public double weight_decay
+
+    cdef public int num_threads
+    cdef public double[:] x_uij
+
+    def __init__(self, double[:,:] W, double[:,:] H, double learning_rate, double weight_decay, int num_threads):
+        self.W = W
+        self.H = H
+        self.M_W = np.zeros(shape=(W.shape[0], W.shape[1]))
+        self.V_W = np.zeros(shape=(W.shape[0], W.shape[1]))
+        self.M_H = np.zeros(shape=(H.shape[0], H.shape[1]))
+        self.V_H = np.zeros(shape=(H.shape[0], H.shape[1]))
+        
+        self.weight_decay = weight_decay
+        self.alpha = learning_rate
+        self.beta1 = 0.9
+        self.beta2 = 0.999
+        self.epsilon = 1e-8
+
+        self.num_threads = num_threads
+        self.x_uij = np.zeros(self.num_threads)
+
+    @cython.boundscheck(False)
+    @cython.wraparound(False)
+    cdef double forward(self, int u, int i, int j) nogil:
+        cdef int thread_id = threadid() # 自分のスレッドidを元に参照すべきdouble[:] x_uijを決定する
+
+        cdef double tmp, loss, l2_norm
+        cdef int K = self.W.shape[1]
+        cdef int k
+
+        self.x_uij[thread_id] = 0.0
+        l2_norm = 0.0
+        for k in range(K):
+            self.x_uij[thread_id] += self.W[u, k] * (self.H[i, k] - self.H[j, k])
+            l2_norm += square(self.W[u, k]) + square(self.H[i, k]) + square(self.H[j, k])
+
+        loss = - log(sigmoid(self.x_uij[thread_id])) + self.weight_decay * l2_norm
+        
+        return loss
+
+    @cython.boundscheck(False)
+    @cython.wraparound(False)
+    cdef void backward(self, int u, int i, int j) nogil:
+        cdef int thread_id = threadid()
+
+
+        cdef double tmp
+        cdef int K = self.W.shape[1]
+        cdef int k
+
+        cdef double grad_wuk
+        cdef double grad_hik
+        cdef double grad_hjk
+        
+        self.x_uij[thread_id] = (1.0 / (1.0 + exp(self.x_uij[thread_id])))
+
+        for k in range(K):
+            grad_wuk = - (self.x_uij[thread_id] * (self.H[i, k] - self.H[j, k]) - self.weight_decay * self.W[u, k])
+            grad_hik = - (self.x_uij[thread_id] *  self.W[u, k] - self.weight_decay * self.H[i, k])
+            grad_hjk = - (self.x_uij[thread_id] * (-self.W[u, k]) - self.weight_decay * self.H[j, k])
+
+            self.M_W[u, k] = self.beta1 * self.M_W[u, k] + (1 - self.beta1) * grad_wuk
+            self.M_H[i, k] = self.beta1 * self.M_H[i, k] + (1 - self.beta1) * grad_hik
+            self.M_H[j, k] = self.beta1 * self.M_H[j, k] + (1 - self.beta1) * grad_hjk
+
+            self.V_W[u, k] = self.beta2 * self.V_W[u, k] + (1 - self.beta2) * square(grad_wuk)
+            self.V_H[i, k] = self.beta2 * self.V_H[i, k] + (1 - self.beta2) * square(grad_hik)
+            self.V_H[j, k] = self.beta2 * self.V_H[j, k] + (1 - self.beta2) * square(grad_hjk)
+
+            self.W[u, k] -= self.alpha * (self.M_W[u, k] / (1 - self.beta1)) / (sqrt(self.V_W[u, k] / (1 - self.beta2)) + self.epsilon)
+            self.H[i, k] -= self.alpha * (self.M_H[i, k] / (1 - self.beta1)) / (sqrt(self.V_H[i, k] / (1 - self.beta2)) + self.epsilon)
+            self.H[j, k] -= self.alpha * (self.M_H[j, k] / (1 - self.beta1)) / (sqrt(self.V_H[j, k] / (1 - self.beta2)) + self.epsilon)
 
 
 cdef class BprAdamUpdater(object):
