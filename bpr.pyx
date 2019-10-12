@@ -14,6 +14,8 @@ import numpy as np
 from collections import Counter
 from cython.parallel import prange
 from cython.parallel import threadid
+from cython.operator cimport dereference
+from cython.operator import postincrement
 from sklearn import utils
 from tqdm import tqdm
 
@@ -23,6 +25,7 @@ from cython cimport integral
 from libcpp cimport bool
 from libcpp.vector cimport vector
 from libcpp.string cimport string
+from libcpp.map cimport map
 from libcpp.unordered_map cimport unordered_map
 
 cdef extern from "math.h":
@@ -159,39 +162,120 @@ def fit_bpr(integral[:] users,
             history.push_back(metrics)
     return history
 
-
-cdef class BprModel(object):
+cdef class Optimizer(object):
     cdef public double[:,:] W
     cdef public double[:,:] H
-    cdef public double[:,:] M_W
-    cdef public double[:,:] V_W
-    cdef public double[:,:] M_H
-    cdef public double[:,:] V_H
+
+    def __init__(self, double[:,:] W, double [:,:] H):
+        self.W = W
+        self.H = H
+
+    @cython.boundscheck(False)
+    @cython.wraparound(False)
+    cdef void update_W(self, int u, int k, double gradient) nogil:
+        raise NotImplementedError()
+
+    @cython.boundscheck(False)
+    @cython.wraparound(False)
+    cdef void update_H(self, int i, int k, double gradient) nogil:
+        raise NotImplementedError()
+
+cdef class Sgd(Optimizer):
+    cdef public double learning_rate
+    def __init__(self, double[:,:] W, double [:,:] H, double learning_rate):
+        super(Sgd, self).__init__(W, H)
+        self.learning_rate = learning_rate
+
+    @cython.boundscheck(False)
+    @cython.wraparound(False)
+    cdef void update_W(self, int u, int k, double gradient) nogil:
+        self.W[u, k] -= self.learning_rate * gradient
+
+    @cython.boundscheck(False)
+    @cython.wraparound(False)
+    cdef void update_H(self, int i, int k, double gradient) nogil:
+        self.H[i, k] -= self.learning_rate * gradient
+
+cdef class AdaGrad(Sgd):
+    cdef public double[:,:] grad_accum_W
+    cdef public double[:,:] grad_accum_H
+
+    def __init__(self, double[:,:] W, double [:,:] H, double learning_rate):
+        super(AdaGrad, self).__init__(W, H, learning_rate)
+        self.grad_accum_W = np.ones(shape=(W.shape[0], W.shape[1]))
+        self.grad_accum_H = np.ones(shape=(H.shape[0], H.shape[1]))
+
+    @cython.boundscheck(False)
+    @cython.wraparound(False)
+    cdef void update_W(self, int u, int k, double gradient) nogil:
+        self.grad_accum_W[u, k] += square(gradient)
+        self.W[u, k] -= self.learning_rate * gradient / sqrt(self.grad_accum_W[u, k])
+        
+    @cython.boundscheck(False)
+    @cython.wraparound(False)
+    cdef void update_H(self, int i, int k, double gradient) nogil:
+        self.grad_accum_H[i, k] += square(gradient)
+        self.H[i, k] -= self.learning_rate * gradient / sqrt(self.grad_accum_H[i, k])
+
+
+cdef class Adam(Optimizer):
     cdef public double alpha
     cdef public double beta1
     cdef public double beta2
     cdef public double epsilon
-    cdef public double weight_decay
+    cdef public double[:,:] M_W
+    cdef public double[:,:] V_W
+    cdef public double[:,:] M_H
+    cdef public double[:,:] V_H
 
+    def __init__(self,
+                 double[:,:] W,
+                 double[:,:] H,
+                 double alpha = 0.001,
+                 double beta1 = 0.9,
+                 double beta2 = 0.999,
+                 double epsilon = 1e-8
+                 ):
+        super(Adam, self).__init__(W, H)
+        self.alpha = alpha
+        self.beta1 = 0.9
+        self.beta2 = 0.999
+        self.epsilon = 1e-8
+        self.M_W = np.zeros(shape=(W.shape[0], W.shape[1]))
+        self.V_W = np.zeros(shape=(W.shape[0], W.shape[1]))
+        self.M_H = np.zeros(shape=(H.shape[0], H.shape[1]))
+        self.V_H = np.zeros(shape=(H.shape[0], H.shape[1]))
+
+    @cython.boundscheck(False)
+    @cython.wraparound(False)
+    cdef void update_W(self, int u, int k, double gradient) nogil:
+        self.M_W[u, k] = self.beta1 * self.M_W[u, k] + (1 - self.beta1) * gradient
+        self.V_W[u, k] = self.beta2 * self.V_W[u, k] + (1 - self.beta2) * square(gradient)
+        self.W[u, k] -= self.alpha * (self.M_W[u, k] / (1 - self.beta1)) / (sqrt(self.V_W[u, k] / (1 - self.beta2)) + self.epsilon)
+
+    @cython.boundscheck(False)
+    @cython.wraparound(False)
+    cdef void update_H(self, int i, int k, double gradient) nogil:
+        self.M_H[i, k] = self.beta1 * self.M_H[i, k] + (1 - self.beta1) * gradient
+        self.V_H[i, k] = self.beta2 * self.V_H[i, k] + (1 - self.beta2) * square(gradient)
+        self.H[i, k] -= self.alpha * (self.M_H[i, k] / (1 - self.beta1)) / (sqrt(self.V_H[i, k] / (1 - self.beta2)) + self.epsilon)
+        
+
+cdef class BprModel(object):
+    cdef public double[:,:] W
+    cdef public double[:,:] H
+    cdef public double weight_decay
+    cdef public Optimizer optimizer
     cdef public int num_threads
     cdef public double[:] x_uij
 
     def __init__(self, double[:,:] W, double[:,:] H, double learning_rate, double weight_decay, int num_threads):
         self.W = W
-        self.H = H
-        self.M_W = np.zeros(shape=(W.shape[0], W.shape[1]))
-        self.V_W = np.zeros(shape=(W.shape[0], W.shape[1]))
-        self.M_H = np.zeros(shape=(H.shape[0], H.shape[1]))
-        self.V_H = np.zeros(shape=(H.shape[0], H.shape[1]))
-        
+        self.H = H        
         self.weight_decay = weight_decay
-        self.alpha = learning_rate
-        self.beta1 = 0.9
-        self.beta2 = 0.999
-        self.epsilon = 1e-8
-
         self.num_threads = num_threads
         self.x_uij = np.zeros(self.num_threads)
+        self.optimizer = AdaGrad(self.W, self.H, learning_rate)
 
     @cython.boundscheck(False)
     @cython.wraparound(False)
@@ -217,8 +301,8 @@ cdef class BprModel(object):
     cdef void backward(self, int u, int i, int j) nogil:
         cdef int thread_id = threadid()
 
-
-        cdef double tmp
+        cdef int N = self.W.shape[0]
+        cdef int M = self.H.shape[0]
         cdef int K = self.W.shape[1]
         cdef int k
 
@@ -233,143 +317,9 @@ cdef class BprModel(object):
             grad_hik = - (self.x_uij[thread_id] *  self.W[u, k] - self.weight_decay * self.H[i, k])
             grad_hjk = - (self.x_uij[thread_id] * (-self.W[u, k]) - self.weight_decay * self.H[j, k])
 
-            self.M_W[u, k] = self.beta1 * self.M_W[u, k] + (1 - self.beta1) * grad_wuk
-            self.M_H[i, k] = self.beta1 * self.M_H[i, k] + (1 - self.beta1) * grad_hik
-            self.M_H[j, k] = self.beta1 * self.M_H[j, k] + (1 - self.beta1) * grad_hjk
-
-            self.V_W[u, k] = self.beta2 * self.V_W[u, k] + (1 - self.beta2) * square(grad_wuk)
-            self.V_H[i, k] = self.beta2 * self.V_H[i, k] + (1 - self.beta2) * square(grad_hik)
-            self.V_H[j, k] = self.beta2 * self.V_H[j, k] + (1 - self.beta2) * square(grad_hjk)
-
-            self.W[u, k] -= self.alpha * (self.M_W[u, k] / (1 - self.beta1)) / (sqrt(self.V_W[u, k] / (1 - self.beta2)) + self.epsilon)
-            self.H[i, k] -= self.alpha * (self.M_H[i, k] / (1 - self.beta1)) / (sqrt(self.V_H[i, k] / (1 - self.beta2)) + self.epsilon)
-            self.H[j, k] -= self.alpha * (self.M_H[j, k] / (1 - self.beta1)) / (sqrt(self.V_H[j, k] / (1 - self.beta2)) + self.epsilon)
-
-
-cdef class BprAdamUpdater(object):
-    cdef public double[:,:] W
-    cdef public double[:,:] H
-    cdef public double[:,:] M_W
-    cdef public double[:,:] V_W
-    cdef public double[:,:] M_H
-    cdef public double[:,:] V_H
-    cdef public double alpha
-    cdef public double beta1
-    cdef public double beta2
-    cdef public double epsilon
-    cdef public double weight_decay
-    def __init__(self, double[:,:] W, double[:,:] H, double learning_rate, double weight_decay):
-        self.W = W
-        self.H = H
-        self.M_W = np.zeros(shape=(W.shape[0], W.shape[1]))
-        self.V_W = np.zeros(shape=(W.shape[0], W.shape[1]))
-        self.M_H = np.zeros(shape=(H.shape[0], H.shape[1]))
-        self.V_H = np.zeros(shape=(H.shape[0], H.shape[1]))
-        
-        self.weight_decay = weight_decay
-        self.alpha = learning_rate
-        self.beta1 = 0.9
-        self.beta2 = 0.999
-        self.epsilon = 1e-8
-
-
-    @cython.boundscheck(False)
-    @cython.wraparound(False)
-    cdef double loss(self, int u, int i, int j, bool update = True) nogil:
-        cdef double x_uij, tmp, loss, l2_norm
-        cdef int K = self.W.shape[1]
-        cdef int k
-        cdef double grad_wuk
-        cdef double grad_hik
-        cdef double grad_hjk
-
-        x_uij = 0.0
-        l2_norm = 0.0
-        for k in range(K):
-            x_uij += self.W[u, k] * (self.H[i, k] - self.H[j, k])
-            l2_norm += square(self.W[u, k]) + square(self.H[i, k]) + square(self.H[j, k])
-
-        loss = - log(sigmoid(x_uij)) + self.weight_decay * l2_norm
-        
-        if not update:
-            return loss
-        
-        x_uij = (1.0 / (1.0 + exp(x_uij)))
-
-        for k in range(K):
-            grad_wuk = - (x_uij * (self.H[i, k] - self.H[j, k]) - self.weight_decay * self.W[u, k])
-            grad_hik = - (x_uij *  self.W[u, k] - self.weight_decay * self.H[i, k])
-            grad_hjk = - (x_uij * (-self.W[u, k]) - self.weight_decay * self.H[j, k])
-
-            self.M_W[u, k] = self.beta1 * self.M_W[u, k] + (1 - self.beta1) * grad_wuk
-            self.M_H[i, k] = self.beta1 * self.M_H[i, k] + (1 - self.beta1) * grad_hik
-            self.M_H[j, k] = self.beta1 * self.M_H[j, k] + (1 - self.beta1) * grad_hjk
-
-            self.V_W[u, k] = self.beta2 * self.V_W[u, k] + (1 - self.beta2) * square(grad_wuk)
-            self.V_H[i, k] = self.beta2 * self.V_H[i, k] + (1 - self.beta2) * square(grad_hik)
-            self.V_H[j, k] = self.beta2 * self.V_H[j, k] + (1 - self.beta2) * square(grad_hjk)
-
-            self.W[u, k] -= self.alpha * (self.M_W[u, k] / (1 - self.beta1)) / (sqrt(self.V_W[u, k] / (1 - self.beta2)) + self.epsilon)
-            self.H[i, k] -= self.alpha * (self.M_H[i, k] / (1 - self.beta1)) / (sqrt(self.V_H[i, k] / (1 - self.beta2)) + self.epsilon)
-            self.H[j, k] -= self.alpha * (self.M_H[j, k] / (1 - self.beta1)) / (sqrt(self.V_H[j, k] / (1 - self.beta2)) + self.epsilon)
-        
-        return loss
-                   
-
-cdef class BprAdaGradUpdater(object):
-    cdef public double[:,:] W
-    cdef public double[:,:] H
-    cdef public double[:,:] grad_accum_W
-    cdef public double[:,:] grad_accum_H
-    cdef public double weight_decay
-    cdef public double learning_rate
-
-
-    def __init__(self, double[:,:] W, double[:,:] H, double learning_rate, double weight_decay):
-        self.W = W
-        self.H = H
-        self.grad_accum_W = np.ones(shape=(W.shape[0], W.shape[1]))
-        self.grad_accum_H = np.ones(shape=(H.shape[0], H.shape[1]))
-        self.weight_decay = weight_decay
-        self.learning_rate = learning_rate
-
-    @cython.boundscheck(False)
-    @cython.wraparound(False)
-    cdef double loss(self, int u, int i, int j, bool update = True) nogil:
-        cdef double x_uij, tmp, loss, l2_norm
-        cdef int K = self.W.shape[1]
-        cdef int k
-        cdef double grad_wuk
-        cdef double grad_hik
-        cdef double grad_hjk
-
-        x_uij = 0.0
-        l2_norm = 0.0
-        for k in range(K):
-            x_uij += self.W[u, k] * (self.H[i, k] - self.H[j, k])
-            l2_norm += square(self.W[u, k]) + square(self.H[i, k]) + square(self.H[j, k])
-
-        loss = - log(sigmoid(x_uij)) + self.weight_decay * l2_norm
-        
-        if not update:
-            return loss
-        
-        x_uij = (1.0 / (1.0 + exp(x_uij)))
-
-        for k in range(K):
-            grad_wuk = - (x_uij * (self.H[i, k] - self.H[j, k]) - self.weight_decay * self.W[u, k])
-            grad_hik = - (x_uij *  self.W[u, k] - self.weight_decay * self.H[i, k])
-            grad_hjk = - (x_uij * (-self.W[u, k]) - self.weight_decay * self.H[j, k])
-
-            self.grad_accum_W[u, k] += square(grad_wuk)
-            self.grad_accum_H[i, k] += square(grad_hik)
-            self.grad_accum_H[j, k] += square(grad_hjk)
-
-            self.W[u, k] -= self.learning_rate * grad_wuk / sqrt(self.grad_accum_W[u, k])
-            self.H[i, k] -= self.learning_rate * grad_hik / sqrt(self.grad_accum_H[i, k])
-            self.H[j, k] -= self.learning_rate * grad_hjk / sqrt(self.grad_accum_H[j, k])
-        
-        return loss
+            self.optimizer.update_W(u, k, grad_wuk)
+            self.optimizer.update_H(i, k, grad_hik)
+            self.optimizer.update_H(j, k, grad_hjk)
                    
 
 @cython.boundscheck(False)
@@ -387,7 +337,7 @@ def evaluate(floating[:,:] W,
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-def recall(integral[:,:] argsorted_scores, floating[:,:] X, int k = 10, int num_threads = 1):
+def recall(integral[:,:] argsorted_scores, floating[:,:] X, integral k = 10, integral num_threads = 1):
     cdef int N = X.shape[0]
     cdef floating[:] _sum = np.array(X).sum(axis=1)
     cdef int i, j
@@ -406,7 +356,7 @@ def recall(integral[:,:] argsorted_scores, floating[:,:] X, int k = 10, int num_
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-def ndcg(integral[:,:] argsorted_scores, floating[:,:] X, int k = 10, int num_threads = 1):
+def ndcg(integral[:,:] argsorted_scores, floating[:,:] X, integral k = 10, integral num_threads = 1):
     cdef int N = X.shape[0]
     cdef floating[:] _sum = np.array(X).sum(axis=1)
     cdef int i, j
@@ -433,7 +383,7 @@ def ndcg(integral[:,:] argsorted_scores, floating[:,:] X, int k = 10, int num_th
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-def ap(integral[:,:] argsorted_scores, floating[:,:] X, int k = 10, int num_threads = 1):
+def ap(integral[:,:] argsorted_scores, floating[:,:] X, integral k = 10, integral num_threads = 1):
     cdef int N = X.shape[0]
     cdef int i, j
     cdef floating[:] counter = np.zeros(N)

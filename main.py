@@ -30,7 +30,7 @@ args = parser.parse_args()
 dataset: Dataset = MovieLens("ml-100k")
 
 model = BPR(num_components=args.num_components, learning_rate=args.lr, weight_decay=args.weight_decay)
-history = model.fit(dataset.train, dataset.valid, dataset.test, num_iterations=args.iter, num_threads=args.threads, verbose=True)
+history = model.fit(dataset.train, dataset.valid, num_iterations=args.iter, num_threads=args.threads, verbose=True)
 
 df = pd.DataFrame(history)
 df.columns = list(map(lambda x: x.decode("utf-8"), df.columns))
