@@ -16,6 +16,9 @@ from tqdm import tqdm
 import pandas as pd
 import matplotlib.pyplot as plt
 
+import os
+os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
+
 import argparse
 parser = argparse.ArgumentParser(description='')
 parser.add_argument('--limit', type=int, default=20)
@@ -30,12 +33,8 @@ args = parser.parse_args()
 dataset: Dataset = MovieLens("ml-100k")
 
 model = BPR(num_components=args.num_components, learning_rate=args.lr, weight_decay=args.weight_decay)
-history = model.fit(dataset.train, dataset.valid, num_iterations=args.iter, num_threads=args.threads, verbose=True)
+history = model.fit(dataset.train, dataset.valid, dataset.test, num_iterations=args.iter, num_threads=args.threads, verbose=True)
 
-df = pd.DataFrame(history)
-df.columns = list(map(lambda x: x.decode("utf-8"), df.columns))
-df.index += 1
-df.index.name = "epoch"
-df.plot()
+history.plot()
 plt.grid()
 plt.show()
