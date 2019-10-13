@@ -29,6 +29,9 @@ from libcpp.string cimport string
 from libcpp.map cimport map
 from libcpp.unordered_map cimport unordered_map
 
+from optimizer cimport Optimizer
+from optimizer cimport Adam
+
 cdef extern from "math.h":
     double exp(double x) nogil
     double log(double x) nogil
@@ -163,16 +166,11 @@ def fit_bpr(integral[:] users,
             history.push_back(metrics)
     return history
 
-#from optimizer cimport Optimizer
-#from optimizer cimport AdaGrad
-cimport optimizer
-#import optimizer
-
 cdef class BprModel(object):
     cdef public double[:,:] W
     cdef public double[:,:] H
     cdef public double weight_decay
-    cdef public optimizer.Optimizer opt
+    cdef public Optimizer optimizer
     cdef public int num_threads
     cdef public double[:] x_uij
 
@@ -182,7 +180,7 @@ cdef class BprModel(object):
         self.weight_decay = weight_decay
         self.num_threads = num_threads
         self.x_uij = np.zeros(self.num_threads)
-        self.opt = optimizer.AdaGrad(self.W, self.H, learning_rate)
+        self.optimizer = Adam(self.W, self.H, learning_rate)
 
     @cython.boundscheck(False)
     @cython.wraparound(False)
@@ -224,9 +222,9 @@ cdef class BprModel(object):
             grad_hik = - (self.x_uij[thread_id] *  self.W[u, k] - self.weight_decay * self.H[i, k])
             grad_hjk = - (self.x_uij[thread_id] * (-self.W[u, k]) - self.weight_decay * self.H[j, k])
 
-            self.opt.update_W(u, k, grad_wuk)
-            self.opt.update_H(i, k, grad_hik)
-            self.opt.update_H(j, k, grad_hjk)
+            self.optimizer.update_W(u, k, grad_wuk)
+            self.optimizer.update_H(i, k, grad_hik)
+            self.optimizer.update_H(j, k, grad_hjk)
                    
 
 @cython.boundscheck(False)

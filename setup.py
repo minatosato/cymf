@@ -16,7 +16,8 @@ lnk_args = ['-lomp']
 
 os.environ['CFLAGS'] = " ".join(cmpl_args + lnk_args)
 os.environ['CXXFLAGS'] = " ".join(cmpl_args + lnk_args)
+os.environ['KMP_DUPLICATE_LIB_OK']='True'
 
-setup(ext_modules=cythonize(["bpr.pyx", "optimizer.pyx", "wmf.pyx", "glove.pyx"]), include_dirs= [np.get_include()])
+# setup(ext_modules=cythonize(["bpr.pyx", "optimizer.pyx", "wmf.pyx"]), include_dirs= [np.get_include()])
 # setup(ext_modules=cythonize(["wmf.pyx"]), include_dirs= [np.get_include()])
-# setup(ext_modules=cythonize(["glove.pyx"]), include_dirs= [np.get_include()])
+setup(ext_modules=cythonize(["glove.pyx"]), include_dirs= [np.get_include()])
