@@ -1,6 +1,8 @@
 all:
 	python setup.py build_ext --inplace
+install:
+	python setup.py install
 clean:
-	rm *.so
+	rm ./fastmf/*.cpp
 	rm -rf ./build
-	rm *.cpp
+	rm ./fastmf/*.so

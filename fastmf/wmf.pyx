@@ -39,9 +39,9 @@ cdef inline floating square(floating x) nogil:
 
 class WMF(object):
     def __init__(self, int num_components,
-                       floating learning_rate = 0.01,
-                       floating weight_decay = 0.01,
-                       floating weight = 5.0):
+                       double learning_rate = 0.01,
+                       double weight_decay = 0.01,
+                       double weight = 5.0):
         self.num_components = num_components
         self.learning_rate = learning_rate
         self.weight_decay = weight_decay
@@ -54,8 +54,6 @@ class WMF(object):
         self.W = np.random.uniform(low=-0.1, high=0.1, size=(X.shape[0], self.num_components))
         self.H = np.random.uniform(low=-0.1, high=0.1, size=(X.shape[1], self.num_components))
 
-        # tmp = np.array([[u, i, X[u, i]] for u in range(X.shape[0]) for i in range(X.shape[1])])
-        # users, items, ratings = utils.shuffle(tmp[:, 0], tmp[:, 1], tmp[:, 2])
         tmp = pd.DataFrame(X.todense()).stack().reset_index()
         tmp.columns = ("user", "item", "rating")
         users = tmp["user"].values

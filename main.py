@@ -6,15 +6,14 @@
 # LICENSE file in the root directory of this source tree.
 #
 
-from bpr import BPR
-# from wmf import WMF
-
 from movielens import MovieLens
 from dataset import Dataset
 
 from tqdm import tqdm
 import pandas as pd
 import matplotlib.pyplot as plt
+
+import fastmf
 
 import os
 os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
@@ -32,7 +31,7 @@ args = parser.parse_args()
 
 dataset: Dataset = MovieLens("ml-100k")
 
-model = BPR(num_components=args.num_components, learning_rate=args.lr, weight_decay=args.weight_decay)
+model = fastmf.BPR(num_components=args.num_components, learning_rate=args.lr, weight_decay=args.weight_decay)
 history = model.fit(dataset.train, dataset.valid, dataset.test, num_iterations=args.iter, num_threads=args.threads, verbose=True)
 
 history.plot()

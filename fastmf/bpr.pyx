@@ -29,9 +29,9 @@ from libcpp.vector cimport vector
 from libcpp.string cimport string
 from libcpp.unordered_map cimport unordered_map
 
-from optimizer cimport Optimizer
-from optimizer cimport Adam
-from metrics import evaluate
+from .optimizer cimport Optimizer
+from .optimizer cimport Adam
+from .metrics import evaluate
 
 cdef extern from "math.h":
     double exp(double x) nogil
