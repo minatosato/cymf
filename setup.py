@@ -7,20 +7,16 @@
 #
 
 from distutils.core import setup
-from distutils.extension import Extension
-from Cython.Distutils import build_ext
+from Cython.Build import cythonize
 import numpy as np
+import os
 
 cmpl_args = ['-Xpreprocessor', '-fopenmp', '-O3']
 lnk_args = ['-lomp']
 
-setup(
-    cmdclass = {'build_ext': build_ext},
-    ext_modules = [
-        Extension("bpr", ["bpr.pyx"], extra_compile_args=cmpl_args, extra_link_args=lnk_args, language="c++"),
-        Extension("wmf", ["wmf.pyx"], extra_compile_args=cmpl_args, extra_link_args=lnk_args, language="c++"),
-        Extension("glove", ["glove.pyx"], extra_compile_args=cmpl_args, extra_link_args=lnk_args, language="c++")
-        # -lcblas
-    ],
-    include_dirs= [np.get_include()]
-)
+os.environ['CFLAGS'] = " ".join(cmpl_args + lnk_args)
+os.environ['CXXFLAGS'] = " ".join(cmpl_args + lnk_args)
+
+setup(ext_modules=cythonize(["bpr.pyx", "optimizer.pyx", "wmf.pyx", "glove.pyx"]), include_dirs= [np.get_include()])
+# setup(ext_modules=cythonize(["wmf.pyx"]), include_dirs= [np.get_include()])
+# setup(ext_modules=cythonize(["glove.pyx"]), include_dirs= [np.get_include()])

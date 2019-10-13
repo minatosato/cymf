@@ -7,7 +7,7 @@
 #
 
 from bpr import BPR
-from wmf import WMF
+# from wmf import WMF
 
 from movielens import MovieLens
 from dataset import Dataset
