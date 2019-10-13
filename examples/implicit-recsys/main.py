@@ -15,13 +15,10 @@ import matplotlib.pyplot as plt
 
 import fastmf
 
-import os
-os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
-
 import argparse
 parser = argparse.ArgumentParser(description='')
 parser.add_argument('--limit', type=int, default=20)
-parser.add_argument('--iter', type=int, default=100)
+parser.add_argument('--iter', type=int, default=30)
 parser.add_argument('--num_components', type=int, default=30)
 parser.add_argument('--lr', type=float, default=0.01)
 parser.add_argument('--weight_decay', type=float, default=0.01)

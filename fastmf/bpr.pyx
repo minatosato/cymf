@@ -47,11 +47,11 @@ cdef inline floating square(floating x) nogil:
     return x * x
 
 cdef class BPR(object):
-    cdef int num_components
-    cdef double learning_rate
-    cdef double weight_decay
-    cdef double[:,:] W
-    cdef double[:,:] H
+    cdef public int num_components
+    cdef public double learning_rate
+    cdef public double weight_decay
+    cdef public double[:,:] W
+    cdef public double[:,:] H
     def __init__(self, int num_components,
                        double learning_rate = 0.01,
                        double weight_decay = 0.01):

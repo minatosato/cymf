@@ -2,8 +2,8 @@
 from gensim.models import KeyedVectors
 from scipy import sparse
 from pathlib import Path
-from glove import GloVe
-from glove import read_text
+from fastmf import GloVe
+from fastmf import read_text
 
 import os
 os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
