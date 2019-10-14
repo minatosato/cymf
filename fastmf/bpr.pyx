@@ -98,23 +98,23 @@ cdef class BPR(object):
     def _fit_bpr(self,
                  integral[:] users,
                  integral[:] positives,
-                 np.ndarray[floating, ndim=2] X,
+                 np.ndarray[double, ndim=2] X,
                  integral[:] users_valid,
                  integral[:] positives_valid,
-                 np.ndarray[floating, ndim=2] X_valid,
-                 np.ndarray[floating, ndim=2] X_test,
-                 floating[:,:] W, 
-                 floating[:,:] H, 
+                 np.ndarray[double, ndim=2] X_valid,
+                 np.ndarray[double, ndim=2] X_test,
+                 double[:,:] W, 
+                 double[:,:] H, 
                  int num_iterations, 
-                 floating learning_rate,
-                 floating weight_decay,
+                 double learning_rate,
+                 double weight_decay,
                  int num_threads,
                  bool verbose):
         cdef int iterations = num_iterations
         cdef int N = users.shape[0]
         cdef int K = W.shape[1]
         cdef int u, i, j, k, l, iteration
-        cdef floating[:] loss = np.zeros(N)
+        cdef double[:] loss = np.zeros(N)
 
         cdef unordered_map[string, double] metrics
         
@@ -126,7 +126,11 @@ cdef class BPR(object):
 
         cdef vector[unordered_map[string, double]] history = []
 
-        cdef BprModel bpr_model = BprModel(W, H, learning_rate, weight_decay, num_iterations)
+        cdef Optimizer optimizer
+        optimizer = Adam(learning_rate)
+        optimizer.set_parameters(W, H)
+
+        cdef BprModel bpr_model = BprModel(W, H, optimizer, weight_decay, num_iterations)
 
         for l in range(N):
             u = users[l]
@@ -186,14 +190,13 @@ cdef class BprModel(object):
     cdef public int num_threads
     cdef public double[:] x_uij
 
-    def __init__(self, double[:,:] W, double[:,:] H, double learning_rate, double weight_decay, int num_threads):
+    def __init__(self, double[:,:] W, double[:,:] H, Optimizer optimizer, double weight_decay, int num_threads):
         self.W = W
-        self.H = H        
+        self.H = H
+        self.optimizer = optimizer
         self.weight_decay = weight_decay
         self.num_threads = num_threads
         self.x_uij = np.zeros(self.num_threads)
-        self.optimizer = Adam(learning_rate)
-        self.optimizer.set_parameters(self.W, self.H)
 
     @cython.boundscheck(False)
     @cython.wraparound(False)

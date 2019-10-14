@@ -91,29 +91,32 @@ cdef class WMF(object):
     def _fit_wmf(self,
                  integral[:] users,
                  integral[:] items,
-                 floating[:] ratings,
-                 floating[:,:] W, 
-                 floating[:,:] H, 
+                 double[:] ratings,
+                 double[:,:] W, 
+                 double[:,:] H, 
                  int num_iterations, 
-                 floating learning_rate,
-                 floating weight_decay,
-                 floating weight,
+                 double learning_rate,
+                 double weight_decay,
+                 double weight,
                  int num_threads,
                  bool verbose):
         cdef int iterations = num_iterations
         cdef int N = users.shape[0]
         cdef int K = W.shape[1]
         cdef int u, i, j, k, l, iteration
-        cdef floating[:] prediction = np.zeros(N)
-        cdef floating[:] w_uk = np.zeros(N)
-        cdef floating[:] l2_norm = np.zeros(N)
-        cdef floating[:] diff = np.zeros(N)
-        cdef floating[:] loss = np.zeros(N)
-        cdef floating acc_loss
+        cdef double[:] prediction = np.zeros(N)
+        cdef double[:] w_uk = np.zeros(N)
+        cdef double[:] l2_norm = np.zeros(N)
+        cdef double[:] diff = np.zeros(N)
+        cdef double[:] loss = np.zeros(N)
+        cdef double acc_loss
         
         cdef list description_list
 
-        cdef WmfModel wmf_model = WmfModel(W, H, learning_rate, weight_decay, num_threads, weight)
+        cdef Optimizer optimizer
+        optimizer = Adam(learning_rate)
+        optimizer.set_parameters(W, H)
+        cdef WmfModel wmf_model = WmfModel(W, H, optimizer, weight_decay, num_threads, weight)
 
         with tqdm(total=iterations, leave=True, ncols=100, disable=not verbose) as progress:
             for iteration in range(iterations):
@@ -140,15 +143,14 @@ cdef class WmfModel(object):
     cdef public double[:] diff
     cdef public double weight
 
-    def __init__(self, double[:,:] W, double[:,:] H, double learning_rate, double weight_decay, int num_threads, double weight):
+    def __init__(self, double[:,:] W, double[:,:] H, Optimizer optimizer, double weight_decay, int num_threads, double weight):
         self.W = W
-        self.H = H        
+        self.H = H
+        self.optimizer = optimizer
         self.weight_decay = weight_decay
         self.num_threads = num_threads
         self.diff = np.zeros(self.num_threads)
         self.weight = weight
-        self.optimizer = Adam(learning_rate)
-        self.optimizer.set_parameters(self.W, self.H)
 
     @cython.boundscheck(False)
     @cython.wraparound(False)
