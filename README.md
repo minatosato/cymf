@@ -26,6 +26,7 @@ echo "export CC='gcc-7'" >> ~/.bashrc
 source ~/.bashrc
 sudo apt install libomp-dev
 
+pip install -r requirements.txt
 git clone https://github.com/satopirka/fastmf
 cd ./fastmf
 make install

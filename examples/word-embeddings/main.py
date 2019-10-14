@@ -18,7 +18,7 @@ parser.add_argument('--threads', type=int, default=8)
 args = parser.parse_args()
 
 print("text読み込み開始")
-X, i2w = read_text("ptb.train.txt", min_count=args.min_count)
+X, i2w = read_text("text8", min_count=args.min_count)
 print("text読み込み完了")
 
 vocab_size = len(i2w)
@@ -38,4 +38,3 @@ with output.open("w") as f:
         f.write(f"{i2w[i]} " + " ".join(list(map(str, model.W[i]))) + "\n")
 
 w2v = KeyedVectors.load_word2vec_format("./vectors.txt")
-
