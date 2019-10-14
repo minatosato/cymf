@@ -8,3 +8,8 @@ Cythonized fast implementation of matrix-factorization based algorithms.
 
 ### Word Embeddings
 - GloVe [Jeffrey Pennington et al. 2014]
+
+## Requiremts
+- GCC 7.4.0
+- Python packages
+    - see `requirements.txt`
