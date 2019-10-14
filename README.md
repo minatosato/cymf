@@ -11,5 +11,22 @@ Cythonized fast implementation of matrix-factorization based algorithms.
 
 ## Requiremts
 - GCC 7.4.0
+- libomp
 - Python packages
     - see `requirements.txt`
+
+## Installation
+Ubuntu
+```
+sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+sudo apt update
+sudo apt install -y g++-7
+echo "export CXX='g++-7'" >> ~/.bashrc
+echo "export CC='gcc-7'" >> ~/.bashrc
+source ~/.bashrc
+sudo apt install libomp-dev
+
+git clone https://github.com/satopirka/fastmf
+cd ./fastmf
+make install
+```
