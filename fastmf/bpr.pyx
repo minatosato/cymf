@@ -192,7 +192,8 @@ cdef class BprModel(object):
         self.weight_decay = weight_decay
         self.num_threads = num_threads
         self.x_uij = np.zeros(self.num_threads)
-        self.optimizer = Adam(self.W, self.H, learning_rate)
+        self.optimizer = Adam(learning_rate)
+        self.optimizer.set_parameters(self.W, self.H)
 
     @cython.boundscheck(False)
     @cython.wraparound(False)

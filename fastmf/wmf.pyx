@@ -147,7 +147,8 @@ cdef class WmfModel(object):
         self.num_threads = num_threads
         self.diff = np.zeros(self.num_threads)
         self.weight = weight
-        self.optimizer = Adam(self.W, self.H, learning_rate)
+        self.optimizer = Adam(learning_rate)
+        self.optimizer.set_parameters(self.W, self.H)
 
     @cython.boundscheck(False)
     @cython.wraparound(False)

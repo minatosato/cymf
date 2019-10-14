@@ -23,7 +23,12 @@ from libcpp.unordered_map cimport unordered_map
 
 
 cdef class Optimizer:
-    def __init__(self, double[:,:] W, double [:,:] H):
+    def __init__(self):
+        raise NotImplementedError()
+
+    @cython.boundscheck(False)
+    @cython.wraparound(False)
+    cdef void set_parameters(self, double[:,:] W, double[:,:] H):
         self.W = W
         self.H = H
 
@@ -38,9 +43,14 @@ cdef class Optimizer:
         raise NotImplementedError()
 
 cdef class Sgd(Optimizer):
-    def __init__(self, double[:,:] W, double [:,:] H, double learning_rate):
-        super(Sgd, self).__init__(W, H)
+    def __init__(self, double learning_rate):
         self.learning_rate = learning_rate
+
+    @cython.boundscheck(False)
+    @cython.wraparound(False)
+    cdef void set_parameters(self, double[:,:] W, double[:,:] H):
+        self.W = W
+        self.H = H
 
     @cython.boundscheck(False)
     @cython.wraparound(False)
@@ -53,8 +63,14 @@ cdef class Sgd(Optimizer):
         self.H[i, k] -= self.learning_rate * gradient
 
 cdef class AdaGrad(Sgd):
-    def __init__(self, double[:,:] W, double [:,:] H, double learning_rate):
-        super(AdaGrad, self).__init__(W, H, learning_rate)
+    def __init__(self, double learning_rate):
+        super(AdaGrad, self).__init__(learning_rate)
+
+    @cython.boundscheck(False)
+    @cython.wraparound(False)
+    cdef void set_parameters(self, double[:,:] W, double[:,:] H):
+        self.W = W
+        self.H = H
         self.grad_accum_W = np.ones(shape=(W.shape[0], W.shape[1]))
         self.grad_accum_H = np.ones(shape=(H.shape[0], H.shape[1]))
 
@@ -72,18 +88,21 @@ cdef class AdaGrad(Sgd):
 
 cdef class Adam(Optimizer):
     def __init__(self,
-                 double[:,:] W,
-                 double[:,:] H,
                  double alpha = 0.001,
                  double beta1 = 0.9,
                  double beta2 = 0.999,
                  double epsilon = 1e-8
                  ):
-        super(Adam, self).__init__(W, H)
         self.alpha = alpha
-        self.beta1 = 0.9
-        self.beta2 = 0.999
-        self.epsilon = 1e-8
+        self.beta1 = beta1
+        self.beta2 = beta2
+        self.epsilon = epsilon
+
+    @cython.boundscheck(False)
+    @cython.wraparound(False)
+    cdef void set_parameters(self, double[:,:] W, double[:,:] H):
+        self.W = W
+        self.H = H
         self.M_W = np.zeros(shape=(W.shape[0], W.shape[1]))
         self.V_W = np.zeros(shape=(W.shape[0], W.shape[1]))
         self.M_H = np.zeros(shape=(H.shape[0], H.shape[1]))

@@ -37,17 +37,20 @@ cdef inline floating square(floating x) nogil:
 cdef class Optimizer:
     cdef public double[:,:] W
     cdef public double[:,:] H
+    cdef void set_parameters(self, double[:,:] W, double[:,:] H)
     cdef void update_W(self, int u, int k, double gradient) nogil
     cdef void update_H(self, int i, int k, double gradient) nogil
 
 cdef class Sgd(Optimizer):
     cdef public double learning_rate
+    cdef void set_parameters(self, double[:,:] W, double[:,:] H)
     cdef void update_W(self, int u, int k, double gradient) nogil
     cdef void update_H(self, int i, int k, double gradient) nogil
 
 cdef class AdaGrad(Sgd):
     cdef public double[:,:] grad_accum_W
     cdef public double[:,:] grad_accum_H
+    cdef void set_parameters(self, double[:,:] W, double[:,:] H)
     cdef void update_W(self, int u, int k, double gradient) nogil
     cdef void update_H(self, int i, int k, double gradient) nogil
 
@@ -60,6 +63,6 @@ cdef class Adam(Optimizer):
     cdef public double[:,:] V_W
     cdef public double[:,:] M_H
     cdef public double[:,:] V_H
-
+    cdef void set_parameters(self, double[:,:] W, double[:,:] H)
     cdef void update_W(self, int u, int k, double gradient) nogil
     cdef void update_H(self, int i, int k, double gradient) nogil

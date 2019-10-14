@@ -5,9 +5,6 @@ from pathlib import Path
 from fastmf import GloVe
 from fastmf import read_text
 
-import os
-os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
-
 import argparse
 parser = argparse.ArgumentParser(description='')
 parser.add_argument('--min_count', type=int, default=5)
