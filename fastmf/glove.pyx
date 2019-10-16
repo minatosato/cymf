@@ -180,13 +180,14 @@ def read_text(str fname, int min_count = 5, int window_size = 10):
     cdef list lines
     cdef vector[vector[int]] x = []
     cdef vector[int] tmp = []
-    cdef int i, j, k, index, vocab_size
+    cdef int i, j, k, index
+    cdef long vocab_size
     cdef double[:,:] matrix
     cdef unordered_map[long, double] sparse_matrix
     cdef unordered_map[long, double].iterator _iterator
-    cdef int[:] row, col
+    cdef long[:] row, col
     cdef double[:] data
-    # cdef vector[int] keys
+
     with open(fname) as f:
         raw = f.read()
         words = raw.replace("\n", "<eos>").split(" ")
@@ -223,22 +224,21 @@ def read_text(str fname, int min_count = 5, int window_size = 10):
         for i in tqdm(range(len(x)), ncols=100, leave=False):
             for j in range(len(x[i])):
                 for k in range(imax(0, j-window_size), j):
-                    sparse_matrix[x[i][j] + x[i][k] * vocab_size] += 1.0 / iabs(j - k)
+                    sparse_matrix[((<long> x[i][j]) + (<long> x[i][k]) * (<long>vocab_size))] += 1.0 / iabs(j - k)
+                    
     
         from scipy import sparse
-        # keys = list(dict(sparse_matrix).keys())
-        # ret = sparse.lil_matrix((vocab_size, vocab_size))
-        row = np.zeros(sparse_matrix.size(), dtype=np.int32)
-        col = np.zeros(sparse_matrix.size(), dtype=np.int32)
+        row = np.zeros(sparse_matrix.size(), dtype=np.int64)
+        col = np.zeros(sparse_matrix.size(), dtype=np.int64)
         data = np.zeros(sparse_matrix.size())
 
+        i = 0
         _iterator = sparse_matrix.begin()
         while _iterator != sparse_matrix.end():
-        # for i in tqdm(range(sparse_matrix.size()), ncols=100, leave=False):
-            #ret[(keys[i] % vocab_size), (keys[i] // vocab_size)] = sparse_matrix[keys[i]]
             row[i] = dereference(_iterator).first % vocab_size
             col[i] = dereference(_iterator).first / vocab_size
             data[i] = dereference(_iterator).second
-            postincrement(it)
+            postincrement(_iterator)
+            i += 1
         ret = sparse.csr_matrix((data, (row, col)), shape=(vocab_size, vocab_size))
         return ret, i2w
