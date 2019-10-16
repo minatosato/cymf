@@ -227,7 +227,7 @@ def read_text(str fname, int min_count = 5, int window_size = 10):
         #ret = sparse.lil_matrix((vocab_size, vocab_size))
         row = np.zeros(sparse_matrix.size(), dtype=np.int32)
         col = np.zeros(sparse_matrix.size(), dtype=np.int32)
-        data = row = np.zeros(sparse_matrix.size())
+        data = np.zeros(sparse_matrix.size())
         for i in tqdm(range(sparse_matrix.size()), ncols=100, leave=False):
             #ret[(keys[i] % vocab_size), (keys[i] // vocab_size)] = sparse_matrix[keys[i]]
             row[i] = keys[i] % vocab_size
