@@ -17,6 +17,7 @@ from cython.parallel import prange
 from cython.parallel import threadid
 from sklearn import utils
 from tqdm import tqdm
+from cython.operator import dereference, postincrement
 
 cimport numpy as np
 from cython cimport floating
@@ -171,6 +172,7 @@ def fit_glove(integral[:] central_words,
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
+@cython.cdivision(True) 
 def read_text(str fname, int min_count = 5, int window_size = 10):
     cdef dict w2i, i2w, count
     cdef str raw
@@ -180,10 +182,11 @@ def read_text(str fname, int min_count = 5, int window_size = 10):
     cdef vector[int] tmp = []
     cdef int i, j, k, index, vocab_size
     cdef double[:,:] matrix
-    cdef unordered_map[int, double] sparse_matrix
+    cdef unordered_map[long, double] sparse_matrix
+    cdef unordered_map[long, double].iterator _iterator
     cdef int[:] row, col
     cdef double[:] data
-    cdef vector[int] keys
+    # cdef vector[int] keys
     with open(fname) as f:
         raw = f.read()
         words = raw.replace("\n", "<eos>").split(" ")
@@ -223,15 +226,19 @@ def read_text(str fname, int min_count = 5, int window_size = 10):
                     sparse_matrix[x[i][j] + x[i][k] * vocab_size] += 1.0 / iabs(j - k)
     
         from scipy import sparse
-        keys = list(dict(sparse_matrix).keys())
-        #ret = sparse.lil_matrix((vocab_size, vocab_size))
+        # keys = list(dict(sparse_matrix).keys())
+        # ret = sparse.lil_matrix((vocab_size, vocab_size))
         row = np.zeros(sparse_matrix.size(), dtype=np.int32)
         col = np.zeros(sparse_matrix.size(), dtype=np.int32)
         data = np.zeros(sparse_matrix.size())
-        for i in tqdm(range(sparse_matrix.size()), ncols=100, leave=False):
+
+        _iterator = sparse_matrix.begin()
+        while _iterator != sparse_matrix.end():
+        # for i in tqdm(range(sparse_matrix.size()), ncols=100, leave=False):
             #ret[(keys[i] % vocab_size), (keys[i] // vocab_size)] = sparse_matrix[keys[i]]
-            row[i] = keys[i] % vocab_size
-            col[i] = keys[i] // vocab_size
-            data[i] = sparse_matrix[keys[i]]
+            row[i] = dereference(_iterator).first % vocab_size
+            col[i] = dereference(_iterator).first / vocab_size
+            data[i] = dereference(_iterator).second
+            postincrement(it)
         ret = sparse.csr_matrix((data, (row, col)), shape=(vocab_size, vocab_size))
         return ret, i2w
