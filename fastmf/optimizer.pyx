@@ -86,6 +86,48 @@ cdef class AdaGrad(Sgd):
         self.grad_accum_H[i, k] += square(gradient)
         self.H[i, k] -= self.learning_rate * gradient / sqrt(self.grad_accum_H[i, k])
 
+
+cdef class GloVeAdaGrad:
+    def __init__(self, double learning_rate):
+        self.learning_rate = learning_rate
+
+    @cython.boundscheck(False)
+    @cython.wraparound(False)
+    cdef void set_parameters(self, double[:,:] W, double[:,:] H, double[:] bias_W, double[:] bias_H):
+        self.W = W
+        self.H = H
+        self.bias_W = bias_W
+        self.bias_H = bias_H
+        self.grad_accum_W = np.ones(shape=(W.shape[0], W.shape[1]))
+        self.grad_accum_H = np.ones(shape=(H.shape[0], H.shape[1]))
+        self.grad_accum_bias_W = np.ones(shape=(bias_W.shape[0]))
+        self.grad_accum_bias_H = np.ones(shape=(bias_H.shape[0]))
+
+    @cython.boundscheck(False)
+    @cython.wraparound(False)
+    cdef void update_W(self, int u, int k, double gradient) nogil:
+        self.grad_accum_W[u, k] += square(gradient)
+        self.W[u, k] -= self.learning_rate * gradient / sqrt(self.grad_accum_W[u, k])
+        
+    @cython.boundscheck(False)
+    @cython.wraparound(False)
+    cdef void update_H(self, int i, int k, double gradient) nogil:
+        self.grad_accum_H[i, k] += square(gradient)
+        self.H[i, k] -= self.learning_rate * gradient / sqrt(self.grad_accum_H[i, k])
+
+    @cython.boundscheck(False)
+    @cython.wraparound(False)
+    cdef void update_bias_W(self, int u, double gradient) nogil:
+        self.grad_accum_bias_W[u] += square(gradient)
+        self.bias_W[u] -= self.learning_rate * gradient / sqrt(self.grad_accum_bias_W[u])
+
+    @cython.boundscheck(False)
+    @cython.wraparound(False)
+    cdef void update_bias_H(self, int i, double gradient) nogil:
+        self.grad_accum_bias_H[i] += square(gradient)
+        self.bias_H[i] -= self.learning_rate * gradient / sqrt(self.grad_accum_bias_H[i])
+
+
 cdef class Adam(Optimizer):
     def __init__(self,
                  double alpha = 0.001,

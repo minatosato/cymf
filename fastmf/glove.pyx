@@ -27,6 +27,8 @@ from libcpp.vector cimport vector
 from libcpp.string cimport string
 from libcpp.unordered_map cimport unordered_map
 
+from .optimizer cimport GloVeAdaGrad
+
 cdef extern from "math.h":
     double exp(double x) nogil
     double log(double x) nogil
@@ -34,13 +36,13 @@ cdef extern from "math.h":
     double fmin(double x, double y) nogil
     double sqrt(double x) nogil
 
-cdef inline floating sigmoid(floating x) nogil:
+cdef inline double sigmoid(double x) nogil:
     return 1.0 / (1.0 + exp(-x))
 
-cdef inline floating square(floating x) nogil:
+cdef inline double square(double x) nogil:
     return x * x
 
-cdef inline floating weight_func(floating x, floating x_max, floating alpha) nogil:
+cdef inline double weight_func(double x, double x_max, double alpha) nogil:
     return fmin(pow(x / x_max, alpha), 1.0)
 
 cdef inline int imax(int a, int b) nogil:
@@ -57,10 +59,10 @@ cdef inline integral iabs(integral a) nogil:
 
 class GloVe(object):
     def __init__(self, int num_components,
-                       floating learning_rate = 0.01,
-                       floating alpha = 0.75,
-                       floating x_max = 10.0,
-                       floating weight_decay = 0.01):
+                       double learning_rate = 0.01,
+                       double alpha = 0.75,
+                       double x_max = 10.0,
+                       double weight_decay = 0.01):
         self.num_components = num_components
         self.learning_rate = learning_rate
         self.alpha = alpha
@@ -101,64 +103,43 @@ class GloVe(object):
 @cython.wraparound(False)
 def fit_glove(integral[:] central_words,
               integral[:] context_words,
-              floating[:] counts,
-              floating[:,:] central_W,
-              floating[:] central_bias,
-              floating[:,:] context_W,
-              floating[:] context_bias,
+              double[:] counts,
+              double[:,:] central_W,
+              double[:] central_bias,
+              double[:,:] context_W,
+              double[:] context_bias,
               int num_iterations, 
-              floating learning_rate,
-              floating x_max,
-              floating alpha,
-              floating weight_decay,
+              double learning_rate,
+              double x_max,
+              double alpha,
+              double weight_decay,
               int num_threads,
               bool verbose):
     cdef int iterations = num_iterations
     cdef int N = central_words.shape[0]
-    cdef int N_W = central_W.shape[0]
     cdef int N_K = central_W.shape[1]
+    cdef double[:] loss = np.zeros(N)
     cdef int u, i, j, k, l, iteration
-    cdef floating[:] diff = np.zeros(N)
-    cdef floating[:] loss = np.zeros(N)
-    cdef floating[:] l2_norm = np.zeros(N)
-    cdef floating[:] weight = np.zeros(N)
-    cdef floating[:] grad = np.zeros(N)
-    cdef floating[:] tmp = np.zeros(N)
-    cdef floating acc_loss
 
-    cdef floating[:,:] central_accum_gW = np.ones(shape=(N_W, N_K))
-    cdef floating[:] central_accum_gbias = np.ones(shape=(N_W,))
-    cdef floating[:,:] context_accum_gW = np.ones(shape=(N_W, N_K))
-    cdef floating[:] context_accum_gbias = np.ones(shape=(N_W,))
+    cdef double acc_loss
     
     cdef list description_list
+
+
+    cdef GloVeAdaGrad optimizer
+    optimizer = GloVeAdaGrad(learning_rate)
+    optimizer.set_parameters(central_W, context_W, central_bias, context_bias)
+
+    cdef GloVeModel glove_model = GloVeModel(
+        central_W, context_W, central_bias, context_bias, x_max, alpha, optimizer, num_threads)
+
 
     with tqdm(total=iterations, leave=True, ncols=100, disable=not verbose) as progress:
         for iteration in range(iterations):
             acc_loss = 0.0
             for l in prange(N, nogil=True, num_threads=num_threads):
-                diff[l] = 0.0
-                l2_norm[l] = 0.0
-                for k in range(N_K):
-                    diff[l] += central_W[central_words[l], k] * context_W[context_words[l], k]
-                diff[l] += central_bias[central_words[l]] + context_bias[context_words[l]] - log(counts[l])
-                weight[l] = weight_func(counts[l], x_max, alpha)
-                loss[l] = weight[l] * square(diff[l])
-
-                for k in range(N_K):
-                    tmp[l] = central_W[central_words[l], k]
-                    grad[l] = weight[l] * diff[l] * context_W[context_words[l], k]
-                    central_accum_gW[central_words[l], k] += square(grad[l])
-                    central_W[central_words[l], k] -= learning_rate * grad[l] / sqrt(central_accum_gW[central_words[l], k])
-
-                    grad[l] = weight[l] * diff[l] * tmp[l]
-                    context_accum_gW[context_words[l], k] += square(grad[l])
-                    context_W[context_words[l], k] -= learning_rate * grad[l] / sqrt(context_accum_gW[context_words[l], k])
-
-                central_accum_gbias[central_words[l]] += square(weight[l] * diff[l])
-                central_bias[central_words[l]] -= learning_rate * weight[l] * diff[l] / sqrt(central_accum_gbias[central_words[l]])
-                context_accum_gbias[context_words[l]] += square(weight[l] * diff[l])
-                context_bias[context_words[l]] -= learning_rate * weight[l] * diff[l] / sqrt(context_accum_gbias[context_words[l]])
+                loss[l] = glove_model.forward(central_words[l], context_words[l], counts[l])
+                glove_model.backward(central_words[l], context_words[l])
 
             for l in range(N):
                 acc_loss += loss[l]
@@ -169,7 +150,79 @@ def fit_glove(integral[:] central_words,
             progress.set_description(', '.join(description_list))
             progress.update(1)
 
+cdef class GloVeModel(object):
+    cdef public double[:,:] W
+    cdef public double[:,:] H
+    cdef public GloVeAdaGrad optimizer
+    cdef public int num_threads
+    cdef public double[:] diff
 
+    cdef public double[:] central_bias
+    cdef public double[:] context_bias
+    cdef public double x_max
+    cdef public double alpha
+
+    def __init__(self,
+                 double[:,:] W,
+                 double[:,:] H,
+                 double[:] central_bias,
+                 double[:] context_bias,
+                 double x_max,
+                 double alpha,
+                 GloVeAdaGrad optimizer,
+                 int num_threads):
+        self.W = W
+        self.H = H
+        self.central_bias = central_bias
+        self.context_bias = context_bias
+        self.x_max = x_max
+        self.alpha = alpha
+        self.optimizer = optimizer
+        self.num_threads = num_threads
+        self.diff = np.zeros(self.num_threads)
+
+    @cython.boundscheck(False)
+    @cython.wraparound(False)
+    cdef double forward(self, int central, int context, double count) nogil:
+        cdef int thread_id = threadid() # 自分のスレッドidを元に参照すべきdouble[:] diffを決定する
+
+        cdef double tmp, loss
+        cdef int K = self.W.shape[1]
+        cdef int k
+
+        self.diff[thread_id] = 0.0
+        for k in range(K):
+            self.diff[thread_id] += self.W[central, k] * self.H[context, k]
+        self.diff[thread_id] += self.central_bias[central] + self.context_bias[context]
+        self.diff[thread_id] -= log(count)
+        tmp = self.diff[thread_id]
+        self.diff[thread_id] *= weight_func(count, self.x_max, self.alpha)
+        loss = 0.5 * self.diff[thread_id] * tmp
+        return loss
+    
+    @cython.boundscheck(False)
+    @cython.wraparound(False)
+    cdef void backward(self, int central, int context) nogil:
+        cdef int thread_id = threadid()
+
+        cdef int K = self.W.shape[1]
+        cdef int k
+        cdef double grad_wck
+        cdef double grad_hck
+        cdef double grad_central_bias
+        cdef double grad_context_bias
+
+        for k in range(K):
+            grad_wck = self.diff[thread_id] * self.H[context, k]
+            grad_hck = self.diff[thread_id] * self.W[central, k]
+            grad_central_bias = self.diff[thread_id]
+            grad_context_bias = self.diff[thread_id]
+
+            self.optimizer.update_W(central, k, grad_wck)
+            self.optimizer.update_H(context, k, grad_hck)
+            self.optimizer.update_bias_W(central, grad_central_bias)
+            self.optimizer.update_bias_H(context, grad_context_bias)
+               
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.cdivision(True) 
