@@ -27,23 +27,8 @@ from libcpp.vector cimport vector
 from libcpp.string cimport string
 from libcpp.unordered_map cimport unordered_map
 
+from .model cimport GloVeModel
 from .optimizer cimport GloVeAdaGrad
-
-cdef extern from "math.h":
-    double exp(double x) nogil
-    double log(double x) nogil
-    double pow(double x, double y) nogil
-    double fmin(double x, double y) nogil
-    double sqrt(double x) nogil
-
-cdef inline double sigmoid(double x) nogil:
-    return 1.0 / (1.0 + exp(-x))
-
-cdef inline double square(double x) nogil:
-    return x * x
-
-cdef inline double weight_func(double x, double x_max, double alpha) nogil:
-    return fmin(pow(x / x_max, alpha), 1.0)
 
 cdef inline int imax(int a, int b) nogil:
     if (a > b):
@@ -150,79 +135,6 @@ def fit_glove(integral[:] central_words,
             progress.set_description(', '.join(description_list))
             progress.update(1)
 
-cdef class GloVeModel(object):
-    cdef public double[:,:] W
-    cdef public double[:,:] H
-    cdef public GloVeAdaGrad optimizer
-    cdef public int num_threads
-    cdef public double[:] diff
-
-    cdef public double[:] central_bias
-    cdef public double[:] context_bias
-    cdef public double x_max
-    cdef public double alpha
-
-    def __init__(self,
-                 double[:,:] W,
-                 double[:,:] H,
-                 double[:] central_bias,
-                 double[:] context_bias,
-                 double x_max,
-                 double alpha,
-                 GloVeAdaGrad optimizer,
-                 int num_threads):
-        self.W = W
-        self.H = H
-        self.central_bias = central_bias
-        self.context_bias = context_bias
-        self.x_max = x_max
-        self.alpha = alpha
-        self.optimizer = optimizer
-        self.num_threads = num_threads
-        self.diff = np.zeros(self.num_threads)
-
-    @cython.boundscheck(False)
-    @cython.wraparound(False)
-    cdef double forward(self, int central, int context, double count) nogil:
-        cdef int thread_id = threadid() # 自分のスレッドidを元に参照すべきdouble[:] diffを決定する
-
-        cdef double tmp, loss
-        cdef int K = self.W.shape[1]
-        cdef int k
-
-        self.diff[thread_id] = 0.0
-        for k in range(K):
-            self.diff[thread_id] += self.W[central, k] * self.H[context, k]
-        self.diff[thread_id] += self.central_bias[central] + self.context_bias[context]
-        self.diff[thread_id] -= log(count)
-        tmp = self.diff[thread_id]
-        self.diff[thread_id] *= weight_func(count, self.x_max, self.alpha)
-        loss = 0.5 * self.diff[thread_id] * tmp
-        return loss
-    
-    @cython.boundscheck(False)
-    @cython.wraparound(False)
-    cdef void backward(self, int central, int context) nogil:
-        cdef int thread_id = threadid()
-
-        cdef int K = self.W.shape[1]
-        cdef int k
-        cdef double grad_wck
-        cdef double grad_hck
-        cdef double grad_central_bias
-        cdef double grad_context_bias
-
-        for k in range(K):
-            grad_wck = self.diff[thread_id] * self.H[context, k]
-            grad_hck = self.diff[thread_id] * self.W[central, k]
-            grad_central_bias = self.diff[thread_id]
-            grad_context_bias = self.diff[thread_id]
-
-            self.optimizer.update_W(central, k, grad_wck)
-            self.optimizer.update_H(context, k, grad_hck)
-            self.optimizer.update_bias_W(central, grad_central_bias)
-            self.optimizer.update_bias_H(context, grad_context_bias)
-               
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.cdivision(True) 
