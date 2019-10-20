@@ -29,6 +29,7 @@ from libcpp.vector cimport vector
 from libcpp.string cimport string
 from libcpp.unordered_map cimport unordered_map
 
+from .model cimport WmfModel
 from .optimizer cimport Optimizer
 from .optimizer cimport Adam
 
@@ -134,56 +135,3 @@ cdef class WMF(object):
                 progress.set_description(", ".join(description_list))
                 progress.update(1)
 
-cdef class WmfModel(object):
-    cdef public double[:,:] W
-    cdef public double[:,:] H
-    cdef public double weight_decay
-    cdef public Optimizer optimizer
-    cdef public int num_threads
-    cdef public double[:] diff
-    cdef public double weight
-
-    def __init__(self, double[:,:] W, double[:,:] H, Optimizer optimizer, double weight_decay, int num_threads, double weight):
-        self.W = W
-        self.H = H
-        self.optimizer = optimizer
-        self.weight_decay = weight_decay
-        self.num_threads = num_threads
-        self.diff = np.zeros(self.num_threads)
-        self.weight = weight
-
-    @cython.boundscheck(False)
-    @cython.wraparound(False)
-    cdef double forward(self, int u, int i, double r) nogil:
-        cdef int thread_id = threadid()
-        cdef int K = self.W.shape[1]
-        cdef int k
-        cdef double loss, l2_norm
-
-        self.diff[thread_id] = 0.0
-        l2_norm = 0.0
-        for k in range(K):
-            self.diff[thread_id] += self.W[u, k] * self.H[i, k]
-            l2_norm += square(self.W[u, k]) + square(self.H[i, k])
-        self.diff[thread_id] = r - self.diff[thread_id]
-        if r != 0.0:
-            self.diff[thread_id] *= self.weight
-
-        loss = square(self.diff[thread_id]) + self.weight_decay * l2_norm
-        return loss
-
-    @cython.boundscheck(False)
-    @cython.wraparound(False)
-    cdef void backward(self, int u, int i) nogil:
-        cdef int thread_id = threadid()
-        cdef int K = self.W.shape[1]
-        cdef int k
-        cdef double grad_wuk
-        cdef double grad_hik
-
-        for k in range(K):
-            grad_wuk = - self.diff[thread_id] * self.H[i, k]
-            grad_hik = - self.diff[thread_id] * self.W[u, k]
-
-            self.optimizer.update_W(u, k, grad_wuk)
-            self.optimizer.update_H(i, k, grad_hik)

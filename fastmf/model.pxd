@@ -22,10 +22,19 @@ from libcpp.unordered_map cimport unordered_map
 
 from .optimizer cimport Optimizer
 
+cdef extern from "math.h":
+    double exp(double x) nogil
+    double log(double x) nogil
+
+cdef inline floating sigmoid(floating x) nogil:
+    return 1.0 / (1.0 + exp(-x))
+
+cdef inline floating square(floating x) nogil:
+    return x * x
+
 cdef class MfModel:
     cdef public double[:,:] W
     cdef public double[:,:] H
-    cdef public int num_threads
     cdef public double[:] tmp
 
 cdef class BprModel(MfModel):
@@ -33,3 +42,12 @@ cdef class BprModel(MfModel):
     cdef public Optimizer optimizer
     cdef double forward(self, int u, int i, int j) nogil
     cdef void backward(self, int u, int i, int j) nogil
+
+cdef class WmfModel(MfModel):
+    cdef public double weight_decay
+    cdef public Optimizer optimizer
+    cdef public double weight
+    cdef double forward(self, int u, int i, double r) nogil
+    cdef void backward(self, int u, int i) nogil
+
+    

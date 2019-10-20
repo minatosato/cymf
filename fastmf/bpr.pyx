@@ -131,7 +131,7 @@ cdef class BPR(object):
         optimizer = Adam(learning_rate)
         optimizer.set_parameters(W, H)
 
-        cdef BprModel bpr_model = BprModel(W, H, optimizer, weight_decay, num_iterations)
+        cdef BprModel bpr_model = BprModel(W, H, optimizer, weight_decay, num_threads)
 
         for l in range(N):
             u = users[l]
