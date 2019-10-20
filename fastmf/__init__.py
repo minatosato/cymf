@@ -1,8 +1,7 @@
 from .bpr import BPR
 from .wmf import WMF
 from .glove import GloVe
-from .glove import read_text
-from .metrics import recall, ndcg, ap
+from . import dataset
 
 __copyright__    = 'Copyright (C) 2019 Minato Sato'
 __version__      = '0.0.1'
@@ -14,4 +13,4 @@ __url__          = 'http://github.com/satopirka/fastmf'
 import os
 os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 
-__all__ = [BPR, WMF, GloVe, read_text, recall, ndcg, ap]
+__all__ = [BPR, WMF, GloVe, dataset]

@@ -184,7 +184,9 @@ def read_text(str fname, int min_count = 5, int window_size = 10):
             for j in range(len(x[i])):
                 for k in range(imax(0, j-window_size), j):
                     matrix[x[i][j], x[i][k]] += 1.0 / iabs(j - k)
-        return matrix, i2w
+        from scipy import sparse
+        ret = sparse.csr_matrix(matrix)
+        return ret, i2w
     except MemoryError:
         for i in tqdm(range(len(x)), ncols=100, leave=False):
             for j in range(len(x[i])):

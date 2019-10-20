@@ -16,10 +16,10 @@ from scipy import sparse
 from sklearn.model_selection import train_test_split
 from tqdm import tqdm
 
-from dataset import Dataset
+from . import ImplicitFeedBackDataset
 
 
-class MovieLens(Dataset):
+class MovieLens(ImplicitFeedBackDataset):
     def __init__(self, dir_name="./ml-100k", min_rating: float = 4.0, under_sampling: Optional[int] = None):
         super().__init__(dir_name, min_rating)
 

@@ -32,7 +32,7 @@ with Path(package_name).joinpath("__init__.py").open("r") as f:
 
 if version is not None and license is not None and author is not None and author_email is not None and url is not None:
     setup(name=package_name,
-        packages=[package_name],
+        packages=[package_name, f"{package_name}.dataset"],
         version=version.group(1),
         author=author.group(1),
         author_email=author_email.group(1),

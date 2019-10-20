@@ -15,7 +15,7 @@ from tqdm import tqdm
 from typing import Tuple
 from typing import Optional
 
-class Dataset(object):
+class ImplicitFeedBackDataset(object):
     num_user: int
     num_item: int
 

@@ -6,14 +6,12 @@
 # LICENSE file in the root directory of this source tree.
 #
 
-from movielens import MovieLens
-from dataset import Dataset
-
 from tqdm import tqdm
 import pandas as pd
 import matplotlib.pyplot as plt
 
 import fastmf
+from fastmf.dataset import ImplicitFeedBackDataset, MovieLens
 
 import argparse
 parser = argparse.ArgumentParser(description='')
@@ -26,7 +24,7 @@ parser.add_argument('--threads', type=int, default=8)
 
 args = parser.parse_args()
 
-dataset: Dataset = MovieLens("ml-100k")
+dataset: ImplicitFeedBackDataset = MovieLens("ml-100k")
 
 model = fastmf.BPR(num_components=args.num_components, learning_rate=args.lr, weight_decay=args.weight_decay)
 history = model.fit(dataset.train, dataset.valid, dataset.test, num_iterations=args.iter, num_threads=args.threads, verbose=True)
