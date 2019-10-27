@@ -16,6 +16,16 @@ Cythonized fast implementation of matrix-factorization based algorithms.
     - see `requirements.txt`
 
 ## Installation
+macOS
+```
+brew install libomp
+
+git clone https://github.com/satopirka/fastmf
+cd fastmf
+pip install -r requirements.txt
+pip install .
+```
+
 Ubuntu
 ```
 sudo add-apt-repository ppa:ubuntu-toolchain-r/test
@@ -27,6 +37,7 @@ source ~/.bashrc
 sudo apt install libomp-dev
 
 git clone https://github.com/satopirka/fastmf
+cd fastmf
 pip install -r requirements.txt
 pip install .
 ```
