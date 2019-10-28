@@ -6,6 +6,8 @@
 # LICENSE file in the root directory of this source tree.
 #
 
+import wget
+import zipfile
 import numpy as np
 from scipy import sparse
 
@@ -21,9 +23,11 @@ class Text8(CooccurrrenceDataset):
         super().__init__(fname, min_count, window_size)
 
         if not self.path.exists():
-            import os
-            os.system(f"wget http://mattmahoney.net/dc/{self.path.name}.zip")
-            os.system(f"unzip {self.path.name}.zip")
+            if not self.path.parent.joinpath(self.path.name + ".zip").exists():
+                wget.download(f"http://mattmahoney.net/dc/{self.path.name}.zip")
+
+            with zipfile.ZipFile(f"{self.path.name}.zip") as zf:
+                zf.extractall()
 
         self.X, self.i2w = read_text(self.path.name, self.min_count, self.window_size)
 
