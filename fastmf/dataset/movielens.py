@@ -22,16 +22,19 @@ from . import ImplicitFeedBackDataset
 
 
 class MovieLens(ImplicitFeedBackDataset):
-    def __init__(self, dir_name="./ml-100k", min_rating: float = 4.0, under_sampling: Optional[int] = None):
+    def __init__(self, dir_name="ml-100k", min_rating: float = 4.0, under_sampling: Optional[int] = None):
         super().__init__(dir_name, min_rating)
 
         if not self.dir_path.exists():
             if not self.dir_path.parent.joinpath(self.dir_path.name + ".zip").exists():
                 print("movielens file does not exist, downloading ...")
-                wget.download(f"http://files.grouplens.org/datasets/movielens/{self.dir_path.name}.zip")
+                wget.download(
+                    f"http://files.grouplens.org/datasets/movielens/{self.dir_path.name}.zip",
+                    out=str(self.dir_path.parent.joinpath(self.dir_path.name + ".zip"))
+                )
             
-            with zipfile.ZipFile(f"{self.dir_path.name}.zip") as zf:
-                zf.extractall()
+            with zipfile.ZipFile(self.dir_path.parent.joinpath(self.dir_path.name + ".zip")) as zf:
+                zf.extractall(self.dir_path.parent)
 
         print("loading movielens...")
         rating_file: Path
