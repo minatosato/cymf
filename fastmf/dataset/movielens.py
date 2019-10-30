@@ -10,6 +10,8 @@ from collections import Counter
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
+import wget
+import zipfile
 import numpy as np
 import pandas as pd
 from scipy import sparse
@@ -24,11 +26,12 @@ class MovieLens(ImplicitFeedBackDataset):
         super().__init__(dir_name, min_rating)
 
         if not self.dir_path.exists():
-            import os
-            print("movielens file does not exist, downloading ...")
-            os.system(f"wget http://files.grouplens.org/datasets/movielens/{self.dir_path.name}.zip")
-            os.system(f"unzip {self.dir_path.name}.zip")
-            print("done.")
+            if not self.dir_path.parent.joinpath(self.dir_path.name + ".zip").exists():
+                print("movielens file does not exist, downloading ...")
+                wget.download(f"http://files.grouplens.org/datasets/movielens/{self.dir_path.name}.zip")
+            
+            with zipfile.ZipFile(f"{self.dir_path.name}.zip") as zf:
+                zf.extractall()
 
         print("loading movielens...")
         rating_file: Path
