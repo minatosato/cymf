@@ -8,7 +8,7 @@ jobs:
       - checkout  # ソースコードを作業ディレクトリにチェックアウトします
       - run:
           command: |  
-            pip install -r requirements.txt
+            sudo pip install -r requirements.txt
       - run:
           name: make
           command: |
