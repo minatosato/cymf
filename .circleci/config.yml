@@ -9,6 +9,11 @@ jobs:
       - run:
           command: |  
             sudo pip install -r requirements.txt
+  build:
+    docker:
+      - image: gcc:7
+    working_directory: ~/circleci-fastmf
+    steps:
       - run:
           name: make
           command: |
