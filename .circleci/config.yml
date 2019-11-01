@@ -1,0 +1,15 @@
+version: 2
+jobs:
+  build:
+    working_directory: ~/circleci-fastmf
+    docker:
+      - image: circleci/python:3.7.4  # ビルドジョブのプライマリコンテナ
+    steps:
+      - checkout  # ソースコードを作業ディレクトリにチェックアウトします
+      - run:
+          command: |  
+            pip install -r requirements.txt
+      - run:
+          name: make
+          command: |
+            make
