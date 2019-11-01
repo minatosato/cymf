@@ -23,13 +23,17 @@ class Text8(CooccurrrenceDataset):
         super().__init__(fname, min_count, window_size)
 
         if not self.path.exists():
-            if not self.path.parent.joinpath(self.path.name + ".zip").exists():
-                wget.download(f"http://mattmahoney.net/dc/{self.path.name}.zip")
+            zip_path: Path = self.path.parent.joinpath(self.path.name + ".zip")
+            if not zip_path.exists():
+                wget.download(
+                    f"http://mattmahoney.net/dc/{self.path.name}.zip",
+                    out=str(zip_path)
+                )
 
-            with zipfile.ZipFile(f"{self.path.name}.zip") as zf:
-                zf.extractall()
+            with zipfile.ZipFile(zip_path) as zf:
+                zf.extractall(self.path.parent)
 
-        self.X, self.i2w = read_text(self.path.name, self.min_count, self.window_size)
+        self.X, self.i2w = read_text(str(self.path), self.min_count, self.window_size)
 
     def vocab_size(self):
         return len(self.i2w)

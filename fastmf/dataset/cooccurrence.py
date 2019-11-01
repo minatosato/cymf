@@ -23,7 +23,9 @@ class CooccurrrenceDataset(object):
     X: Union[sparse.csr_matrix, sparse.csc_matrix]
 
     def __init__(self, fname: str, min_count: int = 5, window_size = 10):
-        self.path: Path = Path(fname)
+        self.root: Path = Path.home().joinpath(".fastmf")
+        self.root.mkdir(exist_ok=True)
+        self.path: Path = self.root.joinpath(fname)
         self.min_count = min_count
         self.window_size = window_size
 
