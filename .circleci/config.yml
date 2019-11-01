@@ -1,8 +1,6 @@
 version: 2
 jobs:
   build:
-    macos: # executor type
-      xcode: "9.0"
     working_directory: ~/circleci-fastmf
     docker:
       - image: circleci/python:3.7.4  # ビルドジョブのプライマリコンテナ
@@ -11,4 +9,3 @@ jobs:
       - run:
           command: |  
             sudo pip install -r requirements.txt
-            
