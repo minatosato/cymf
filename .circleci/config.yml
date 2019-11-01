@@ -1,6 +1,6 @@
 version: 2
 jobs:
-  build:
+  "pip":
     working_directory: ~/circleci-fastmf
     docker:
       - image: circleci/python:3.7.4  # ビルドジョブのプライマリコンテナ
@@ -9,7 +9,7 @@ jobs:
       - run:
           command: |  
             sudo pip install -r requirements.txt
-  build:
+  "gcc":
     docker:
       - image: gcc:7
     working_directory: ~/circleci-fastmf
