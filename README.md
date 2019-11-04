@@ -1,5 +1,6 @@
 
 # fastmf
+[![CircleCI](https://circleci.com/gh/satopirka/fastmf.svg?style=svg)](https://circleci.com/gh/satopirka/fastmf)  
 Cythonized fast implementation of matrix-factorization based algorithms.
 
 ### Implicit RecSys
