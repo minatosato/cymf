@@ -10,11 +10,12 @@ from sklearn.model_selection import train_test_split
 from .implicit import ImplicitFeedBackDataset
 
 class YahooMusic(ImplicitFeedBackDataset):
-    def __init__(self, dir_name: str = "yahoomusic", min_rating: float = 4.0, under_sampling: Optional[int] = None):
+    def __init__(self, min_rating: float = 4.0, under_sampling: Optional[int] = None):
+        dir_name: str = "yahoomusic"
         super().__init__(dir_name, min_rating)
 
         if not self.dir_path.exists():
-            print("download R3 dataset from 'https://webscope.sandbox.yahoo.com/catalog.php?datatype=r' ,")
+            print("download R3 dataset from https://webscope.sandbox.yahoo.com/catalog.php?datatype=r ,")
             print(f"and put it on {self.dir_path.as_posix()}.")
             exit(1)
 
