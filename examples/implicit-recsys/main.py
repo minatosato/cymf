@@ -15,12 +15,11 @@ from fastmf.dataset import ImplicitFeedBackDataset, MovieLens
 
 import argparse
 parser = argparse.ArgumentParser(description='')
-parser.add_argument('--limit', type=int, default=20)
-parser.add_argument('--iter', type=int, default=30)
-parser.add_argument('--num_components', type=int, default=30)
+parser.add_argument('--iter', type=int, default=50)
+parser.add_argument('--num_components', type=int, default=20)
 parser.add_argument('--lr', type=float, default=0.01)
-parser.add_argument('--weight_decay', type=float, default=0.01)
-parser.add_argument('--threads', type=int, default=8)
+parser.add_argument('--weight_decay', type=float, default=1e-5)
+parser.add_argument('--threads', type=int, default=1)
 
 args = parser.parse_args()
 

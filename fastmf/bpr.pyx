@@ -32,7 +32,7 @@ from libcpp.unordered_map cimport unordered_map
 from .model cimport BprModel
 from .optimizer cimport Optimizer
 from .optimizer cimport Adam
-from .metrics import evaluate
+from .evaluator cimport Evaluator
 
 cdef extern from "math.h":
     double exp(double x) nogil
@@ -79,13 +79,22 @@ cdef class BPR(object):
             users_valid, positives_valid = X_valid.nonzero()
             dense_valid = np.array(X_valid.todense())
 
+        users_test = None
+        positives_test = None
+        dense_test = None
+        if X_test is not None:
+            users_test, positives_test = X_test.nonzero()
+            dense_test = np.array(X_test.todense())
+
         return self._fit_bpr(users, 
                              positives,
                              dense,
                              users_valid,
                              positives_valid,
                              dense_valid,
-                             X_test.toarray() if X_test is not None else None,
+                             users_test,
+                             positives_test,
+                             dense_test,
                              self.W,
                              self.H,
                              num_iterations,
@@ -103,6 +112,8 @@ cdef class BPR(object):
                  integral[:] users_valid,
                  integral[:] positives_valid,
                  np.ndarray[double, ndim=2] X_valid,
+                 integral[:] users_test,
+                 integral[:] positives_test,
                  np.ndarray[double, ndim=2] X_test,
                  double[:,:] W, 
                  double[:,:] H, 
@@ -118,12 +129,14 @@ cdef class BPR(object):
         cdef double[:] loss = np.zeros(N)
 
         cdef unordered_map[string, double] metrics
+        cdef unordered_map[string, double] tmp
         
         cdef list description_list
 
         cdef integral[:] negative_samples
         cdef integral[:,:] negatives = np.zeros((N, iterations)).astype(np.int32)
         cdef integral[:,:] negatives_valid = None
+        cdef integral[:,:] negatives_test = None
 
         cdef vector[unordered_map[string, double]] history = []
 
@@ -132,6 +145,7 @@ cdef class BPR(object):
         optimizer.set_parameters(W, H)
 
         cdef BprModel bpr_model = BprModel(W, H, optimizer, weight_decay, num_threads)
+        cdef Evaluator evaluator = Evaluator(bpr_model)
 
         for l in range(N):
             u = users[l]
@@ -145,33 +159,52 @@ cdef class BPR(object):
                 negative_samples = np.random.choice((X_valid[u]-1).nonzero()[0], iterations).astype(np.int32)
                 negatives_valid[l][:] = negative_samples
 
-        with tqdm(total=iterations, leave=True, ncols=100, disable=not verbose) as progress:
+        if X_test is not None:
+            negatives_test = np.zeros((users_test.shape[0], iterations)).astype(np.int32)
+            for l in range(users_test.shape[0]):
+                u = users_test[l]
+                negative_samples = np.random.choice((X_test[u]-1).nonzero()[0], iterations).astype(np.int32)
+                negatives_test[l][:] = negative_samples
+
+        with tqdm(total=iterations, leave=True, ncols=120, disable=not verbose) as progress:
             for iteration in range(iterations):
-                metrics[b"loss"] = 0.0
+                metrics[b"train"] = 0.0
                 for l in prange(N, nogil=True, num_threads=num_threads):
                     loss[l] = bpr_model.forward(users[l], positives[l], negatives[l, iteration])
                     bpr_model.backward(users[l], positives[l], negatives[l, iteration])
 
                 for l in range(N):
-                    metrics[b"loss"] += loss[l]
-                metrics[b"loss"] /= N
+                    metrics[b"train"] += loss[l]
+                metrics[b"train"] /= N
 
                 if X_valid is not None:
-                    metrics[b"val_loss"] = 0.0
+                    metrics[b"valid"] = 0.0
                     for l in prange(users_valid.shape[0], nogil=True, num_threads=num_threads):
                         loss[l] = bpr_model.forward(users_valid[l], positives_valid[l], negatives_valid[l, iteration])
                     for l in range(users_valid.shape[0]):
-                        metrics[b"val_loss"] += loss[l]
-                    metrics[b"val_loss"] /= users_valid.shape[0]
+                        metrics[b"valid"] += loss[l]
+                    metrics[b"valid"] /= users_valid.shape[0]
+
+                if X_test is not None:
+                    metrics[b"test"] = 0.0
+                    for l in prange(users_test.shape[0], nogil=True, num_threads=num_threads):
+                        loss[l] = bpr_model.forward(users_test[l], positives_test[l], negatives_test[l, iteration])
+                    for l in range(users_test.shape[0]):
+                        metrics[b"test"] += loss[l]
+                    metrics[b"test"] /= users_test.shape[0]
 
                 description_list = []
                 description_list.append(f"ITER={iteration+1:{len(str(iterations))}}")
-                description_list.append(f"LOSS: {np.round(metrics[b'loss'], 4):.4f}")
+                description_list.append(f"LOSS: {np.round(metrics[b'train'], 4):.4f}")
                 if X_valid is not None:
-                    description_list.append(f"VAL_LOSS: {np.round(metrics[b'val_loss'], 4):.4f}")
+                    description_list.append(f"VAL_LOSS: {np.round(metrics[b'valid'], 4):.4f}")
 
                 if X_test is not None:
-                    metrics = evaluate(W, H, X_test, metrics)
+                    description_list.append(f"TEST_LOSS: {np.round(metrics[b'test'], 4):.4f}")
+
+                if X_test is not None:
+                    # metrics = eval_test(W, H, X_test, metrics, 100)
+                    metrics = evaluator.evaluate(X_test, metrics, 100)
                 progress.set_description(', '.join(description_list))
                 progress.update(1)
 
