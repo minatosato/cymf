@@ -32,6 +32,13 @@ from libcpp.unordered_map cimport unordered_map
 
 from .optimizer cimport Optimizer
 
+
+from scipy.linalg.cython_blas cimport sdot, ddot
+
+cdef double blas_dot(int n, double *x, int incx, double *y, int incy) nogil:
+    return ddot(&n, x, &incx, y, &incy)
+
+
 cdef class MfModel:
     def __init__(self, double[:,:] W, double[:,:] H, Optimizer optimizer, double weight_decay, int num_threads):
         self.W = W
@@ -56,8 +63,10 @@ cdef class BprModel(MfModel):
         self.tmp[thread_id] = 0.0
         l2_norm = 0.0
         for k in range(K):
-            self.tmp[thread_id] += self.W[u, k] * (self.H[i, k] - self.H[j, k])
+            # self.tmp[thread_id] += self.W[u, k] * (self.H[i, k] - self.H[j, k])
             l2_norm += square(self.W[u, k]) + square(self.H[i, k]) + square(self.H[j, k])
+
+        self.tmp[thread_id] = blas_dot(K, &self.W[u,:][0], 1, &self.H[i,:][0], 1) - blas_dot(K, &self.W[u,:][0], 1, &self.H[j,:][0], 1)
 
         loss = - log(sigmoid(self.tmp[thread_id])) + self.weight_decay * l2_norm
         
@@ -158,9 +167,10 @@ cdef class GloVeModel:
         cdef int K = self.W.shape[1]
         cdef int k
 
-        self.diff[thread_id] = 0.0
-        for k in range(K):
-            self.diff[thread_id] += self.W[central, k] * self.H[context, k]
+        #self.diff[thread_id] = 0.0
+        # for k in range(K):
+        #     self.diff[thread_id] += self.W[central, k] * self.H[context, k]
+        self.diff[thread_id] = blas_dot(K, &self.W[central,:][0], 1, &self.H[context,:][0], 1)
         self.diff[thread_id] += self.central_bias[central] + self.context_bias[context]
         self.diff[thread_id] -= log(count)
         tmp = self.diff[thread_id]
