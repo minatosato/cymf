@@ -11,7 +11,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 import fastmf
-from fastmf.dataset import ImplicitFeedBackDataset, MovieLens
+from fastmf.dataset import ImplicitFeedBackDataset, MovieLens, YahooMusic
 
 import argparse
 parser = argparse.ArgumentParser(description='')
@@ -23,7 +23,7 @@ parser.add_argument('--threads', type=int, default=1)
 
 args = parser.parse_args()
 
-dataset: ImplicitFeedBackDataset = MovieLens("ml-100k")
+dataset: ImplicitFeedBackDataset = YahooMusic()
 
 model = fastmf.BPR(num_components=args.num_components, learning_rate=args.lr, weight_decay=args.weight_decay)
 history = model.fit(dataset.train, dataset.valid, dataset.test, num_iterations=args.iter, num_threads=args.threads, verbose=True)

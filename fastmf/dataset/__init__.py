@@ -1,8 +1,9 @@
 
 from .implicit import ImplicitFeedBackDataset
 from .movielens import MovieLens
+from .yahoomusic import YahooMusic
 from .cooccurrence import CooccurrrenceDataset
 from .text8 import Text8
 from ..glove import read_text
 
-__all__ = [ImplicitFeedBackDataset, MovieLens, CooccurrrenceDataset, Text8]
+__all__ = [ImplicitFeedBackDataset, MovieLens, YahooMusic, CooccurrrenceDataset, Text8]
