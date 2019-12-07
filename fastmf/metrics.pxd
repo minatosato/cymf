@@ -18,4 +18,3 @@ cpdef double dcg_at_k(np.ndarray[int, ndim=1] y_true, np.ndarray[double, ndim=1]
 cpdef double precision_at_k(np.ndarray[int, ndim=1] y_true, np.ndarray[double, ndim=1] y_score, int k)
 cpdef double recall_at_k(np.ndarray[int, ndim=1] y_true, np.ndarray[double, ndim=1] y_score, int k)
 cpdef double average_precision_at_k(np.ndarray[int, ndim=1] y_true, np.ndarray[double, ndim=1] y_score, int k)
-cpdef unordered_map[string, double] eval_test(double[:,:] W, double[:,:] H, np.ndarray[double, ndim=2] X, unordered_map[string, double] metrics, int num_negatives)

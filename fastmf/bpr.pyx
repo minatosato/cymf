@@ -32,7 +32,7 @@ from libcpp.unordered_map cimport unordered_map
 from .model cimport BprModel
 from .optimizer cimport Optimizer
 from .optimizer cimport Adam
-from .metrics import eval_test
+from .evaluator cimport Evaluator
 
 cdef extern from "math.h":
     double exp(double x) nogil
@@ -145,6 +145,7 @@ cdef class BPR(object):
         optimizer.set_parameters(W, H)
 
         cdef BprModel bpr_model = BprModel(W, H, optimizer, weight_decay, num_threads)
+        cdef Evaluator evaluator = Evaluator(bpr_model)
 
         for l in range(N):
             u = users[l]
@@ -202,7 +203,8 @@ cdef class BPR(object):
                     description_list.append(f"TEST_LOSS: {np.round(metrics[b'test'], 4):.4f}")
 
                 if X_test is not None:
-                    metrics = eval_test(W, H, X_test, metrics, 100)
+                    # metrics = eval_test(W, H, X_test, metrics, 100)
+                    metrics = evaluator.evaluate(X_test, metrics, 100)
                 progress.set_description(', '.join(description_list))
                 progress.update(1)
 
