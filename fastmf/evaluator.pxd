@@ -22,3 +22,6 @@ from .model cimport MfModel
 cdef class Evaluator(object):
     cdef public MfModel model
     cpdef unordered_map[string, double] evaluate(self, np.ndarray[double, ndim=2] X, unordered_map[string, double] metrics, int num_negatives)
+cdef class UnbiasedEvaluator(object):
+    cdef public MfModel model
+    cpdef unordered_map[string, double] evaluate(self, np.ndarray[double, ndim=2] X, np.ndarray[double, ndim=1] propensity_scores, unordered_map[string, double] metrics, int num_negatives)

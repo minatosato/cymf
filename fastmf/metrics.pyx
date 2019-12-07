@@ -96,5 +96,90 @@ cpdef double average_precision_at_k(np.ndarray[int, ndim=1] y_true, np.ndarray[d
     #if count == 0.0:
     #    return 0.0
 
-    return average_precision_score / total
+    return average_precision_score / k
     
+
+@cython.boundscheck(False)
+@cython.wraparound(False)
+cpdef double dcg_at_k_with_ips(np.ndarray[int, ndim=1] y_true, np.ndarray[double, ndim=1] y_score, np.ndarray[double, ndim=1] propensity_scores, int k):
+    cdef int[:] y_true_sorted_by_score = y_true[y_score.argsort()[::-1]]
+    cdef double[:] p_scores_sorted_by_score = propensity_scores[y_score.argsort()[::-1]]
+
+    cdef double dcg_score = y_true_sorted_by_score[0] / p_scores_sorted_by_score[0]
+    cdef int i
+    cdef double total = 0.0
+    cdef double tmp = 0.0
+
+    if y_true_sorted_by_score[0] != 0.0:
+        tmp += 1.0 / p_scores_sorted_by_score[0]
+
+    for i in range(y_true.shape[0]):
+        if 1 <= i < k:
+            dcg_score += <double> y_true_sorted_by_score[i] / log2(<double>i+1.0) / p_scores_sorted_by_score[i]
+            if y_true_sorted_by_score[i] != 0.0:
+                tmp += 1.0 / p_scores_sorted_by_score[i]
+
+        total += <double> y_true_sorted_by_score[i]
+
+    if total == 0.0:
+        return 0.0
+
+    if tmp == 0.0:
+        return 0.0
+
+    return dcg_score / total / tmp
+
+# @cython.boundscheck(False)
+# @cython.wraparound(False)
+# cpdef double recall_at_k_with_ips(np.ndarray[int, ndim=1] y_true, np.ndarray[double, ndim=1] y_score, np.ndarray[double, ndim=1] propensity_scores, int k):
+#     cdef int[:] y_true_sorted_by_score = y_true[y_score.argsort()[::-1]]
+#     cdef double[:] p_scores_sorted_by_score = propensity_scores[y_score.argsort()[::-1]]
+#     cdef int i
+
+#     cdef double tmp = 0.0
+
+#     cdef double num_positive_items_in_k = 0.0
+#     cdef int num_positive_items = 0
+#     for i in range(y_true.shape[0]):
+#         num_positive_items += y_true_sorted_by_score[i]
+#         if i < k:
+#             num_positive_items_in_k += (<double> y_true_sorted_by_score[i]) / p_scores_sorted_by_score[i]
+
+#         tmp += (<double> y_true_sorted_by_score[i]) / p_scores_sorted_by_score[i]
+    
+#     if num_positive_items == 0:
+#         return 0.0
+    
+#     if tmp == 0.0:
+#         return 0.0
+    
+#     return num_positive_items_in_k / num_positive_items / tmp
+
+# @cython.boundscheck(False)
+# @cython.wraparound(False)
+# cpdef double average_precision_at_k_with_ips(np.ndarray[int, ndim=1] y_true, np.ndarray[double, ndim=1] y_score, np.ndarray[double, ndim=1] propensity_scores, int k):
+#     cdef int[:] y_true_sorted_by_score = y_true[y_score.argsort()[::-1]]
+#     cdef double[:] p_scores_sorted_by_score = propensity_scores[y_score.argsort()[::-1]]
+#     cdef double average_precision_score = 0.0
+
+#     cdef double total = 0.
+#     cdef int i
+#     cdef double count = 0
+#     cdef double tmp = 0.0
+#     cdef int num_items = y_true.shape[0]
+#     for i in range(num_items):
+#         total += <double>y_true_sorted_by_score[i]
+
+#     if total == 0:
+#         return 0.0
+
+#     for i in range(k):
+#         if y_true_sorted_by_score[i] == 1:
+#             count += 1.0
+#             average_precision_score += count / (<double>(i + 1)) / p_scores_sorted_by_score[i]
+#             tmp = 1.0 / p_scores_sorted_by_score[i]
+    
+#     if tmp == 0.0:
+#         return 0.0
+
+#     return average_precision_score / k / tmp

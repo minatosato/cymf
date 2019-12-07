@@ -33,6 +33,7 @@ from .model cimport BprModel
 from .optimizer cimport Optimizer
 from .optimizer cimport Adam
 from .evaluator cimport Evaluator
+from .evaluator cimport UnbiasedEvaluator
 
 cdef extern from "math.h":
     double exp(double x) nogil
@@ -145,7 +146,14 @@ cdef class BPR(object):
         optimizer.set_parameters(W, H)
 
         cdef BprModel bpr_model = BprModel(W, H, optimizer, weight_decay, num_threads)
-        cdef Evaluator evaluator = Evaluator(bpr_model)
+
+        cdef np.ndarray[double, ndim=1] propensity_scores = X.sum(axis=0)
+        propensity_scores[propensity_scores<1.0] = 1.0
+        propensity_scores /= propensity_scores.max()
+        propensity_scores = propensity_scores ** 0.5
+
+        cdef UnbiasedEvaluator evaluator = UnbiasedEvaluator(bpr_model)
+        #cdef Evaluator evaluator = Evaluator(bpr_model)
 
         for l in range(N):
             u = users[l]
@@ -203,8 +211,8 @@ cdef class BPR(object):
                     description_list.append(f"TEST_LOSS: {np.round(metrics[b'test'], 4):.4f}")
 
                 if X_test is not None:
-                    # metrics = eval_test(W, H, X_test, metrics, 100)
-                    metrics = evaluator.evaluate(X_test, metrics, 100)
+                    metrics = evaluator.evaluate(X_test, propensity_scores, metrics, 100)
+                    #metrics = evaluator.evaluate(X_test, metrics, 100)
                 progress.set_description(', '.join(description_list))
                 progress.update(1)
 
