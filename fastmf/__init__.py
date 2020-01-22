@@ -1,6 +1,7 @@
 from .bpr import BPR
 from .wmf import WMF
 from .glove import GloVe
+from .expomf import *
 from . import dataset
 
 __copyright__    = 'Copyright (C) 2019 Minato Sato'
