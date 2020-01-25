@@ -22,6 +22,9 @@ os.environ['CXXFLAGS'] = " ".join(cmpl_args + lnk_args)
 
 package_name: str = "fastmf"
 
+# export LDFLAGS="-L/usr/local/opt/openblas/lib"
+# export CPPFLAGS="-I/usr/local/opt/openblas/include"
+
 with Path(package_name).joinpath("__init__.py").open("r") as f:
     init_text = f.read()
     version: Optional[Match[Any]] = re.search(r'__version__\s*=\s*[\'\"](.+?)[\'\"]', init_text)
