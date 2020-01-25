@@ -4,22 +4,24 @@
 Cythonized fast implementation of matrix-factorization based algorithms.
 
 ### Implicit RecSys
-- Bayesian Personlized Ranking [Steffen Rendle et al. 2009]
-- Weighted Matrix Factorization [Yifan Hu et al. 2008]
+- Bayesian Personlized Ranking (BPR) [Steffen Rendle et al. 2009]
+- Weighted Matrix Factorization (WMF) [Yifan Hu et al. 2008]
+- Exposure Matrix Factorization (ExpoMF) [Dawen Liang et al. 2016]
 
 ### Word Embeddings
 - GloVe [Jeffrey Pennington et al. 2014]
 
 ## Requiremts
 - GCC 7.4.0
-- libomp
+- OpenMP
+- OpenBLAS
 - Python packages
     - see `requirements.txt`
 
 ## Installation
 macOS
 ```
-brew install libomp
+brew install libomp openblas
 
 git clone https://github.com/satopirka/fastmf
 cd fastmf
