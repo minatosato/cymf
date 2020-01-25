@@ -38,6 +38,8 @@ echo "export CXX='g++-7'" >> ~/.bashrc
 echo "export CC='gcc-7'" >> ~/.bashrc
 source ~/.bashrc
 sudo apt install libomp-dev
+sudo apt-get install libopenblas-base
+sudo apt-get install libopenblas-dev
 
 git clone https://github.com/satopirka/fastmf
 cd fastmf
