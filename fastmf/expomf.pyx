@@ -38,18 +38,18 @@ cdef extern from 'cblas.h':
         CblasConjTrans
     double cblas_ddot(int N, double* X, int incX, double* Y, int incY) nogil
     double cblas_dgemm(CBLAS_ORDER Order, CBLAS_TRANSPOSE TransA, CBLAS_TRANSPOSE TransB,
-                                     int M, int N, int K,
-                                     double alpha, double *A, int lda, double *B, int ldb,
-                                     double beta, double *C, int ldc) nogil
+                       int M, int N, int K,
+                       double alpha, double *A, int lda, double *B, int ldb,
+                       double beta, double *C, int ldc) nogil
 
 
 cdef void matmul(double alpha, double[:,:] A, double[:,:] B, double beta, double[:,:] C):
     """
     C = alpha * A   B   + beta * C
     """
-    cblas_dgemm(CblasRowMajor,CblasNoTrans,CblasNoTrans, C.shape[0], C.shape[1],
-               B.shape[0], alpha, &A[0,0], A.shape[1], &B[0,0],
-               B.shape[1], beta, &C[0,0], C.shape[1])
+    cblas_dgemm(CblasRowMajor,CblasNoTrans,CblasNoTrans, C.shape[0], C.shape[1], B.shape[0],
+                alpha, &A[0,0], A.shape[1], &B[0,0],
+                B.shape[1], beta, &C[0,0], C.shape[1])
 
 cpdef double[:,::1] _broadcast_hadamard(double[:,::1] A, double[:,::1] b):
     """
