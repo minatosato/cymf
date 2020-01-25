@@ -26,7 +26,7 @@ from libcpp.vector cimport vector
 from libcpp.string cimport string
 from libcpp.unordered_map cimport unordered_map
 from libc.stdlib cimport malloc, free
-from scipy.linalg.cython_lapack cimport dgesv, dgetrf, dgetrs
+from scipy.linalg.cython_lapack cimport dgesv as lapack_dgesv
 
 cdef extern from 'cblas.h':
     ctypedef enum CBLAS_ORDER:
@@ -36,19 +36,11 @@ cdef extern from 'cblas.h':
         CblasNoTrans
         CblasTrans
         CblasConjTrans
-    void dgemv 'cblas_dgemv'(CBLAS_ORDER order,
-                             CBLAS_TRANSPOSE transpose,
-                             int M, int N,
-                             double alpha, double* A, int lda,
-                             double* X, int incX,
-                             double beta, double* Y, int incY) nogil
-    double ddot 'cblas_ddot'(int N,
-                             double* X, int incX,
-                             double* Y, int incY) nogil
-    double cblas_dgemm 'cblas_dgemm'(CBLAS_ORDER Order, CBLAS_TRANSPOSE TransA,
-                                 CBLAS_TRANSPOSE TransB, int M, int N, int K,
-                                 double alpha, double *A, int lda, double *B, int ldb,
-                                 double beta, double *C, int ldc) nogil
+    double cblas_ddot(int N, double* X, int incX, double* Y, int incY) nogil
+    double cblas_dgemm(CBLAS_ORDER Order, CBLAS_TRANSPOSE TransA, CBLAS_TRANSPOSE TransB,
+                                     int M, int N, int K,
+                                     double alpha, double *A, int lda, double *B, int ldb,
+                                     double beta, double *C, int ldc) nogil
 
 
 cdef void matmul(double alpha, double[:,:] A, double[:,:] B, double beta, double[:,:] C):
@@ -59,7 +51,10 @@ cdef void matmul(double alpha, double[:,:] A, double[:,:] B, double beta, double
                B.shape[0], alpha, &A[0,0], A.shape[1], &B[0,0],
                B.shape[1], beta, &C[0,0], C.shape[1])
 
-cpdef double[:,::1] _prod(double[:,::1] A, double[:,::1] b):
+cpdef double[:,::1] _broadcast_hadamard(double[:,::1] A, double[:,::1] b):
+    """
+    C = A * b
+    """
     cdef double[:,::1] C = np.zeros_like(A).astype(np.float64)
     cdef int i, j
     for i in range(C.shape[0]):
@@ -67,7 +62,7 @@ cpdef double[:,::1] _prod(double[:,::1] A, double[:,::1] b):
             C[i, j] = A[i, j] * b[i, 0]
     return C
 
-cpdef double[:,::1] _xtx_lambda(double alpha, double[:,::1] A, double[:,::1] B, double regularization):
+cpdef double[:,::1] _atb_lambda(double alpha, double[:,::1] A, double[:,::1] B, double regularization):
     """
     C = alpha * AT B   + regularization * C
     """
@@ -110,7 +105,7 @@ cpdef double[:,::1] _atb(double[:,::1] A, double[:,::1] B):
 
 
 cpdef double _dot(double[::1] x, double[::1] y):
-    return ddot(x.shape[0], &x[0], 1, &y[0], 1)
+    return cblas_ddot(x.shape[0], &x[0], 1, &y[0], 1)
 
 
 cdef extern from "math.h" nogil:
@@ -139,14 +134,9 @@ cdef int _solve(double[::1,:] A, double[::1,:] b) nogil:
     cdef int nrhs = b.shape[1]
     cdef int* p_ipiv = <int*> malloc( n*sizeof(int) )
     cdef int info
-    # solve (on exit, b is overwritten by the solution)
-    #
-    # http://www.netlib.org/lapack/lapack-3.1.1/html/dgesv.f.html
-    # N, NRHS, A, LDA, IPIV, B, LDB, INFO
-    #
-    dgesv(&n, &nrhs, &A[0,0], &n, p_ipiv, &b[0,0], &n, &info)
+    lapack_dgesv(&n, &nrhs, &A[0,0], &n, p_ipiv, &b[0,0], &n, &info)
     free( <void*>p_ipiv )
-    return 0
+    return info
 
 cdef class ExpoMF(object):
     cdef public int num_components
@@ -182,7 +172,6 @@ cdef class ExpoMF(object):
         cdef double[:] mu = np.ones(I) * 0.01
 
         for iteration in range(num_iterations):
-            print("ITER:", iteration+1)
             for u in range(U):
                 for i in range(I):
                     if _X[u, i] == 1.0:
@@ -195,37 +184,17 @@ cdef class ExpoMF(object):
 
             # Wの更新
             for u in range(U):
-                A = _xtx_lambda(lam_y, _prod(self.H, Exposure[u:u+1,:].T.copy()), self.H, self.weight_decay).copy_fortran()
+                A = _atb_lambda(lam_y, _broadcast_hadamard(self.H, Exposure[u:u+1,:].T.copy()), self.H, self.weight_decay).copy_fortran()
                 b = _atbt(self.H, EY[u:u+1, :]).copy_fortran()
                 _solve(A, b)
                 for k in range(K):
                     self.W[u,k] = b[k,0]
             # Hの更新
             for i in range(I):
-                A = _xtx_lambda(lam_y, _prod(self.W, Exposure[:,i:i+1]), self.W, self.weight_decay).copy_fortran()
+                A = _atb_lambda(lam_y, _broadcast_hadamard(self.W, Exposure[:,i:i+1]), self.W, self.weight_decay).copy_fortran()
                 b = _atb(self.W, EY[:,i:i+1].copy()).copy_fortran()
                 _solve(A, b)
                 for k in range(K):
                     self.H[i, k] = b[k,0]
             # muの更新
             mu = (alpha_1 + np.array(Exposure).sum(axis=0) - 1.) / (alpha_1 + alpha_2 + U - 2.)
-"""
-%%timeit
-import fastmf
-model = fastmf.expomf.ExpoMF(20, 0.01)
-import numpy as np
-from lightfm.datasets import fetch_movielens
-dataset = fetch_movielens(min_rating=4.0)
-Y = dataset["train"].toarray().astype(np.float64)
-Y[Y > 0] = 1.0
-model.fit(Y, num_iterations=3)
-Y_test = dataset["test"].toarray()
-Y_test[Y_test > 0] = 1.0
-from sklearn import metrics
-predicted = np.array(model.W) @ np.array(model.H).T
-scores = np.zeros(Y_test.shape[0])
-for u in range(Y_test.shape[0]):
-    fpr, tpr, thresholds = metrics.roc_curve(Y_test[u], predicted[u])
-    scores[u] = metrics.auc(fpr, tpr) if len(set(Y_test[u])) != 1 else 0.0
-print(f"test mean auc: {scores.mean()}")
-"""

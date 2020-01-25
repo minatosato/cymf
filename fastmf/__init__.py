@@ -1,7 +1,7 @@
 from .bpr import BPR
 from .wmf import WMF
 from .glove import GloVe
-from .expomf import *
+from .expomf import ExpoMF
 from . import dataset
 
 __copyright__    = 'Copyright (C) 2019 Minato Sato'
@@ -14,4 +14,4 @@ __url__          = 'http://github.com/satopirka/fastmf'
 import os
 os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 
-__all__ = [BPR, WMF, GloVe, dataset]
+__all__ = [BPR, WMF, GloVe, ExpoMF, dataset]
