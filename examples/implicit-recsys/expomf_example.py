@@ -19,7 +19,6 @@ parser = argparse.ArgumentParser(description='')
 parser.add_argument('--iter', type=int, default=3)
 parser.add_argument('--num_components', type=int, default=20)
 parser.add_argument('--weight_decay', type=float, default=0.1)
-parser.add_argument('--threads', type=int, default=1)
 
 args = parser.parse_args()
 

@@ -18,7 +18,7 @@ from scipy.linalg.cython_lapack cimport dgesv as lapack_dgesv
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-cpdef void matmul(double alpha, double[:,:] A, double[:,:] B, double beta, double[:,:] C):
+cpdef void matmul(double alpha, double[:,:] A, double[:,:] B, double beta, double[:,:] C) nogil:
     """
     C = alpha * A   B   + beta * C
     """
@@ -64,9 +64,8 @@ cpdef double[:,::1] atbt(double[:,::1] A, double[:,::1] B):
     cdef int N = B.shape[0] # BTの列数
     cdef int K = B.shape[1] #
     cdef double[:,::1] C = np.zeros((M, N))
-    cblas_dgemm(CblasRowMajor,CblasTrans,CblasTrans, M, N,
-               K, 1.0, &A[0,0], A.shape[1], &B[0,0],
-               B.shape[1], 0.0, &C[0,0], C.shape[1])
+    cblas_dgemm(CblasRowMajor,CblasTrans,CblasTrans, M, N, K,
+                1.0, &A[0,0], A.shape[1], &B[0,0], B.shape[1], 0.0, &C[0,0], C.shape[1])
     return C
 
 @cython.boundscheck(False)
@@ -79,9 +78,8 @@ cpdef double[:,::1] atb(double[:,::1] A, double[:,::1] B):
     cdef int N = B.shape[1] # Bの列数
     cdef int K = B.shape[0] #
     cdef double[:,::1] C = np.zeros((M, N))
-    cblas_dgemm(CblasRowMajor,CblasTrans,CblasNoTrans, M, N,
-               K, 1.0, &A[0,0], A.shape[1], &B[0,0],
-               B.shape[1], 0.0, &C[0,0], C.shape[1])
+    cblas_dgemm(CblasRowMajor,CblasTrans,CblasNoTrans, M, N, K,
+                1.0, &A[0,0], A.shape[1], &B[0,0], B.shape[1], 0.0, &C[0,0], C.shape[1])
     return C
 
 @cython.boundscheck(False)

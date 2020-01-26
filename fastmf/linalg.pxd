@@ -34,7 +34,7 @@ cdef extern from 'cblas.h':
                        double beta, double *C, int ldc) nogil
 
 
-cpdef void matmul(double alpha, double[:,:] A, double[:,:] B, double beta, double[:,:] C)
+cpdef void matmul(double alpha, double[:,:] A, double[:,:] B, double beta, double[:,:] C) nogil
 cpdef double[:,::1] broadcast_hadamard(double[:,::1] A, double[:,::1] b)
 cpdef double[:,::1] atb_lambda(double alpha, double[:,::1] A, double[:,::1] B, double regularization)
 cpdef double[:,::1] atbt(double[:,::1] A, double[:,::1] B)

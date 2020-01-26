@@ -55,7 +55,7 @@ cdef class ExpoMF(object):
         self.W = None
         self.H = None
 
-    def fit(self, X, int num_iterations = 10, int num_threads = 8, bool verbose = False):
+    def fit(self, X, int num_iterations = 10, bool verbose = False):
         if isinstance(X, (sparse.lil_matrix, sparse.csr_matrix, sparse.csc_matrix)):
             X = X.toarray()
         X = X.astype(np.float64)
