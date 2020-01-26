@@ -86,7 +86,7 @@ cpdef double[:,::1] atb(double[:,::1] A, double[:,::1] B):
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-cpdef double dot(double[::1] x, double[::1] y):
+cpdef double dot(double[::1] x, double[::1] y) nogil:
     return cblas_ddot(x.shape[0], &x[0], 1, &y[0], 1)
 
 @cython.boundscheck(False)

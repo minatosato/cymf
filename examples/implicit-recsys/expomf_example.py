@@ -25,14 +25,11 @@ args = parser.parse_args()
 
 dataset: ImplicitFeedbackDataset = MovieLens("ml-100k")
 
-
-Y = dataset.train.toarray().astype(np.float64)
-Y[Y > 0] = 1.0
+Y_train = dataset.train.toarray()
 model = fastmf.ExpoMF(num_components=args.num_components, weight_decay=args.weight_decay)
-model.fit(Y, num_iterations=args.iter, verbose=True)
+model.fit(Y_train, num_iterations=args.iter, verbose=True)
 
-Y_test = dataset.test.toarray().astype(np.float64)
-Y_test[Y_test > 0] = 1.0
+Y_test = dataset.test.toarray()
 from sklearn import metrics
 predicted = np.array(model.W) @ np.array(model.H).T
 scores = np.zeros(Y_test.shape[0])
