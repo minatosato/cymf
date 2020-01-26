@@ -22,6 +22,8 @@ Cythonized fast implementation of matrix-factorization based algorithms.
 macOS
 ```
 brew install libomp openblas
+echo "export LDFLAGS='-L/usr/local/opt/openblas/lib'" >> ~/.bash_profile
+echo "export CPPFLAGS='-I/usr/local/opt/openblas/include'" >> ~/.bash_profile
 
 git clone https://github.com/satopirka/fastmf
 cd fastmf
