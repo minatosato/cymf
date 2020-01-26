@@ -13,6 +13,7 @@ import cython
 import multiprocessing
 import numpy as np
 import pandas as pd
+from scipy import sparse
 from collections import Counter
 from cython.parallel import prange
 from cython.parallel import threadid
@@ -56,15 +57,23 @@ cdef class WMF(object):
         self.learning_rate = learning_rate
         self.weight_decay = weight_decay
         self.weight = weight
+        self.W = None
+        self.H = None
 
     def fit(self, X, 
                   int num_iterations,
                   int num_threads,
                   bool verbose = False):
-        self.W = np.random.uniform(low=-0.1, high=0.1, size=(X.shape[0], self.num_components)) / self.num_components
-        self.H = np.random.uniform(low=-0.1, high=0.1, size=(X.shape[1], self.num_components)) / self.num_components
+        if isinstance(X, (sparse.lil_matrix, sparse.csr_matrix, sparse.csc_matrix)):
+            X = X.toarray()
+        X = X.astype(np.float64)
+        
+        if self.W is None:
+            self.W = np.random.uniform(low=-0.1, high=0.1, size=(X.shape[0], self.num_components)) / self.num_components
+        if self.H is None:
+            self.H = np.random.uniform(low=-0.1, high=0.1, size=(X.shape[1], self.num_components)) / self.num_components
 
-        tmp = pd.DataFrame(X.todense()).stack().reset_index()
+        tmp = pd.DataFrame(X).stack().reset_index()
         tmp.columns = ("user", "item", "rating")
         users = tmp["user"].values
         items = tmp["item"].values

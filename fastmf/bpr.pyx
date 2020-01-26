@@ -13,6 +13,7 @@ import cython
 import multiprocessing
 import numpy as np
 import pandas as pd
+from scipy import sparse
 from collections import Counter
 from cython.parallel import prange
 from cython.parallel import threadid
@@ -47,18 +48,27 @@ cdef class BPR(object):
         self.num_components = num_components
         self.learning_rate = learning_rate
         self.weight_decay = weight_decay
+        self.W = None
+        self.H = None
 
     def fit(self, X, X_valid = None, X_test = None,
                   int num_iterations = 10,
                   int num_threads = 8,
                   bool verbose = False):
 
-        self.W = np.random.uniform(low=-0.1, high=0.1, size=(X.shape[0], self.num_components)) / self.num_components
-        self.H = np.random.uniform(low=-0.1, high=0.1, size=(X.shape[1], self.num_components)) / self.num_components
+        if isinstance(X, (sparse.lil_matrix, sparse.csr_matrix, sparse.csc_matrix)):
+            X = X.toarray()
+        X = X.astype(np.float64)
+        
+        if self.W is None:
+            self.W = np.random.uniform(low=-0.1, high=0.1, size=(X.shape[0], self.num_components)) / self.num_components
+        if self.H is None:
+            self.H = np.random.uniform(low=-0.1, high=0.1, size=(X.shape[1], self.num_components)) / self.num_components
+
         num_threads = min(num_threads, multiprocessing.cpu_count())
 
         users, positives = utils.shuffle(*(X.nonzero()))
-        dense = np.array(X.todense())
+        dense = np.array(X)
 
         users_valid = None
         positives_valid = None
@@ -74,14 +84,14 @@ cdef class BPR(object):
             users_test, positives_test = X_test.nonzero()
             dense_test = np.array(X_test.todense())
 
-        return self._fit_bpr(users, 
-                             positives,
+        return self._fit_bpr(users.astype(np.int32), 
+                             positives.astype(np.int32),
                              dense,
-                             users_valid,
-                             positives_valid,
+                             users_valid, # todo 修正
+                             positives_valid, # todo 修正
                              dense_valid,
-                             users_test,
-                             positives_test,
+                             users_test, # todo 修正
+                             positives_test, # todo 修正
                              dense_test,
                              self.W,
                              self.H,
@@ -94,14 +104,14 @@ cdef class BPR(object):
     @cython.boundscheck(False)
     @cython.wraparound(False)
     def _fit_bpr(self,
-                 integral[:] users,
-                 integral[:] positives,
+                 int[:] users,
+                 int[:] positives,
                  np.ndarray[double, ndim=2] X,
-                 integral[:] users_valid,
-                 integral[:] positives_valid,
+                 int[:] users_valid,
+                 int[:] positives_valid,
                  np.ndarray[double, ndim=2] X_valid,
-                 integral[:] users_test,
-                 integral[:] positives_test,
+                 int[:] users_test,
+                 int[:] positives_test,
                  np.ndarray[double, ndim=2] X_test,
                  double[:,:] W, 
                  double[:,:] H, 
@@ -121,10 +131,10 @@ cdef class BPR(object):
         
         cdef list description_list
 
-        cdef integral[:] negative_samples
-        cdef integral[:,:] negatives = np.zeros((N, iterations)).astype(np.int32)
-        cdef integral[:,:] negatives_valid = None
-        cdef integral[:,:] negatives_test = None
+        cdef int[:] negative_samples
+        cdef int[:,:] negatives = np.zeros((N, iterations)).astype(np.int32)
+        cdef int[:,:] negatives_valid = None
+        cdef int[:,:] negatives_test = None
 
         cdef vector[unordered_map[string, double]] history = []
 
