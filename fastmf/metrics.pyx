@@ -1,5 +1,5 @@
 # 
-# Copyright (c) 2019 Minato Sato
+# Copyright (c) 2020 Minato Sato
 # All rights reserved.
 #
 # This source code is licensed under the license found in the
@@ -17,9 +17,7 @@ from libcpp.unordered_map cimport unordered_map
 
 cimport cython
 
-cdef extern from "math.h":
-    double log2(double x) nogil
-
+from .math cimport log2
 
 @cython.boundscheck(False)
 @cython.wraparound(False)

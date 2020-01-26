@@ -6,14 +6,13 @@
 # LICENSE file in the root directory of this source tree.
 #
 
-
 from tqdm import tqdm
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
 import fastmf
-from fastmf.dataset import ImplicitFeedBackDataset, MovieLens, YahooMusic
+from fastmf.dataset import ImplicitFeedbackDataset, MovieLens, YahooMusic
 
 import argparse
 parser = argparse.ArgumentParser(description='')
@@ -24,7 +23,7 @@ parser.add_argument('--threads', type=int, default=1)
 
 args = parser.parse_args()
 
-dataset: ImplicitFeedBackDataset = MovieLens("ml-100k")
+dataset: ImplicitFeedbackDataset = MovieLens("ml-100k")
 
 
 Y = dataset.train.toarray().astype(np.float64)

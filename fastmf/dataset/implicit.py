@@ -1,10 +1,11 @@
 # 
-# Copyright (c) 2019 Minato Sato
+# Copyright (c) 2020 Minato Sato
 # All rights reserved.
 #
 # This source code is licensed under the license found in the
 # LICENSE file in the root directory of this source tree.
 #
+
 from pathlib import Path
 
 import numpy as np
@@ -15,7 +16,7 @@ from tqdm import tqdm
 from typing import Tuple
 from typing import Optional
 
-class ImplicitFeedBackDataset(object):
+class ImplicitFeedbackDataset(object):
     num_user: int
     num_item: int
 

@@ -1,5 +1,5 @@
 # 
-# Copyright (c) 2019 Minato Sato
+# Copyright (c) 2020 Minato Sato
 # All rights reserved.
 #
 # This source code is licensed under the license found in the
@@ -21,6 +21,8 @@ from libcpp.string cimport string
 from libcpp.map cimport map
 from libcpp.unordered_map cimport unordered_map
 
+from .math cimport sqrt
+from .math cimport square
 
 cdef class Optimizer:
     def __init__(self):

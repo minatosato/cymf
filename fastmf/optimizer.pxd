@@ -1,5 +1,5 @@
 # 
-# Copyright (c) 2019 Minato Sato
+# Copyright (c) 2020 Minato Sato
 # All rights reserved.
 #
 # This source code is licensed under the license found in the
@@ -19,20 +19,6 @@ from libcpp.vector cimport vector
 from libcpp.string cimport string
 from libcpp.map cimport map
 from libcpp.unordered_map cimport unordered_map
-
-
-cdef extern from "math.h":
-    double exp(double x) nogil
-    double log(double x) nogil
-    double log2(double x) nogil
-    double sqrt(double x) nogil
-    double pow(double x, double y) nogil
-
-cdef inline floating sigmoid(floating x) nogil:
-    return 1.0 / (1.0 + exp(-x))
-
-cdef inline floating square(floating x) nogil:
-    return x * x
 
 cdef class Optimizer:
     cdef public double[:,:] W

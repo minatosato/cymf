@@ -1,6 +1,6 @@
 
 # 
-# Copyright (c) 2019 Minato Sato
+# Copyright (c) 2020 Minato Sato
 # All rights reserved.
 #
 # This source code is licensed under the license found in the
@@ -11,26 +11,25 @@
 # distutils: language=c++
 
 import cython
-import multiprocessing
 import numpy as np
-import pandas as pd
-from collections import Counter
 from cython.parallel import prange
 from cython.parallel import threadid
-from cython.operator cimport dereference
-from cython.operator import postincrement
 from sklearn import utils
 from tqdm import tqdm
 
 cimport numpy as np
-from cython cimport floating
-from cython cimport integral
-from libcpp cimport bool
-from libcpp.vector cimport vector
-from libcpp.string cimport string
-from libcpp.unordered_map cimport unordered_map
 
 from .optimizer cimport Optimizer
+
+from .math cimport pow
+from .math cimport fmin
+from .math cimport square
+from .math cimport sigmoid
+from .math cimport log
+from .math cimport exp
+
+cdef inline double weight_func(double x, double x_max, double alpha) nogil:
+    return fmin(pow(x / x_max, alpha), 1.0)
 
 cdef class MfModel:
     def __init__(self, double[:,:] W, double[:,:] H, Optimizer optimizer, double weight_decay, int num_threads):

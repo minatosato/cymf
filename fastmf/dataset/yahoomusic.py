@@ -1,3 +1,10 @@
+# 
+# Copyright (c) 2020 Minato Sato
+# All rights reserved.
+#
+# This source code is licensed under the license found in the
+# LICENSE file in the root directory of this source tree.
+#
 
 from pathlib import Path
 from typing import Optional
@@ -7,9 +14,9 @@ import pandas as pd
 from scipy import sparse
 from sklearn.model_selection import train_test_split
 
-from .implicit import ImplicitFeedBackDataset
+from .implicit import ImplicitFeedbackDataset
 
-class YahooMusic(ImplicitFeedBackDataset):
+class YahooMusic(ImplicitFeedbackDataset):
     def __init__(self, min_rating: float = 4.0, under_sampling: Optional[int] = None):
         dir_name: str = "yahoomusic"
         super().__init__(dir_name, min_rating)

@@ -37,13 +37,10 @@ from .linalg cimport atbt
 from .linalg cimport atb
 from .linalg cimport dot
 
-cdef extern from "math.h" nogil:
-    double sqrt(double x)
-    double exp(double x)
-    const double M_PI
-
-cdef inline double square(double x) nogil:
-    return x * x
+from .math cimport sqrt
+from .math cimport exp
+from .math cimport M_PI
+from .math cimport square
 
 cdef class ExpoMF(object):
     cdef public int num_components
