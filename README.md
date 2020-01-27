@@ -24,6 +24,7 @@ macOS
 brew install libomp openblas
 echo "export LDFLAGS='-L/usr/local/opt/openblas/lib'" >> ~/.bash_profile
 echo "export CPPFLAGS='-I/usr/local/opt/openblas/include'" >> ~/.bash_profile
+source ~/.bash_profile
 
 git clone https://github.com/satopirka/fastmf
 cd fastmf
@@ -39,9 +40,7 @@ sudo apt install -y g++-7
 echo "export CXX='g++-7'" >> ~/.bashrc
 echo "export CC='gcc-7'" >> ~/.bashrc
 source ~/.bashrc
-sudo apt install libomp-dev
-sudo apt-get install libopenblas-base
-sudo apt-get install libopenblas-dev
+sudo apt install libomp-dev libopenblas-base libopenblas-dev libatlas-base-dev
 
 git clone https://github.com/satopirka/fastmf
 cd fastmf
