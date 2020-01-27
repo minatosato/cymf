@@ -15,7 +15,7 @@ from Cython.Build import cythonize
 from distutils.core import setup
 
 cmpl_args = ['-Xpreprocessor', '-fopenmp', '-O3']
-lnk_args = ['-lomp']
+lnk_args = ['-lomp', '-lcblas']
 
 os.environ['CFLAGS'] = " ".join(cmpl_args + lnk_args)
 os.environ['CXXFLAGS'] = " ".join(cmpl_args + lnk_args)
