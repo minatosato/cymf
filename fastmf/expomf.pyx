@@ -10,28 +10,14 @@
 # distutils: language=c++
 
 import cython
-import multiprocessing
 import numpy as np
-import pandas as pd
 from scipy import sparse
-from collections import Counter
-from cython.parallel import prange
-from cython.parallel import threadid
-from cython.operator cimport dereference
-from cython.operator import postincrement
-from sklearn import utils
 from tqdm import tqdm
 
 cimport numpy as np
-from cython cimport floating
-from cython cimport integral
 from libcpp cimport bool
-from libcpp.vector cimport vector
-from libcpp.string cimport string
-from libcpp.unordered_map cimport unordered_map
 
 from .linalg cimport solve
-from .linalg cimport matmul
 from .linalg cimport broadcast_hadamard
 from .linalg cimport atb_lambda
 from .linalg cimport atbt
@@ -40,8 +26,8 @@ from .linalg cimport dot
 
 from .math cimport sqrt
 from .math cimport exp
-from .math cimport M_PI
 from .math cimport square
+from .math cimport M_PI
 
 class ExpoMF(object):
     """

@@ -14,17 +14,11 @@ import multiprocessing
 import numpy as np
 import pandas as pd
 from scipy import sparse
-from collections import Counter
 from cython.parallel import prange
-from cython.parallel import threadid
-from cython.operator cimport dereference
-from cython.operator import postincrement
 from sklearn import utils
 from tqdm import tqdm
 
 cimport numpy as np
-from cython cimport floating
-from cython cimport integral
 from libcpp cimport bool
 from libcpp.vector cimport vector
 from libcpp.string cimport string
@@ -33,37 +27,45 @@ from libcpp.unordered_map cimport unordered_map
 from .model cimport WmfModel
 from .optimizer cimport Optimizer
 from .optimizer cimport Adam
+from .optimizer cimport Sgd
 
-cdef extern from "math.h":
-    double exp(double x) nogil
-    double log(double x) nogil
-    double pow(double x, double y) nogil
-
-cdef inline floating square(floating x) nogil:
-    return x * x
-
-cdef class WMF(object):
-    cdef public int num_components
-    cdef public double learning_rate
-    cdef public double weight_decay
-    cdef public double[:,:] W
-    cdef public double[:,:] H
-    cdef public double weight
+class WMF(object):
+    """
+    Weighted Matrix Factorization (WMF)
+    http://yifanhu.net/PUB/cf.pdf
+    
+    Attributes:
+        num_components (int): Dimensionality of latent vector
+        learning_rate (double): Leanring rate
+        optimizer (str): Optimizers. e.g. 'adam', 'sgd'
+        weight_decay (double): A coefficient of weight decay
+        weight (double): A weight for positive feedbacks.
+        W (np.ndarray[double, ndim=2]): User latent vectors
+        H (np.ndarray[double, ndim=2]): Item latent vectors
+    """
     def __init__(self, int num_components,
-                       double learning_rate = 0.01,
+                       double learning_rate = 0.001,
+                       str optimizer = "adam",
                        double weight_decay = 0.01,
-                       double weight = 5.0):
+                       double weight = 10.0):
         self.num_components = num_components
         self.learning_rate = learning_rate
+        self.optimizer = optimizer
         self.weight_decay = weight_decay
         self.weight = weight
         self.W = None
         self.H = None
 
-    def fit(self, X, 
-                  int num_iterations,
-                  int num_threads,
-                  bool verbose = False):
+    def fit(self, X, int num_iterations, int num_threads, bool verbose = False):
+        """
+        Training WMF model with Gradient Descent.
+
+        Args:
+            X: A user-item interaction matrix.
+            num_iterations (int): The number of epochs.
+            num_threads (int): The number of threads in HOGWILD! (http://i.stanford.edu/hazy/papers/hogwild-nips.pdf)
+            verbose (bool): Whether to show the progress of training.
+        """
         if isinstance(X, (sparse.lil_matrix, sparse.csr_matrix, sparse.csc_matrix)):
             X = X.toarray()
         X = X.astype(np.float64)
@@ -85,31 +87,31 @@ cdef class WMF(object):
         items = items.astype(np.int32)
         num_threads = min(num_threads, multiprocessing.cpu_count())
         self._fit_wmf(users, 
-                     items,
-                     ratings,
-                     self.W,
-                     self.H,
-                     num_iterations,
-                     self.learning_rate,
-                     self.weight_decay,
-                     self.weight,
-                     num_threads,
-                     verbose)
+                      items,
+                      ratings,
+                      num_iterations,
+                      self.learning_rate,
+                      self.weight_decay,
+                      self.weight,
+                      num_threads,
+                      verbose)
 
     @cython.boundscheck(False)
     @cython.wraparound(False)
     def _fit_wmf(self,
-                 integral[:] users,
-                 integral[:] items,
+                 int[:] users,
+                 int[:] items,
                  double[:] ratings,
-                 double[:,:] W, 
-                 double[:,:] H, 
                  int num_iterations, 
                  double learning_rate,
                  double weight_decay,
                  double weight,
                  int num_threads,
                  bool verbose):
+
+        cdef double[:,:] W = self.W
+        cdef double[:,:] H = self.H
+
         cdef int iterations = num_iterations
         cdef int N = users.shape[0]
         cdef int K = W.shape[1]
@@ -123,8 +125,7 @@ cdef class WMF(object):
         
         cdef list description_list
 
-        cdef Optimizer optimizer
-        optimizer = Adam(learning_rate)
+        cdef Optimizer optimizer = Adam(learning_rate) if self.optimizer == "adam" else Sgd(learning_rate)
         optimizer.set_parameters(W, H)
         cdef WmfModel wmf_model = WmfModel(W, H, optimizer, weight_decay, num_threads, weight)
 

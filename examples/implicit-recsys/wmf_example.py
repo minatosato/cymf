@@ -27,7 +27,7 @@ args = parser.parse_args()
 dataset: ImplicitFeedbackDataset = MovieLens("ml-100k")
 
 Y_train = dataset.train.toarray()
-model = fastmf.WMF(num_components=args.num_components, learning_rate=1e-3, weight_decay=args.weight_decay)
+model = fastmf.WMF(num_components=args.num_components, weight_decay=args.weight_decay)
 model.fit(Y_train, num_iterations=args.iter, num_threads=args.num_threads, verbose=True)
 
 Y_test = dataset.test.toarray()
