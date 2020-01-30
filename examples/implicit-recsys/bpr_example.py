@@ -27,12 +27,12 @@ args = parser.parse_args()
 dataset: ImplicitFeedbackDataset = MovieLens("ml-100k")
 
 Y_train = dataset.train.toarray()
-model = fastmf.BPR(num_components=args.num_components, learning_rate=1e-2, weight_decay=args.weight_decay)
+model = fastmf.BPR(num_components=args.num_components, learning_rate=0.01, weight_decay=args.weight_decay)
 model.fit(Y_train, num_iterations=args.iter, num_threads=args.num_threads, verbose=True)
 
 Y_test = dataset.test.toarray()
 from sklearn import metrics
-predicted = np.array(model.W) @ np.array(model.H).T
+predicted = model.W @ model.H.T
 scores = np.zeros(Y_test.shape[0])
 for u in range(Y_test.shape[0]):
     fpr, tpr, thresholds = metrics.roc_curve(Y_test[u], predicted[u])
