@@ -26,8 +26,9 @@ from libcpp.unordered_map cimport unordered_map
 
 from .model cimport WmfModel
 from .optimizer cimport Optimizer
-from .optimizer cimport Adam
 from .optimizer cimport Sgd
+from .optimizer cimport AdaGrad
+from .optimizer cimport Adam
 
 class WMF(object):
     """
@@ -55,6 +56,9 @@ class WMF(object):
         self.weight = weight
         self.W = None
         self.H = None
+
+        if self.optimizer not in ("sgd", "adagrad", "adam"):
+            raise Exception(f"{self.optimizer} is invalid.")
 
     def fit(self, X, int num_iterations, int num_threads, bool verbose = False):
         """
@@ -90,9 +94,6 @@ class WMF(object):
                       items,
                       ratings,
                       num_iterations,
-                      self.learning_rate,
-                      self.weight_decay,
-                      self.weight,
                       num_threads,
                       verbose)
 
@@ -103,9 +104,6 @@ class WMF(object):
                  int[:] items,
                  double[:] ratings,
                  int num_iterations, 
-                 double learning_rate,
-                 double weight_decay,
-                 double weight,
                  int num_threads,
                  bool verbose):
 
@@ -121,27 +119,34 @@ class WMF(object):
         cdef double[:] l2_norm = np.zeros(N)
         cdef double[:] diff = np.zeros(N)
         cdef double[:] loss = np.zeros(N)
-        cdef double acc_loss
+        cdef double accum_loss
         
         cdef list description_list
 
-        cdef Optimizer optimizer = Adam(learning_rate) if self.optimizer == "adam" else Sgd(learning_rate)
+        cdef Optimizer optimizer
+        if self.optimizer == "adam":
+            optimizer = Adam(self.learning_rate)
+        elif self.optimizer == "adagrad":
+            optimizer = AdaGrad(self.learning_rate)
+        elif self.optimizer == "sgd":
+            optimizer = Sgd(self.learning_rate)
+
         optimizer.set_parameters(W, H)
-        cdef WmfModel wmf_model = WmfModel(W, H, optimizer, weight_decay, num_threads, weight)
+        cdef WmfModel wmf_model = WmfModel(W, H, optimizer, self.weight_decay, num_threads, self.weight)
 
         with tqdm(total=iterations, leave=True, ncols=100, disable=not verbose) as progress:
             for iteration in range(iterations):
-                acc_loss = 0.0
+                accum_loss = 0.0
                 for l in prange(N, nogil=True, num_threads=num_threads):
                     loss[l] = wmf_model.forward(users[l], items[l], ratings[l])
                     wmf_model.backward(users[l], items[l])
 
                 for l in range(N):                
-                    acc_loss += loss[l]
+                    accum_loss += loss[l]
 
                 description_list = []
                 description_list.append(f"ITER={iteration+1:{len(str(iterations))}}")
-                description_list.append(f"LOSS: {np.round(acc_loss/N, 4):.4f}")
+                description_list.append(f"LOSS: {np.round(accum_loss/N, 4):.4f}")
                 progress.set_description(", ".join(description_list))
                 progress.update(1)
 

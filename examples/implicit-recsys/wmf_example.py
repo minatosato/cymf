@@ -32,7 +32,7 @@ model.fit(Y_train, num_iterations=args.iter, num_threads=args.num_threads, verbo
 
 Y_test = dataset.test.toarray()
 from sklearn import metrics
-predicted = np.array(model.W) @ np.array(model.H).T
+predicted = model.W @ model.H.T
 scores = np.zeros(Y_test.shape[0])
 for u in range(Y_test.shape[0]):
     fpr, tpr, thresholds = metrics.roc_curve(Y_test[u], predicted[u])
