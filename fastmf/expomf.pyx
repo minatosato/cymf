@@ -43,19 +43,37 @@ from .math cimport exp
 from .math cimport M_PI
 from .math cimport square
 
-cdef class ExpoMF(object):
-    cdef public int num_components
-    cdef public double weight_decay
-    cdef public double[:,::1] W
-    cdef public double[:,::1] H
-    def __init__(self, int num_components,
-                       double weight_decay = 0.01):
+class ExpoMF(object):
+    """
+    Exposure Matrix Factorization (ExpoMF)
+    https://arxiv.org/pdf/1510.07025.pdf
+    
+    Attributes:
+        num_components (int): Dimensionality of latent vector
+        weight_decay (double): A coefficient of weight decay
+        W (np.ndarray[double, ndim=2]): User latent vectors
+        H (np.ndarray[double, ndim=2]): Item latent vectors
+    """
+    def __init__(self, int num_components = 20, double weight_decay = 0.01):
+        """
+        Args:
+            num_components (int): Dimensionality of latent vector
+            weight_decay (double): A coefficient of weight decay
+        """
         self.num_components = num_components
         self.weight_decay = weight_decay
         self.W = None
         self.H = None
 
     def fit(self, X, int num_iterations = 10, bool verbose = False):
+        """
+        Training ExpoMF model with EM Algorithm
+
+        Args:
+            X: A user-item interaction matrix.
+            num_iterations (int): The number of epochs.
+            verbose (bool): Whether to show the progress of training.
+        """
         if isinstance(X, (sparse.lil_matrix, sparse.csr_matrix, sparse.csc_matrix)):
             X = X.toarray()
         X = X.astype(np.float64)
@@ -64,11 +82,11 @@ cdef class ExpoMF(object):
             self.W = np.random.uniform(low=-0.1, high=0.1, size=(X.shape[0], self.num_components)) / self.num_components
         if self.H is None:
             self.H = np.random.uniform(low=-0.1, high=0.1, size=(X.shape[1], self.num_components)) / self.num_components
-        self._fit(X, num_iterations, verbose)
+        self.__fit(X, num_iterations, verbose)
 
     @cython.boundscheck(False)
     @cython.wraparound(False)
-    def _fit(self, np.ndarray[double, ndim=2] _X, int iterations, bool verbose):
+    def __fit(self, np.ndarray[double, ndim=2] _X, int iterations, bool verbose):
         cdef double[:,::1] X = np.array(_X, dtype=np.float64, order="C")
         cdef int U = X.shape[0]
         cdef int I = X.shape[1]
@@ -83,6 +101,9 @@ cdef class ExpoMF(object):
         cdef double[:,::1] EY = np.zeros_like(_X)
         cdef double[:] mu = np.ones(I) * 0.01
 
+        cdef double[:,::1] W = self.W
+        cdef double[:,::1] H = self.H
+
         with tqdm(total=iterations, leave=True, ncols=100, disable=not verbose) as progress:
             for iteration in range(iterations):
                 for u in range(U):
@@ -91,25 +112,28 @@ cdef class ExpoMF(object):
                             Exposure[u, i] = 1.0
                             EY[u, i] = 1.0 * lam_y
                         else:
-                            n_ui = (lam_y / sqrt(2.0*M_PI)) * exp(- square(dot(self.W[u], self.H[i])) * square(lam_y))
+                            n_ui = (lam_y / sqrt(2.0*M_PI)) * exp(- square(dot(W[u], H[i])) * square(lam_y))
                             Exposure[u, i] = n_ui / (n_ui + (1 - mu[i]) / (mu[i]+1e-8))
                             EY[u, i] = Exposure[u, i] * X[u, i] * lam_y
 
                 # Wの更新
                 for u in range(U):
-                    A = atb_lambda(lam_y, broadcast_hadamard(self.H, Exposure[u:u+1,:].T.copy()), self.H, self.weight_decay).copy_fortran()
-                    b = atbt(self.H, EY[u:u+1, :]).copy_fortran()
+                    A = atb_lambda(lam_y, broadcast_hadamard(H, Exposure[u:u+1,:].T.copy()), H, self.weight_decay).copy_fortran()
+                    b = atbt(H, EY[u:u+1, :]).copy_fortran()
                     solve(A, b)
                     for k in range(K):
-                        self.W[u,k] = b[k,0]
+                        W[u,k] = b[k,0]
                 # Hの更新
                 for i in range(I):
-                    A = atb_lambda(lam_y, broadcast_hadamard(self.W, Exposure[:,i:i+1]), self.W, self.weight_decay).copy_fortran()
-                    b = atb(self.W, EY[:,i:i+1].copy()).copy_fortran()
+                    A = atb_lambda(lam_y, broadcast_hadamard(W, Exposure[:,i:i+1]), W, self.weight_decay).copy_fortran()
+                    b = atb(W, EY[:,i:i+1].copy()).copy_fortran()
                     solve(A, b)
                     for k in range(K):
-                        self.H[i, k] = b[k,0]
+                        H[i, k] = b[k,0]
                 # muの更新
                 mu = (alpha_1 + np.array(Exposure).sum(axis=0) - 1.) / (alpha_1 + alpha_2 + U - 2.)
 
                 progress.update(1)
+
+        self.W = np.array(W)
+        self.H = np.array(H)
