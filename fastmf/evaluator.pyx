@@ -19,17 +19,17 @@ cimport cython
 from libcpp cimport bool
 
 from .metrics import dcg_at_k
-#from .metrics import recall_at_k
+from .metrics import recall_at_k
 #from .metrics import average_precision_at_k
 
 from .metrics import dcg_at_k_with_ips
-#from .metrics import recall_at_k_with_ips
+from .metrics import recall_at_k_with_ips
 #from .metrics import average_precision_at_k_with_ips
 
 
 
 class Evaluator(object):
-    def __init__(self, np.ndarray[double, ndim=2] X, list metrics = ["dcg"], int k = 5, int num_negatives = 100, bool unbiased = False):
+    def __init__(self, np.ndarray[double, ndim=2] X, list metrics = ["dcg", "recall"], int k = 5, int num_negatives = 100, bool unbiased = False):
         self.X = X
         self.propensity_scores = np.maximum(X.mean(axis=0), 1e-3)
         self.metrics = metrics
@@ -58,9 +58,13 @@ class Evaluator(object):
                 if self.unbiased:
                     if metric == "dcg":
                         buff[f"{metric}@{self.k}"][user] = dcg_at_k_with_ips(ratings, scores[user, items], self.k, self.propensity_scores)
+                    elif metric == "recall":
+                        buff[f"{metric}@{self.k}"][user] = recall_at_k_with_ips(ratings, scores[user, items], self.k, self.propensity_scores)
                 else:
                     if metric == "dcg":
                         buff[f"{metric}@{self.k}"][user] = dcg_at_k(ratings, scores[user, items], self.k)
+                    elif metric == "recall":
+                        buff[f"{metric}@{self.k}"][user] = recall_at_k(ratings, scores[user, items], self.k)
 
         return buff
 

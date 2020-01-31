@@ -30,8 +30,8 @@ evaluator = fastmf.evaluator.Evaluator(Y_test, unbiased=True)
 model = fastmf.ExpoMF(num_components=args.num_components, weight_decay=args.weight_decay)
 for i in range(10):
     model.fit(Y_train, num_iterations=1, verbose=True)
-    print(evaluator.evaluate(model.W @ model.H.T)["dcg@5"].mean())
-
+    ret = evaluator.evaluate(model.W @ model.H.T)
+    print(ret["dcg@5"].mean())
 
 from sklearn import metrics
 predicted = model.W @ model.H.T

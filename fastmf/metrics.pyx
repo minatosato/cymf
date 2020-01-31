@@ -32,7 +32,7 @@ cpdef double dcg_at_k(np.ndarray[int, ndim=1] y_true, np.ndarray[double, ndim=1]
     dcg_tmp = <double> y_true_sorted_by_score[0]
     dcg_score += dcg_tmp
 
-    for i in range(1, k):
+    for i in range(y_true_sorted_by_score.shape[0]):
         if 1 <= i < k:
             dcg_tmp = <double> y_true_sorted_by_score[i] / log2(<double>i+1.0)
             dcg_score += dcg_tmp
@@ -58,7 +58,7 @@ cpdef double dcg_at_k_with_ips(np.ndarray[int, ndim=1] y_true, np.ndarray[double
     dcg_tmp = <double> y_true_sorted_by_score[0] / p_scores_sorted_by_score[0]
     dcg_score += dcg_tmp
 
-    for i in range(k):
+    for i in range(y_true_sorted_by_score.shape[0]):
         if 1 <= i < k:
             dcg_tmp = <double> y_true_sorted_by_score[i] / log2(<double>i+1.0) / p_scores_sorted_by_score[i]
             dcg_score += dcg_tmp
@@ -70,6 +70,48 @@ cpdef double dcg_at_k_with_ips(np.ndarray[int, ndim=1] y_true, np.ndarray[double
 
     dcg_score /= sn
     return dcg_score
+
+@cython.boundscheck(False)
+@cython.wraparound(False)
+cpdef double recall_at_k(np.ndarray[int, ndim=1] y_true, np.ndarray[double, ndim=1] y_score, int k):
+    cdef int[:] y_true_sorted_by_score = y_true[y_score.argsort()[::-1]]
+
+    cdef int i
+    cdef double recall_score = 0.0
+    cdef double counter = 0.0
+
+    for i in range(y_true_sorted_by_score.shape[0]):
+        if 0 <= i < k:
+            recall_score += <double> y_true_sorted_by_score[i]
+        
+        counter += <double> y_true_sorted_by_score[i]
+
+    if counter == 0.0:
+        return 0.0
+
+    return recall_score / counter
+
+@cython.boundscheck(False)
+@cython.wraparound(False)
+cpdef double recall_at_k_with_ips(np.ndarray[int, ndim=1] y_true, np.ndarray[double, ndim=1] y_score, int k, np.ndarray[double, ndim=1] propensity_scores):
+    cdef int[:] y_true_sorted_by_score = y_true[y_score.argsort()[::-1]]
+    cdef double[:] p_scores_sorted_by_score = propensity_scores[y_score.argsort()[::-1]]
+
+    cdef int i
+    cdef double recall_score = 0.0
+    cdef double sn = 0.0 # self normalizer
+
+    for i in range(y_true_sorted_by_score.shape[0]):
+        if 0 <= i < k:
+            recall_score += <double> y_true_sorted_by_score[i] / p_scores_sorted_by_score[i]
+        
+        sn += <double> y_true_sorted_by_score[i] / p_scores_sorted_by_score[i]
+
+    if sn == 0.0:
+        return 0.0
+
+    return recall_score / sn
+
 
 """
 @cython.boundscheck(False)
@@ -103,30 +145,4 @@ cpdef double recall_at_k(np.ndarray[int, ndim=1] y_true, np.ndarray[double, ndim
         return 0.0
     
     return num_positive_items_in_k / num_positive_items
-
-@cython.boundscheck(False)
-@cython.wraparound(False)
-cpdef double average_precision_at_k(np.ndarray[int, ndim=1] y_true, np.ndarray[double, ndim=1] y_score, int k):
-    cdef int[:] y_true_sorted_by_score = y_true[y_score.argsort()[::-1]]
-    cdef double average_precision_score = 0.0
-
-    cdef double total = 0.
-    cdef int i
-    cdef double count = 0
-    cdef int num_items = y_true.shape[0]
-    for i in range(num_items):
-        total += <double>y_true_sorted_by_score[i]
-
-    if total == 0:
-        return 0.0
-
-    for i in range(k):
-        if y_true_sorted_by_score[i] == 1:
-            count += 1.0
-            average_precision_score += count / (<double>(i + 1))
-    
-    #if count == 0.0:
-    #    return 0.0
-
-    return average_precision_score / k
 """
