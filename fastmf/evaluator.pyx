@@ -20,16 +20,16 @@ from libcpp cimport bool
 
 from .metrics import dcg_at_k
 from .metrics import recall_at_k
-#from .metrics import average_precision_at_k
+from .metrics import average_precision_at_k
 
 from .metrics import dcg_at_k_with_ips
 from .metrics import recall_at_k_with_ips
-#from .metrics import average_precision_at_k_with_ips
+from .metrics import average_precision_at_k_with_ips
 
 
 
 class Evaluator(object):
-    def __init__(self, np.ndarray[double, ndim=2] X, list metrics = ["dcg", "recall"], int k = 5, int num_negatives = 100, bool unbiased = False):
+    def __init__(self, np.ndarray[double, ndim=2] X, list metrics = ["DCG", "Recall", "MAP"], int k = 5, int num_negatives = 100, bool unbiased = False):
         self.X = X
         self.propensity_scores = np.maximum(X.mean(axis=0), 1e-3)
         self.metrics = metrics
@@ -56,15 +56,22 @@ class Evaluator(object):
             
             for metric in self.metrics:
                 if self.unbiased:
-                    if metric == "dcg":
+                    if metric == "DCG":
                         buff[f"{metric}@{self.k}"][user] = dcg_at_k_with_ips(ratings, scores[user, items], self.k, self.propensity_scores)
-                    elif metric == "recall":
+                    elif metric == "Recall":
                         buff[f"{metric}@{self.k}"][user] = recall_at_k_with_ips(ratings, scores[user, items], self.k, self.propensity_scores)
+                    elif metric == "MAP":
+                        buff[f"{metric}@{self.k}"][user] = average_precision_at_k_with_ips(ratings, scores[user, items], self.k, self.propensity_scores)
                 else:
-                    if metric == "dcg":
+                    if metric == "DCG":
                         buff[f"{metric}@{self.k}"][user] = dcg_at_k(ratings, scores[user, items], self.k)
-                    elif metric == "recall":
+                    elif metric == "Recall":
                         buff[f"{metric}@{self.k}"][user] = recall_at_k(ratings, scores[user, items], self.k)
+                    elif metric == "MAP":
+                        buff[f"{metric}@{self.k}"][user] = average_precision_at_k(ratings, scores[user, items], self.k)
+        
+        for metric in self.metrics:
+            buff[f"{metric)}@{self.k}"] = buff[f"{metric)}@{self.k}"].mean()
 
         return buff
 

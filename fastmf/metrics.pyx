@@ -113,36 +113,47 @@ cpdef double recall_at_k_with_ips(np.ndarray[int, ndim=1] y_true, np.ndarray[dou
     return recall_score / sn
 
 
-"""
+
 @cython.boundscheck(False)
 @cython.wraparound(False)
-cpdef double precision_at_k(np.ndarray[int, ndim=1] y_true, np.ndarray[double, ndim=1] y_score, int k):
+cpdef double average_precision_at_k(np.ndarray[int, ndim=1] y_true, np.ndarray[double, ndim=1] y_score, int k):
     cdef int[:] y_true_sorted_by_score = y_true[y_score.argsort()[::-1]][:k]
-    cdef double precision_score = 0.0
+    cdef double average_precision_score = 0.0
+    cdef double tmp
+    cdef double counter = 0.0
     cdef int i
 
-    for i in range(y_true.shape[0]):
-        precision_score += y_true_sorted_by_score[i]
+    for i in range(y_true_sorted_by_score.shape[0]):
+        counter += <double> y_true_sorted_by_score[i]
+        if 0 <= i < k:
+            average_precision_score +=  counter / (<double>i + 1.0)
+    average_precision_score /= k
 
-    precision_score /= k
-    return precision_score
+    if counter == 0.0:
+        return 0.0
 
+    return average_precision_score / counter
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-cpdef double recall_at_k(np.ndarray[int, ndim=1] y_true, np.ndarray[double, ndim=1] y_score, int k):
-    cdef int[:] y_true_sorted_by_score = y_true[y_score.argsort()[::-1]]
+cpdef double average_precision_at_k_with_ips(np.ndarray[int, ndim=1] y_true, np.ndarray[double, ndim=1] y_score, int k, np.ndarray[double, ndim=1] propensity_scores):
+    cdef int[:] y_true_sorted_by_score = y_true[y_score.argsort()[::-1]][:k]
+    cdef double[:] p_scores_sorted_by_score = propensity_scores[y_score.argsort()[::-1]]
+
+    cdef double average_precision_score = 0.0
+    cdef double tmp
+    cdef double counter = 0.0
+    cdef double sn = 0.0 # self normalizer
     cdef int i
 
-    cdef int num_positive_items_in_k = 0
-    cdef int num_positive_items = 0
-    for i in range(y_true.shape[0]):
-        num_positive_items += y_true_sorted_by_score[i]
-        if i < k:
-            num_positive_items_in_k += y_true_sorted_by_score[i]
-    
-    if num_positive_items == 0:
+    for i in range(y_true_sorted_by_score.shape[0]):
+        counter += <double> y_true_sorted_by_score[i]
+        sn += <double> y_true_sorted_by_score[i] / p_scores_sorted_by_score[i]
+        if 0 <= i < k:
+            average_precision_score +=  counter / (<double>i + 1.0)
+    average_precision_score /= k
+
+    if sn == 0.0:
         return 0.0
-    
-    return num_positive_items_in_k / num_positive_items
-"""
+
+    return average_precision_score / sn

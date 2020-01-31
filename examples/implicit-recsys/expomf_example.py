@@ -16,7 +16,7 @@ from fastmf.dataset import ImplicitFeedbackDataset, MovieLens, YahooMusic
 
 import argparse
 parser = argparse.ArgumentParser(description='')
-parser.add_argument('--iter', type=int, default=3)
+parser.add_argument('--iter', type=int, default=5)
 parser.add_argument('--num_components', type=int, default=20)
 parser.add_argument('--weight_decay', type=float, default=0.1)
 
@@ -26,18 +26,9 @@ dataset: ImplicitFeedbackDataset = MovieLens("ml-100k")
 Y_train = dataset.train.toarray()
 Y_test = dataset.test.toarray()
 
-evaluator = fastmf.evaluator.Evaluator(Y_test, unbiased=True)
+evaluator = fastmf.evaluator.Evaluator(Y_test, unbiased=False)
 model = fastmf.ExpoMF(num_components=args.num_components, weight_decay=args.weight_decay)
-for i in range(10):
-    model.fit(Y_train, num_iterations=1, verbose=True)
-    ret = evaluator.evaluate(model.W @ model.H.T)
-    print(ret["dcg@5"].mean())
-
-from sklearn import metrics
-predicted = model.W @ model.H.T
-scores = np.zeros(Y_test.shape[0])
-for u in range(Y_test.shape[0]):
-    fpr, tpr, thresholds = metrics.roc_curve(Y_test[u], predicted[u])
-    scores[u] = metrics.auc(fpr, tpr) if len(set(Y_test[u])) != 1 else 0.0
-print(f"test mean auc: {scores.mean()}")
+for i in range(args.iter):
+    model.fit(Y_train, num_iterations=1, verbose=False)
+    print(evaluator.evaluate(model.W @ model.H.T))
 
