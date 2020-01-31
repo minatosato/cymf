@@ -23,10 +23,9 @@ parser.add_argument('--weight_decay', type=float, default=0.1)
 args = parser.parse_args()
 
 dataset: ImplicitFeedbackDataset = MovieLens("ml-100k")
-
-
 Y_train = dataset.train.toarray()
 Y_test = dataset.test.toarray()
+
 evaluator = fastmf.evaluator.Evaluator(Y_test, unbiased=True)
 model = fastmf.ExpoMF(num_components=args.num_components, weight_decay=args.weight_decay)
 for i in range(10):
@@ -34,7 +33,6 @@ for i in range(10):
     print(evaluator.evaluate(model.W @ model.H.T)["dcg@5"].mean())
 
 
-Y_test = dataset.test.toarray()
 from sklearn import metrics
 predicted = model.W @ model.H.T
 scores = np.zeros(Y_test.shape[0])

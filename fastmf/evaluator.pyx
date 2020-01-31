@@ -45,7 +45,7 @@ class Evaluator(object):
         cdef int user
 
         for metric in self.metrics:
-            buff[f"{metric.upper()}@{self.k}"] = np.zeros(self.X.shape[0])
+            buff[f"{metric)}@{self.k}"] = np.zeros(self.X.shape[0])
         
         for user in range(self.X.shape[0]):
             positives = self.X[user].nonzero()[0]
@@ -57,10 +57,10 @@ class Evaluator(object):
             for metric in self.metrics:
                 if self.unbiased:
                     if metric == "dcg":
-                        buff[f"{metric.upper()}@{self.k}"][user] = dcg_at_k_with_ips(ratings, scores[user, items], self.k, self.propensity_scores)
+                        buff[f"{metric}@{self.k}"][user] = dcg_at_k_with_ips(ratings, scores[user, items], self.k, self.propensity_scores)
                 else:
                     if metric == "dcg":
-                        buff[f"{metric.upper()}@{self.k}"][user] = dcg_at_k(ratings, scores[user, items], self.k)
+                        buff[f"{metric}@{self.k}"][user] = dcg_at_k(ratings, scores[user, items], self.k)
 
         return buff
 
