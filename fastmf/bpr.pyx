@@ -30,7 +30,7 @@ from .optimizer cimport Adam
 class BPR(object):
     """
     Bayesian Personalized Ranking (BPR)
-    http://yifanhu.net/PUB/cf.pdf
+    https://arxiv.org/pdf/1205.2618.pdf
     
     Attributes:
         num_components (int): Dimensionality of latent vector
@@ -41,6 +41,13 @@ class BPR(object):
         H (np.ndarray[double, ndim=2]): Item latent vectors
     """
     def __init__(self, int num_components, double learning_rate = 0.001, str optimizer = "adam", double weight_decay = 0.01):
+        """
+        Args:
+            num_components (int): Dimensionality of latent vector
+            learning_rate (double): Leanring rate
+            optimizer (str): Optimizers. e.g. 'adam', 'sgd'
+            weight_decay (double): A coefficient of weight decay
+        """
         self.num_components = num_components
         self.learning_rate = learning_rate
         self.optimizer = optimizer
@@ -54,7 +61,6 @@ class BPR(object):
     def fit(self, X, int num_iterations = 10, int num_threads = 8, bool verbose = False):
         """
         Training BPR model with Gradient Descent.
-        https://arxiv.org/pdf/1205.2618.pdf
 
         Args:
             X: A user-item interaction matrix.

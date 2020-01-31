@@ -49,6 +49,14 @@ class WMF(object):
                        str optimizer = "adam",
                        double weight_decay = 0.01,
                        double weight = 10.0):
+        """
+        Args:
+            num_components (int): Dimensionality of latent vector
+            learning_rate (double): Leanring rate
+            optimizer (str): Optimizers. e.g. 'adam', 'sgd'
+            weight_decay (double): A coefficient of weight decay
+            weight (double): A weight for positive feedbacks.
+        """
         self.num_components = num_components
         self.learning_rate = learning_rate
         self.optimizer = optimizer

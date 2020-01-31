@@ -19,8 +19,8 @@ from typing import Dict
 from typing import Union
 
 class Text8(CooccurrrenceDataset):
-    def __init__(self, fname: str = "text8", min_count: int = 5, window_size = 10):
-        super().__init__(fname, min_count, window_size)
+    def __init__(self, min_count: int = 5, window_size = 10):
+        super().__init__("text8", min_count, window_size)
 
         if not self.path.exists():
             zip_path: Path = self.path.parent.joinpath(self.path.name + ".zip")

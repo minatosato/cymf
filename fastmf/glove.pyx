@@ -12,6 +12,7 @@
 import cython
 import multiprocessing
 import numpy as np
+from scipy import sparse
 from collections import Counter
 from cython.parallel import prange
 from cython.parallel import threadid
@@ -24,7 +25,6 @@ from cython cimport floating
 from cython cimport integral
 from libcpp cimport bool
 from libcpp.vector cimport vector
-from libcpp.string cimport string
 from libcpp.unordered_map cimport unordered_map
 
 from .model cimport GloVeModel
@@ -43,21 +43,47 @@ cdef inline integral iabs(integral a) nogil:
         return a
 
 class GloVe(object):
+    """
+    GloVe: Global Vectors for Word Representation
+    https://nlp.stanford.edu/projects/glove/
+    
+    Attributes:
+        num_components (int): Dimensionality of latent vector
+        learning_rate (double): Leanring rate used in AdaGrad
+        alpha (double): See the paper.
+        x_max (double): See the paper.
+        W (np.ndarray[double, ndim=2]): Word vectors
+    """
     def __init__(self, int num_components,
                        double learning_rate = 0.01,
                        double alpha = 0.75,
-                       double x_max = 10.0,
-                       double weight_decay = 0.01):
+                       double x_max = 10.0):
+        """
+        Args:
+            num_components (int): Dimensionality of latent vector
+            learning_rate (double): Leanring rate used in AdaGrad
+            alpha (double): See the paper.
+            x_max (double): See the paper.
+        """
         self.num_components = num_components
         self.learning_rate = learning_rate
         self.alpha = alpha
         self.x_max = x_max
-        self.weight_decay = weight_decay
+        self.W = None
 
-    def fit(self, X,
-                  int num_iterations,
-                  int num_threads,
-                  bool verbose = False):
+    def fit(self, X, int num_iterations, int num_threads, bool verbose = False):
+        """
+        Training BPR model with Gradient Descent.
+
+        Args:
+            X: The word-word cooccurrence matrix.
+            num_iterations (int): The number of epochs.
+            num_threads (int): The number of threads in HOGWILD! (http://i.stanford.edu/hazy/papers/hogwild-nips.pdf)
+            verbose (bool): Whether to show the progress of training.
+        """
+
+        if not isinstance(X, (sparse.lil_matrix, sparse.csr_matrix, sparse.csc_matrix)):
+            raise ValueError("X is invalid.")
                   
         self.W = np.random.uniform(low=-0.5, high=0.5, size=(X.shape[0], self.num_components)) / self.num_components
         self.bias = np.random.uniform(low=-0.5, high=0.5, size=(X.shape[0],)) / self.num_components
@@ -68,72 +94,69 @@ class GloVe(object):
         central_words, context_words = X.nonzero()
         counts = X.data
 
-        fit_glove(*utils.shuffle(central_words, context_words, counts),
-                  self.W,
-                  self.bias,
-                  _W,
-                  _bias,
-                  num_iterations,
-                  self.learning_rate,
-                  self.x_max,
-                  self.alpha,
-                  self.weight_decay,
-                  num_threads,
-                  verbose)
+        self._fit_glove(*utils.shuffle(central_words, context_words, counts),
+                        self.W,
+                        self.bias,
+                        _W,
+                        _bias,
+                        num_iterations,
+                        self.learning_rate,
+                        self.x_max,
+                        self.alpha,
+                        num_threads,
+                        verbose)
         
         self.W = (self.W + _W) / 2.0
 
 
-@cython.boundscheck(False)
-@cython.wraparound(False)
-def fit_glove(integral[:] central_words,
-              integral[:] context_words,
-              double[:] counts,
-              double[:,:] central_W,
-              double[:] central_bias,
-              double[:,:] context_W,
-              double[:] context_bias,
-              int num_iterations, 
-              double learning_rate,
-              double x_max,
-              double alpha,
-              double weight_decay,
-              int num_threads,
-              bool verbose):
-    cdef int iterations = num_iterations
-    cdef int N = central_words.shape[0]
-    cdef int N_K = central_W.shape[1]
-    cdef double[:] loss = np.zeros(N)
-    cdef int u, i, j, k, l, iteration
+    @cython.boundscheck(False)
+    @cython.wraparound(False)
+    def _fit_glove(self,
+                   integral[:] central_words,
+                   integral[:] context_words,
+                   double[:] counts,
+                   double[:,:] central_W,
+                   double[:] central_bias,
+                   double[:,:] context_W,
+                   double[:] context_bias,
+                   int num_iterations, 
+                   double learning_rate,
+                   double x_max,
+                   double alpha,
+                   int num_threads,
+                   bool verbose):
+        cdef int iterations = num_iterations
+        cdef int N = central_words.shape[0]
+        cdef int N_K = central_W.shape[1]
+        cdef double[:] loss = np.zeros(N)
+        cdef int u, i, j, k, l, iteration
 
-    cdef double acc_loss
-    
-    cdef list description_list
+        cdef double acc_loss
+        
+        cdef list description_list
 
+        cdef GloVeAdaGrad optimizer
+        optimizer = GloVeAdaGrad(learning_rate)
+        optimizer.set_parameters(central_W, context_W, central_bias, context_bias)
 
-    cdef GloVeAdaGrad optimizer
-    optimizer = GloVeAdaGrad(learning_rate)
-    optimizer.set_parameters(central_W, context_W, central_bias, context_bias)
+        cdef GloVeModel glove_model = GloVeModel(
+            central_W, context_W, central_bias, context_bias, x_max, alpha, optimizer, num_threads)
 
-    cdef GloVeModel glove_model = GloVeModel(
-        central_W, context_W, central_bias, context_bias, x_max, alpha, optimizer, num_threads)
+        with tqdm(total=iterations, leave=True, ncols=100, disable=not verbose) as progress:
+            for iteration in range(iterations):
+                accum_loss = 0.0
+                for l in prange(N, nogil=True, num_threads=num_threads):
+                    loss[l] = glove_model.forward(central_words[l], context_words[l], counts[l])
+                    glove_model.backward(central_words[l], context_words[l])
 
+                for l in range(N):
+                    accum_loss += loss[l]
 
-    with tqdm(total=iterations, leave=True, ncols=100, disable=not verbose) as progress:
-        for iteration in range(iterations):
-            acc_loss = 0.0
-            for l in prange(N, nogil=True, num_threads=num_threads):
-                loss[l] = glove_model.forward(central_words[l], context_words[l], counts[l])
-                glove_model.backward(central_words[l], context_words[l])
-
-            for l in range(N):
-                acc_loss += loss[l]
-
-            description_list = []
-            description_list.append(f"ITER={iteration+1:{len(str(iterations))}}")
-            description_list.append(f"LOSS: {np.round(acc_loss/N, 4):.4f}")
-            progress.set_description(', '.join(description_list))
-            progress.update(1)
+                description_list = []
+                description_list.append(f"ITER={iteration+1:{len(str(iterations))}}")
+                description_list.append(f"LOSS: {np.round(accum_loss/N, 4):.4f}")
+                progress.set_description(', '.join(description_list))
+                progress.update(1)
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
