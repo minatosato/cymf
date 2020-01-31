@@ -6,41 +6,71 @@
 # LICENSE file in the root directory of this source tree.
 #
 
-from movielens import MovieLens
-from dataset import Dataset
+import fastmf
+import optuna
 import numpy as np
+
+from fastmf.dataset import ImplicitFeedbackDataset, MovieLens, YahooMusic
 
 import argparse
 parser = argparse.ArgumentParser(description='')
-parser.add_argument('--limit', type=int, default=20)
-parser.add_argument('--iter', type=int, default=30)
-parser.add_argument('--num_components', type=int, default=30)
-parser.add_argument('--lr', type=float, default=0.01)
-parser.add_argument('--weight_decay', type=float, default=0.01)
-parser.add_argument('--threads', type=int, default=4)
+parser.add_argument('--num_components', type=int, default=20)
+parser.add_argument('--threads', type=int, default=8)
 
 args = parser.parse_args()
 
-dataset: Dataset = MovieLens("ml-100k")
+dataset: ImplicitFeedbackDataset = MovieLens("ml-100k")
+valid_evaluator = fastmf.evaluator.Evaluator(dataset.valid.toarray(), metrics=["DCG"])
+test_evaluator = fastmf.evaluator.Evaluator(dataset.test.toarray())
 
-import fastmf
-from fastmf import ap
-import optuna
-
-def objective(trial: optuna.Trial):
-    iterations = trial.suggest_int("iterations", 1, 30)
-    model = fastmf.BPR(num_components=args.num_components, learning_rate=args.lr, weight_decay=args.weight_decay)
+def bpr_objective(trial: optuna.Trial):
+    iterations = trial.suggest_int("iterations", 10, 50)
+    alpha = trial.suggest_loguniform("alpha", 1e-5, 1e-1)
+    weight_decay = trial.suggest_loguniform("weight_decay", 1e-6, 1e-1)
+    model = fastmf.BPR(num_components=args.num_components, learning_rate=alpha, weight_decay=weight_decay)
     model.fit(dataset.train, num_iterations=iterations, num_threads=args.threads, verbose=False)
-    scores = np.dot(model.W, model.H.T)
-    argsorted_scores = scores.argsort(axis=1)[:,::-1][:,:5].astype(np.int32)
-    return -ap(argsorted_scores, dataset.valid.toarray(), 5).mean()
+    return valid_evaluator.evaluate(model.W@model.H.T)["DCG@5"]
 
-study = optuna.create_study()
-study.optimize(objective, n_trials=10)
+def expomf_objective(trial: optuna.Trial):
+    iterations = trial.suggest_int("iterations", 1, 10)
+    weight_decay = trial.suggest_loguniform("weight_decay", 1e-6, 1e1)
+    model = fastmf.ExpoMF(num_components=args.num_components, weight_decay=weight_decay)
+    model.fit(dataset.train, num_iterations=iterations, verbose=False)
+    return valid_evaluator.evaluate(model.W@model.H.T)["DCG@5"]
+
+def wmf_objective(trial: optuna.Trial):
+    iterations = trial.suggest_int("iterations", 1, 10)
+    weight_decay = trial.suggest_loguniform("weight_decay", 1e-6, 1e-1)
+    weight = trial.suggest_loguniform("weight", 1e0, 1e2)
+    model = fastmf.WMF(num_components=args.num_components, weight_decay=weight_decay, weight=weight)
+    model.fit(dataset.train, num_iterations=iterations, num_threads=args.threads, verbose=False)
+    return valid_evaluator.evaluate(model.W@model.H.T)["DCG@5"]
+
+
+summary = {}
+
+study = optuna.create_study(direction="maximize")
+study.optimize(bpr_objective, n_trials=100)
 print(study.best_params)
-
-model = fastmf.BPR(num_components=args.num_components, learning_rate=args.lr, weight_decay=args.weight_decay)
+model = fastmf.BPR(num_components=args.num_components, learning_rate=study.best_params["alpha"], weight_decay=study.best_params["weight_decay"])
 model.fit(dataset.train, num_iterations=study.best_params["iterations"], num_threads=args.threads, verbose=True)
-scores = np.dot(model.W, model.H.T)
-argsorted_scores = scores.argsort(axis=1)[:,::-1][:,:5].astype(np.int32)
-print(ap(argsorted_scores, dataset.test.toarray(), 5).mean())
+summary["BPR"] = test_evaluator.evaluate(model.W @ model.H.T)
+print(summary["BPR"])
+
+study = optuna.create_study(direction="maximize")
+study.optimize(expomf_objective, n_trials=100)
+print(study.best_params)
+model = fastmf.ExpoMF(num_components=args.num_components, weight_decay=study.best_params["weight_decay"])
+model.fit(dataset.train, num_iterations=study.best_params["iterations"], verbose=True)
+summary["ExpoMF"] = test_evaluator.evaluate(model.W @ model.H.T)
+print(summary["ExpoMF"])
+
+study = optuna.create_study(direction="maximize")
+study.optimize(wmf_objective, n_trials=100)
+print(study.best_params)
+model = fastmf.WMF(num_components=args.num_components, weight_decay=study.best_params["weight_decay"], weight=study.best_params["weight"])
+model.fit(dataset.train, num_iterations=study.best_params["iterations"], num_threads=args.threads, verbose=False)
+summary["WMF"] = test_evaluator.evaluate(model.W @ model.H.T)
+print(summary["WMF"])
+
+print(pd.DataFrame(summary))
