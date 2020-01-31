@@ -3,8 +3,9 @@ from .wmf import WMF
 from .glove import GloVe
 from .expomf import ExpoMF
 from . import dataset
+from .evaluator import *
 
-__copyright__    = 'Copyright (C) 2019 Minato Sato'
+__copyright__    = 'Copyright (C) 2020 Minato Sato'
 __version__      = '0.0.1'
 __license__      = 'MIT'
 __author__       = 'Minato Sato'

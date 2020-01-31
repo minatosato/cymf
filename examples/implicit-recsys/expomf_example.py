@@ -1,5 +1,5 @@
 # 
-# Copyright (c) 2019 Minato Sato
+# Copyright (c) 2020 Minato Sato
 # All rights reserved.
 #
 # This source code is licensed under the license found in the
@@ -24,9 +24,15 @@ args = parser.parse_args()
 
 dataset: ImplicitFeedbackDataset = MovieLens("ml-100k")
 
+
 Y_train = dataset.train.toarray()
+Y_test = dataset.test.toarray()
+evaluator = fastmf.evaluator.Evaluator(Y_test, unbiased=True)
 model = fastmf.ExpoMF(num_components=args.num_components, weight_decay=args.weight_decay)
-model.fit(Y_train, num_iterations=args.iter, verbose=True)
+for i in range(10):
+    model.fit(Y_train, num_iterations=1, verbose=True)
+    print(evaluator.evaluate(model.W @ model.H.T)["dcg@5"].mean())
+
 
 Y_test = dataset.test.toarray()
 from sklearn import metrics
@@ -36,3 +42,4 @@ for u in range(Y_test.shape[0]):
     fpr, tpr, thresholds = metrics.roc_curve(Y_test[u], predicted[u])
     scores[u] = metrics.auc(fpr, tpr) if len(set(Y_test[u])) != 1 else 0.0
 print(f"test mean auc: {scores.mean()}")
+

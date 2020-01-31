@@ -9,17 +9,6 @@
 # cython: language_level=3
 # distutils: language=c++
 
-import cython
-
-cimport numpy as np
-from cython cimport floating
-from cython cimport integral
-from libcpp cimport bool
-from libcpp.vector cimport vector
-from libcpp.string cimport string
-from libcpp.map cimport map
-from libcpp.unordered_map cimport unordered_map
-
 cdef class Optimizer:
     cdef public double[:,:] W
     cdef public double[:,:] H

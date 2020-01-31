@@ -13,13 +13,6 @@ import cython
 import numpy as np
 
 cimport numpy as np
-from cython cimport floating
-from cython cimport integral
-from libcpp cimport bool
-from libcpp.vector cimport vector
-from libcpp.string cimport string
-from libcpp.map cimport map
-from libcpp.unordered_map cimport unordered_map
 
 from .math cimport sqrt
 from .math cimport square
@@ -165,4 +158,3 @@ cdef class Adam(Optimizer):
         self.M_H[i, k] = self.beta1 * self.M_H[i, k] + (1 - self.beta1) * gradient
         self.V_H[i, k] = self.beta2 * self.V_H[i, k] + (1 - self.beta2) * square(gradient)
         self.H[i, k] -= self.alpha * (self.M_H[i, k] / (1 - self.beta1)) / (sqrt(self.V_H[i, k] / (1 - self.beta2)) + self.epsilon)
-        
