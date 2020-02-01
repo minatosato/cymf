@@ -6,3 +6,4 @@ pandas==0.25.1
 scikit-learn==0.21.3
 tqdm==4.32.1
 wget==3.2
+optuna==1.0.0
