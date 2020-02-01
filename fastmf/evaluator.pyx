@@ -29,8 +29,14 @@ from .metrics import average_precision_at_k_with_ips
 
 
 class Evaluator(object):
-    def __init__(self, np.ndarray[double, ndim=2] X, list metrics = ["DCG", "Recall", "MAP"], int k = 5, int num_negatives = 100, bool unbiased = False):
+    def __init__(self, np.ndarray[double, ndim=2] X,
+                       np.ndarray[double, ndim=2] X_train = None,
+                       list metrics = ["DCG", "Recall", "MAP"],
+                       int k = 5,
+                       int num_negatives = 100,
+                       bool unbiased = False):
         self.X = X
+        self.X_train = X_train
         self.propensity_scores = np.maximum(X.mean(axis=0), 1e-3)
         self.metrics = metrics
         self.k = k
@@ -49,7 +55,9 @@ class Evaluator(object):
         
         for user in range(self.X.shape[0]):
             positives = self.X[user].nonzero()[0]
-            negatives = np.random.permutation((self.X[user]==0.).nonzero()[0])[:self.num_negatives]
+            negatives = np.random.permutation(
+                (self.X[user]==0.).nonzero()[0] if self.X_train is None else ((self.X[user]-self.X_train[user])==0.).nonzero()[0]
+            )[:self.num_negatives]
 
             items = np.r_[positives, negatives]
             ratings = np.r_[np.ones_like(positives), np.zeros_like(negatives)].astype(np.int32)

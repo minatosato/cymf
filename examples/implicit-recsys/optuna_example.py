@@ -22,8 +22,11 @@ parser.add_argument('--trials', type=int, default=50)
 args = parser.parse_args()
 
 dataset: ImplicitFeedbackDataset = MovieLens("ml-100k")
-valid_evaluator = fastmf.evaluator.Evaluator(dataset.valid.toarray(), metrics=["DCG"])
-test_evaluator = fastmf.evaluator.Evaluator(dataset.test.toarray(), unbiased=True)
+Y_train = dataset.train.toarray()
+Y_valid = dataset.valid.toarray()
+Y_test = dataset.test.toarray()
+valid_evaluator = fastmf.evaluator.Evaluator(Y_valid, Y_train, metrics=["DCG"])
+test_evaluator = fastmf.evaluator.Evaluator(Y_test, Y_train, unbiased=True)
 
 def bpr_objective(trial: optuna.Trial):
     iterations = trial.suggest_int("iterations", 1, 50)
