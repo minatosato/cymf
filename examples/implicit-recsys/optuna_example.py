@@ -21,12 +21,12 @@ parser.add_argument('--trials', type=int, default=50)
 
 args = parser.parse_args()
 
-dataset: ImplicitFeedbackDataset = MovieLens("ml-100k")
+dataset: ImplicitFeedbackDataset = YahooMusic()
 Y_train = dataset.train.toarray()
 Y_valid = dataset.valid.toarray()
 Y_test = dataset.test.toarray()
-valid_evaluator = fastmf.evaluator.Evaluator(Y_valid, Y_train, metrics=["DCG"])
-test_evaluator = fastmf.evaluator.Evaluator(Y_test, Y_train, unbiased=True)
+valid_evaluator = fastmf.evaluator.Evaluator(Y_valid, Y_train, unbiased=True, metrics=["DCG"])
+test_evaluator = fastmf.evaluator.Evaluator(Y_test, Y_train, unbiased=False)
 
 def bpr_objective(trial: optuna.Trial):
     iterations = trial.suggest_int("iterations", 1, 50)
@@ -38,7 +38,7 @@ def bpr_objective(trial: optuna.Trial):
 
 def expomf_objective(trial: optuna.Trial):
     iterations = trial.suggest_int("iterations", 1, 10)
-    weight_decay = trial.suggest_loguniform("weight_decay", 1e-5, 1e1)
+    weight_decay = trial.suggest_loguniform("weight_decay", 1e-5, 1e0)
     model = fastmf.ExpoMF(num_components=args.num_components, weight_decay=weight_decay)
     model.fit(dataset.train, num_iterations=iterations, verbose=False)
     return valid_evaluator.evaluate(model.W@model.H.T)["DCG@5"]
