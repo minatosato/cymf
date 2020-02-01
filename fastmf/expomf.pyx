@@ -36,17 +36,19 @@ class ExpoMF(object):
     
     Attributes:
         num_components (int): Dimensionality of latent vector
+        lam_y (double): See the paper
         weight_decay (double): A coefficient of weight decay
         W (np.ndarray[double, ndim=2]): User latent vectors
         H (np.ndarray[double, ndim=2]): Item latent vectors
     """
-    def __init__(self, int num_components = 20, double weight_decay = 0.01):
+    def __init__(self, int num_components = 20, double lam_y = 1.0, double weight_decay = 0.01):
         """
         Args:
             num_components (int): Dimensionality of latent vector
             weight_decay (double): A coefficient of weight decay
         """
         self.num_components = num_components
+        self.lam_y = lam_y
         self.weight_decay = weight_decay
         self.W = None
         self.H = None
@@ -80,7 +82,7 @@ class ExpoMF(object):
         cdef int u, i, k, iteration
         cdef double[::1,:] A = np.zeros((K, K), order="F")
         cdef double[::1,:] b = np.zeros((K, 1), order="F")
-        cdef double lam_y = self.weight_decay
+        cdef double lam_y = self.lam_y
         cdef double alpha_1 = 1.0
         cdef double alpha_2 = 1.0
         cdef double[:,::1] Exposure = np.zeros_like(_X)

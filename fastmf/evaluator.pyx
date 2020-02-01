@@ -32,7 +32,7 @@ class Evaluator(object):
     def __init__(self, np.ndarray[double, ndim=2] X,
                        np.ndarray[double, ndim=2] X_train = None,
                        list metrics = ["DCG", "Recall", "MAP"],
-                       int k = 5,
+                       k = [1, 3, 5],
                        int num_negatives = 100,
                        bool unbiased = False):
         self.X = X
@@ -49,9 +49,14 @@ class Evaluator(object):
         cdef np.ndarray[np.int_t, ndim=1] positives
         cdef np.ndarray[np.int_t, ndim=1] negatives
         cdef int user
+        cdef int k
 
-        for metric in self.metrics:
-            buff[f"{metric)}@{self.k}"] = np.zeros(self.X.shape[0])
+        if type(self.k) == int:
+            self.k = [self.k]
+
+        for k in self.k:
+            for metric in self.metrics:
+                buff[f"{metric)}@{k}"] = np.zeros(self.X.shape[0])
         
         for user in range(self.X.shape[0]):
             positives = self.X[user].nonzero()[0]
@@ -61,25 +66,27 @@ class Evaluator(object):
 
             items = np.r_[positives, negatives]
             ratings = np.r_[np.ones_like(positives), np.zeros_like(negatives)].astype(np.int32)
-            
-            for metric in self.metrics:
-                if self.unbiased:
-                    if metric == "DCG":
-                        buff[f"{metric}@{self.k}"][user] = dcg_at_k_with_ips(ratings, scores[user, items], self.k, self.propensity_scores)
-                    elif metric == "Recall":
-                        buff[f"{metric}@{self.k}"][user] = recall_at_k_with_ips(ratings, scores[user, items], self.k, self.propensity_scores)
-                    elif metric == "MAP":
-                        buff[f"{metric}@{self.k}"][user] = average_precision_at_k_with_ips(ratings, scores[user, items], self.k, self.propensity_scores)
-                else:
-                    if metric == "DCG":
-                        buff[f"{metric}@{self.k}"][user] = dcg_at_k(ratings, scores[user, items], self.k)
-                    elif metric == "Recall":
-                        buff[f"{metric}@{self.k}"][user] = recall_at_k(ratings, scores[user, items], self.k)
-                    elif metric == "MAP":
-                        buff[f"{metric}@{self.k}"][user] = average_precision_at_k(ratings, scores[user, items], self.k)
+
+            for k in self.k:
+                for metric in self.metrics:
+                    if self.unbiased:
+                        if metric == "DCG":
+                            buff[f"{metric}@{k}"][user] = dcg_at_k_with_ips(ratings, scores[user, items], k, self.propensity_scores)
+                        elif metric == "Recall":
+                            buff[f"{metric}@{k}"][user] = recall_at_k_with_ips(ratings, scores[user, items], k, self.propensity_scores)
+                        elif metric == "MAP":
+                            buff[f"{metric}@{k}"][user] = average_precision_at_k_with_ips(ratings, scores[user, items], k, self.propensity_scores)
+                    else:
+                        if metric == "DCG":
+                            buff[f"{metric}@{k}"][user] = dcg_at_k(ratings, scores[user, items], k)
+                        elif metric == "Recall":
+                            buff[f"{metric}@{k}"][user] = recall_at_k(ratings, scores[user, items], k)
+                        elif metric == "MAP":
+                            buff[f"{metric}@{k}"][user] = average_precision_at_k(ratings, scores[user, items], k)
         
-        for metric in self.metrics:
-            buff[f"{metric)}@{self.k}"] = buff[f"{metric)}@{self.k}"].mean()
+        for k in self.k:
+            for metric in self.metrics:
+                buff[f"{metric)}@{k}"] = buff[f"{metric)}@{k}"].mean()
 
         return buff
 
