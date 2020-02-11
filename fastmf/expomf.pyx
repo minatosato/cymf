@@ -35,7 +35,7 @@ class ExpoMF(object):
     https://arxiv.org/pdf/1510.07025.pdf
     
     Attributes:
-        num_components (int): Dimensionality of latent vector
+        num_components (int): A dimensionality of latent vector
         lam_y (double): See the paper
         weight_decay (double): A coefficient of weight decay
         W (np.ndarray[double, ndim=2]): User latent vectors
@@ -44,7 +44,7 @@ class ExpoMF(object):
     def __init__(self, int num_components = 20, double lam_y = 1.0, double weight_decay = 0.01):
         """
         Args:
-            num_components (int): Dimensionality of latent vector
+            num_components (int): A dimensionality of latent vector
             weight_decay (double): A coefficient of weight decay
         """
         self.num_components = num_components
@@ -59,7 +59,7 @@ class ExpoMF(object):
 
         Args:
             X: A user-item interaction matrix.
-            num_iterations (int): The number of epochs.
+            num_iterations (int): A number of epochs.
             verbose (bool): Whether to show the progress of training.
         """
         if isinstance(X, (sparse.lil_matrix, sparse.csr_matrix, sparse.csc_matrix)):

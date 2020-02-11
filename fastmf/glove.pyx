@@ -48,8 +48,8 @@ class GloVe(object):
     https://nlp.stanford.edu/projects/glove/
     
     Attributes:
-        num_components (int): Dimensionality of latent vector
-        learning_rate (double): Leanring rate used in AdaGrad
+        num_components (int): A dimensionality of latent vector
+        learning_rate (double): A learning rate used in AdaGrad
         alpha (double): See the paper.
         x_max (double): See the paper.
         W (np.ndarray[double, ndim=2]): Word vectors
@@ -60,8 +60,8 @@ class GloVe(object):
                        double x_max = 10.0):
         """
         Args:
-            num_components (int): Dimensionality of latent vector
-            learning_rate (double): Leanring rate used in AdaGrad
+            num_components (int): A dimensionality of latent vector
+            learning_rate (double): A learning rate used in AdaGrad
             alpha (double): See the paper.
             x_max (double): See the paper.
         """
@@ -73,12 +73,12 @@ class GloVe(object):
 
     def fit(self, X, int num_iterations, int num_threads, bool verbose = False):
         """
-        Training BPR model with Gradient Descent.
+        Training GloVe model with Gradient Descent.
 
         Args:
-            X: The word-word cooccurrence matrix.
-            num_iterations (int): The number of epochs.
-            num_threads (int): The number of threads in HOGWILD! (http://i.stanford.edu/hazy/papers/hogwild-nips.pdf)
+            X: A word-word cooccurrence matrix.
+            num_iterations (int): A number of epochs.
+            num_threads (int): A number of threads in HOGWILD! (http://i.stanford.edu/hazy/papers/hogwild-nips.pdf)
             verbose (bool): Whether to show the progress of training.
         """
 
@@ -131,7 +131,7 @@ class GloVe(object):
         cdef double[:] loss = np.zeros(N)
         cdef int u, i, j, k, l, iteration
 
-        cdef double acc_loss
+        cdef double accum_loss
         
         cdef list description_list
 

@@ -36,8 +36,8 @@ class WMF(object):
     http://yifanhu.net/PUB/cf.pdf
     
     Attributes:
-        num_components (int): Dimensionality of latent vector
-        learning_rate (double): Leanring rate
+        num_components (int): A dimensionality of latent vector
+        learning_rate (double): A learning rate
         optimizer (str): Optimizers. e.g. 'adam', 'sgd'
         weight_decay (double): A coefficient of weight decay
         weight (double): A weight for positive feedbacks.
@@ -51,8 +51,8 @@ class WMF(object):
                        double weight = 10.0):
         """
         Args:
-            num_components (int): Dimensionality of latent vector
-            learning_rate (double): Leanring rate
+            num_components (int): A dimensionality of latent vector
+            learning_rate (double): A learning rate
             optimizer (str): Optimizers. e.g. 'adam', 'sgd'
             weight_decay (double): A coefficient of weight decay
             weight (double): A weight for positive feedbacks.
@@ -74,8 +74,8 @@ class WMF(object):
 
         Args:
             X: A user-item interaction matrix.
-            num_iterations (int): The number of epochs.
-            num_threads (int): The number of threads in HOGWILD! (http://i.stanford.edu/hazy/papers/hogwild-nips.pdf)
+            num_iterations (int): A number of epochs.
+            num_threads (int): A number of threads in HOGWILD! (http://i.stanford.edu/hazy/papers/hogwild-nips.pdf)
             verbose (bool): Whether to show the progress of training.
         """
         if isinstance(X, (sparse.lil_matrix, sparse.csr_matrix, sparse.csc_matrix)):

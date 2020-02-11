@@ -33,8 +33,8 @@ class BPR(object):
     https://arxiv.org/pdf/1205.2618.pdf
     
     Attributes:
-        num_components (int): Dimensionality of latent vector
-        learning_rate (double): Leanring rate
+        num_components (int): A dimensionality of latent vector
+        learning_rate (double): A learning rate
         optimizer (str): Optimizers. e.g. 'adam', 'sgd'
         weight_decay (double): A coefficient of weight decay
         W (np.ndarray[double, ndim=2]): User latent vectors
@@ -43,8 +43,8 @@ class BPR(object):
     def __init__(self, int num_components, double learning_rate = 0.001, str optimizer = "adam", double weight_decay = 0.01):
         """
         Args:
-            num_components (int): Dimensionality of latent vector
-            learning_rate (double): Leanring rate
+            num_components (int): A dimensionality of latent vector
+            learning_rate (double): A learning rate
             optimizer (str): Optimizers. e.g. 'adam', 'sgd'
             weight_decay (double): A coefficient of weight decay
         """
@@ -64,8 +64,8 @@ class BPR(object):
 
         Args:
             X: A user-item interaction matrix.
-            num_iterations (int): The number of epochs.
-            num_threads (int): The number of threads in HOGWILD! (http://i.stanford.edu/hazy/papers/hogwild-nips.pdf)
+            num_iterations (int): A number of epochs.
+            num_threads (int): A number of threads in HOGWILD! (http://i.stanford.edu/hazy/papers/hogwild-nips.pdf)
             verbose (bool): Whether to show the progress of training.
         """
 
