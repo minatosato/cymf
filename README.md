@@ -42,8 +42,5 @@ echo "export CC='gcc-7'" >> ~/.bashrc
 source ~/.bashrc
 sudo apt install libomp-dev libopenblas-base libopenblas-dev libatlas-base-dev
 
-git clone https://github.com/satopirka/fastmf
-cd fastmf
-pip install -r requirements.txt
-pip install .
+pip install  git+https://github.com/satopirka/fastmf
 ```

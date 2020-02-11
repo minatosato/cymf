@@ -39,5 +39,15 @@ if version is not None and license is not None and author is not None and author
         version=version.group(1),
         author=author.group(1),
         author_email=author_email.group(1),
+        install_requires=[
+            "Cython==0.29.13",
+            "gensim==3.8.1",
+            "matplotlib==3.1.1",
+            "numpy==1.17.2",
+            "pandas==0.25.1",
+            "scikit-learn==0.21.3",
+            "tqdm==4.32.1",
+            "wget==3.2"
+        ],
         ext_modules=cythonize(["fastmf/*.pyx"]),
         include_dirs= [np.get_include()])
