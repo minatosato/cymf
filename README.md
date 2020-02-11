@@ -26,10 +26,7 @@ echo "export LDFLAGS='-L/usr/local/opt/openblas/lib'" >> ~/.bash_profile
 echo "export CPPFLAGS='-I/usr/local/opt/openblas/include'" >> ~/.bash_profile
 source ~/.bash_profile
 
-git clone https://github.com/satopirka/fastmf
-cd fastmf
-pip install -r requirements.txt
-pip install .
+pip install git+https://github.com/satopirka/fastmf
 ```
 
 Ubuntu
@@ -42,5 +39,5 @@ echo "export CC='gcc-7'" >> ~/.bashrc
 source ~/.bashrc
 sudo apt install libomp-dev libopenblas-base libopenblas-dev libatlas-base-dev
 
-pip install  git+https://github.com/satopirka/fastmf
+pip install git+https://github.com/satopirka/fastmf
 ```
