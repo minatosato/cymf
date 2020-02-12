@@ -26,6 +26,7 @@ echo "export LDFLAGS='-L/usr/local/opt/openblas/lib'" >> ~/.bash_profile
 echo "export CPPFLAGS='-I/usr/local/opt/openblas/include'" >> ~/.bash_profile
 source ~/.bash_profile
 
+pip install numpy scipy cython
 pip install git+https://github.com/satopirka/fastmf
 ```
 
@@ -39,5 +40,6 @@ echo "export CC='gcc-7'" >> ~/.bashrc
 source ~/.bashrc
 sudo apt install libomp-dev libopenblas-base libopenblas-dev libatlas-base-dev
 
+pip install numpy scipy cython
 pip install git+https://github.com/satopirka/fastmf
 ```
