@@ -1,6 +1,6 @@
 
 # CyMF
-[![CircleCI](https://circleci.com/gh/satopirka/fastmf.svg?style=svg)](https://circleci.com/gh/satopirka/fastmf)  
+[![CircleCI](https://circleci.com/gh/satopirka/cymf.svg?style=svg)](https://circleci.com/gh/satopirka/cymf)  
 Cythonized implementation of matrix-factorization based algorithms.
 
 ### Implicit RecSys
