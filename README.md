@@ -1,7 +1,7 @@
 
-# fastmf
+# CyMF
 [![CircleCI](https://circleci.com/gh/satopirka/fastmf.svg?style=svg)](https://circleci.com/gh/satopirka/fastmf)  
-Cythonized fast implementation of matrix-factorization based algorithms.
+Cythonized implementation of matrix-factorization based algorithms.
 
 ### Implicit RecSys
 - Bayesian Personlized Ranking (BPR) [Steffen Rendle et al. 2009]
@@ -27,7 +27,7 @@ echo "export CPPFLAGS='-I/usr/local/opt/openblas/include'" >> ~/.bash_profile
 source ~/.bash_profile
 
 pip install numpy scipy cython
-pip install git+https://github.com/satopirka/fastmf
+pip install git+https://github.com/satopirka/cymf
 ```
 
 Ubuntu
@@ -41,5 +41,5 @@ source ~/.bashrc
 sudo apt install libomp-dev libopenblas-base libopenblas-dev libatlas-base-dev
 
 pip install numpy scipy cython
-pip install git+https://github.com/satopirka/fastmf
+pip install git+https://github.com/satopirka/cymf
 ```

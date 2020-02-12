@@ -29,7 +29,7 @@ dataset: ImplicitFeedbackDataset = MovieLens("ml-100k")
 Y_train = dataset.train.toarray()
 Y_test = dataset.test.toarray()
 
-evaluator = fastmf.evaluator.Evaluator(Y_test, Y_train, unbiased=False)
+evaluator = fastmf.evaluator.Evaluator(Y_test, Y_train, k=5, unbiased=False)
 model = fastmf.BPR(num_components=args.num_components, learning_rate=0.01, weight_decay=args.weight_decay)
 for i in range(args.iter):
     model.fit(Y_train, num_iterations=1, num_threads=args.num_threads, verbose=False)
