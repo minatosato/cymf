@@ -1,15 +1,15 @@
 os: osx
 before_install:
-    - brew install libomp openblas
+    - brew install libomp openblas pyenv
     - echo "export LDFLAGS='-L/usr/local/opt/openblas/lib'" >> ~/.bash_profile
     - echo "export CPPFLAGS='-I/usr/local/opt/openblas/include'" >> ~/.bash_profile
-    - brew install pyenv
+    - echo 'eval "$(pyenv init -)"' >> ~/.bash_profile
+    - source ~/.bash_profile
     - pyenv install miniconda3-latest
     - pyenv global miniconda3-latest
     - pyenv rehash
     - pyenv shell miniconda3-latest
     - conda install python=3.7.6
-    - source ~/.bash_profile
 install:
     - pip install numpy scipy cython
     - pip install git+https://github.com/satopirka/cymf
