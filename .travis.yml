@@ -1,3 +1,4 @@
+language: minimal
 os: osx
 before_install:
     - brew install libomp openblas pyenv
