@@ -68,12 +68,15 @@ class BPR(object):
             num_threads (int): A number of threads in HOGWILD! (http://i.stanford.edu/hazy/papers/hogwild-nips.pdf)
             verbose (bool): Whether to show the progress of training.
         """
+        if X is None:
+            raise ValueError()
 
         if isinstance(X, (sparse.lil_matrix, sparse.csr_matrix, sparse.csc_matrix)):
             X = X.toarray()
         X = X.astype(np.float64)
         
         if self.W is None:
+            np.random.seed(4321)
             self.W = np.random.uniform(low=-0.1, high=0.1, size=(X.shape[0], self.num_components)) / self.num_components
         if self.H is None:
             self.H = np.random.uniform(low=-0.1, high=0.1, size=(X.shape[1], self.num_components)) / self.num_components

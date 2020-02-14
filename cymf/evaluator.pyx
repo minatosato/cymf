@@ -29,14 +29,21 @@ from .metrics import average_precision_at_k_with_ips
 
 
 class Evaluator(object):
-    def __init__(self, np.ndarray[double, ndim=2] X,
-                       np.ndarray[double, ndim=2] X_train = None,
+    def __init__(self, X,
+                       X_train = None,
                        list metrics = ["DCG", "Recall", "MAP"],
-                       k = [1, 3, 5],
+                       k = 5,
                        int num_negatives = 100,
                        bool unbiased = False):
         self.X = X
         self.X_train = X_train
+
+        if not isinstance(self.X, np.ndarray):
+            raise TypeError("X must be a type of numpy.ndarray.")
+
+        if self.X_train is not None and not isinstance(self.X_train, np.ndarray):
+            raise TypeError("X_train must be a type of numpy.ndarray.")
+
         self.propensity_scores = np.maximum(X.mean(axis=0), 1e-3)
         self.metrics = metrics
         self.k = k
@@ -48,17 +55,19 @@ class Evaluator(object):
         cdef str metric
         cdef np.ndarray[np.int_t, ndim=1] positives
         cdef np.ndarray[np.int_t, ndim=1] negatives
-        cdef int user
+        cdef int user, U
         cdef int k
+
+        U = self.X.shape[0]
 
         if type(self.k) == int:
             self.k = [self.k]
 
         for k in self.k:
             for metric in self.metrics:
-                buff[f"{metric)}@{k}"] = np.zeros(self.X.shape[0])
+                buff[f"{metric)}@{k}"] = np.zeros(U)
         
-        for user in range(self.X.shape[0]):
+        for user in range(U):
             positives = self.X[user].nonzero()[0]
             negatives = np.random.permutation(
                 (self.X[user]==0.).nonzero()[0] if self.X_train is None else ((self.X[user]-self.X_train[user])==0.).nonzero()[0]

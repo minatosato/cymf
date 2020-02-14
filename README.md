@@ -1,5 +1,7 @@
 
 # CyMF
+![CyMF logo](logo.png)
+
 [![CircleCI](https://circleci.com/gh/satopirka/cymf.svg?style=svg)](https://circleci.com/gh/satopirka/cymf)  
 Cythonized implementation of matrix-factorization based algorithms.
 

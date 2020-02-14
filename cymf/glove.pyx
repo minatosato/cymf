@@ -81,9 +81,11 @@ class GloVe(object):
             num_threads (int): A number of threads in HOGWILD! (http://i.stanford.edu/hazy/papers/hogwild-nips.pdf)
             verbose (bool): Whether to show the progress of training.
         """
+        if X is None:
+            raise ValueError()
 
         if not isinstance(X, (sparse.lil_matrix, sparse.csr_matrix, sparse.csc_matrix)):
-            raise ValueError("X is invalid.")
+            raise TypeError("X must be a type of scipy.sparse.*_matrix.")
                   
         self.W = np.random.uniform(low=-0.5, high=0.5, size=(X.shape[0], self.num_components)) / self.num_components
         self.bias = np.random.uniform(low=-0.5, high=0.5, size=(X.shape[0],)) / self.num_components
