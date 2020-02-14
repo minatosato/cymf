@@ -13,3 +13,5 @@ before_install:
 install:
     - pip install numpy scipy cython
     - pip install git+https://github.com/satopirka/cymf
+script:
+    - exit 0
