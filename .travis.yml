@@ -9,7 +9,7 @@ before_install:
     - pyenv global miniconda3-latest
     - pyenv rehash
     - pyenv shell miniconda3-latest
-    - conda install python=3.7.6
+    - conda install python=3.7.6 -y
 install:
     - pip install numpy scipy cython
     - pip install git+https://github.com/satopirka/cymf
