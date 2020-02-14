@@ -2,9 +2,9 @@
 # CyMF
 ![CyMF logo](logo.png)
 
-||Ubuntu|
-|-|-|
-| Build status | [![CircleCI](https://circleci.com/gh/satopirka/cymf.svg?style=svg)](https://circleci.com/gh/satopirka/cymf) |
+||Ubuntu|macOS|
+|-|-|-|
+| Build status | [![CircleCI](https://circleci.com/gh/satopirka/cymf.svg?style=svg)](https://circleci.com/gh/satopirka/cymf) | [![Build Status](https://travis-ci.org/satopirka/cymf.svg?branch=master)](https://travis-ci.org/satopirka/cymf) |
 
 Cython implementation of matrix-factorization based algorithms.
 
