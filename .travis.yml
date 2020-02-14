@@ -1,0 +1,26 @@
+os: osx
+language: python
+python:
+    - 3.7.6
+
+before_install: |
+if [ "$TRAVIS_OS_NAME" == "osx" ]; then
+    brew update
+    brew install openssl readline
+    brew outdated pyenv || brew upgrade pyenv
+    pyenv install miniconda3-latest
+    # export PYENV_VERSION=$PYTHON
+    # export PATH="/Users/travis/.pyenv/shims:${PATH}"
+    pyenv global miniconda3-latest
+    pyenv reshash
+    conda install -y python=$PYTHON
+
+    brew install libomp openblas
+    echo "export LDFLAGS='-L/usr/local/opt/openblas/lib'" >> ~/.bash_profile
+    echo "export CPPFLAGS='-I/usr/local/opt/openblas/include'" >> ~/.bash_profile
+    source ~/.bash_profile
+fi
+
+install:
+    - pip install numpy scipy cython
+    - pip install git+https://github.com/satopirka/cymf
