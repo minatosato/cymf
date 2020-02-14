@@ -10,7 +10,7 @@ __version__      = '0.0.1'
 __license__      = 'MIT'
 __author__       = 'Minato Sato'
 __author_email__ = 'sato.minato@ohsuga.is.uec.ac.jp'
-__url__          = 'http://github.com/satopirka/fastmf'
+__url__          = 'http://github.com/satopirka/cymf'
 
 import os
 os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"

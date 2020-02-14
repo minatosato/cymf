@@ -11,8 +11,8 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-import fastmf
-from fastmf.dataset import ImplicitFeedbackDataset, MovieLens, YahooMusic
+import cymf
+from cymf.dataset import ImplicitFeedbackDataset, MovieLens, YahooMusic
 
 import argparse
 parser = argparse.ArgumentParser(description='')
@@ -27,7 +27,7 @@ args = parser.parse_args()
 dataset: ImplicitFeedbackDataset = MovieLens("ml-100k")
 
 Y_train = dataset.train.toarray()
-model = fastmf.WMF(num_components=args.num_components, weight_decay=args.weight_decay)
+model = cymf.WMF(num_components=args.num_components, weight_decay=args.weight_decay)
 model.fit(Y_train, num_iterations=args.iter, num_threads=args.num_threads, verbose=True)
 
 Y_test = dataset.test.toarray()

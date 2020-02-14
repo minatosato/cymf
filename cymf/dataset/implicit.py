@@ -33,7 +33,7 @@ class ImplicitFeedbackDataset(object):
     test: sparse.lil_matrix
 
     def __init__(self, dir_name: str, min_rating: float = 4.0, gamma: float = 0.2) -> None:
-        self.root: Path = Path.home().joinpath(".fastmf")
+        self.root: Path = Path.home().joinpath(".cymf")
         self.root.mkdir(exist_ok=True)
         self.dir_path: Path = self.root.joinpath(dir_name)
         self.min_rating: float = min_rating

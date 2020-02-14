@@ -1,9 +1,9 @@
 version: 2
 jobs:
   build:
-    working_directory: ~/circleci-fastmf
+    working_directory: ~/circleci-cymf
     docker:
-      - image: satopirka/fastmf
+      - image: satopirka/cymf
     steps:
       - checkout
       - run:

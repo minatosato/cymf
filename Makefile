@@ -3,6 +3,6 @@ all:
 install:
 	python setup.py install
 clean:
-	rm ./fastmf/*.cpp
+	rm ./cymf/*.cpp
 	rm -rf ./build
-	rm ./fastmf/*.so
+	rm ./cymf/*.so

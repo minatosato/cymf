@@ -9,9 +9,9 @@
 from gensim.models import KeyedVectors
 from scipy import sparse
 from pathlib import Path
-from fastmf import GloVe
-from fastmf.dataset import Text8
-from fastmf.dataset import CooccurrrenceDataset
+from cymf import GloVe
+from cymf.dataset import Text8
+from cymf.dataset import CooccurrrenceDataset
 
 import argparse
 parser = argparse.ArgumentParser(description='')

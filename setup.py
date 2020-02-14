@@ -20,7 +20,7 @@ lnk_args = ['-lomp', '-lcblas']
 os.environ['CFLAGS'] = " ".join(cmpl_args + lnk_args)
 os.environ['CXXFLAGS'] = " ".join(cmpl_args + lnk_args)
 
-package_name: str = "fastmf"
+package_name: str = "cymf"
 
 # export LDFLAGS="-L/usr/local/opt/openblas/lib"
 # export CPPFLAGS="-I/usr/local/opt/openblas/include"
@@ -40,5 +40,5 @@ if version is not None and license is not None and author is not None and author
         author=author.group(1),
         author_email=author_email.group(1),
         install_requires=Path("./requirements.txt").open("r").read().split("\n"),
-        ext_modules=cythonize(["fastmf/*.pyx"]),
+        ext_modules=cythonize(["cymf/*.pyx"]),
         include_dirs= [np.get_include()])

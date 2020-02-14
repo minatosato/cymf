@@ -11,8 +11,8 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-import fastmf
-from fastmf.dataset import ImplicitFeedbackDataset, MovieLens, YahooMusic
+import cymf
+from cymf.dataset import ImplicitFeedbackDataset, MovieLens, YahooMusic
 
 import argparse
 parser = argparse.ArgumentParser(description='')
@@ -29,8 +29,8 @@ dataset: ImplicitFeedbackDataset = MovieLens("ml-100k")
 Y_train = dataset.train.toarray()
 Y_test = dataset.test.toarray()
 
-evaluator = fastmf.evaluator.Evaluator(Y_test, Y_train, k=5, unbiased=False)
-model = fastmf.BPR(num_components=args.num_components, learning_rate=0.01, weight_decay=args.weight_decay)
+evaluator = cymf.evaluator.Evaluator(Y_test, Y_train, k=5, unbiased=False)
+model = cymf.BPR(num_components=args.num_components, learning_rate=0.01, weight_decay=args.weight_decay)
 for i in range(args.iter):
     model.fit(Y_train, num_iterations=1, num_threads=args.num_threads, verbose=False)
     print(evaluator.evaluate(model.W @ model.H.T))
