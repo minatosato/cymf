@@ -2,8 +2,11 @@
 # CyMF
 ![CyMF logo](logo.png)
 
-[![CircleCI](https://circleci.com/gh/satopirka/cymf.svg?style=svg)](https://circleci.com/gh/satopirka/cymf)  
-Cythonized implementation of matrix-factorization based algorithms.
+||Ubuntu|
+|-|-|
+| Build status | [![CircleCI](https://circleci.com/gh/satopirka/cymf.svg?style=svg)](https://circleci.com/gh/satopirka/cymf) |
+
+Cython implementation of matrix-factorization based algorithms.
 
 ### Implicit RecSys
 - Bayesian Personlized Ranking (BPR) [Steffen Rendle et al. 2009]
