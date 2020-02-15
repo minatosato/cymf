@@ -25,6 +25,9 @@ class MovieLens(ImplicitFeedbackDataset):
     def __init__(self, dir_name="ml-100k", min_rating: float = 4.0, under_sampling: Optional[int] = None):
         super().__init__(dir_name, min_rating)
 
+        if dir_name not in ("ml-100k", "ml-1m"):
+            raise ValueError("dir_name must be 'ml-100k' or 'ml-1m'.")
+
         if not self.dir_path.exists():
             if not self.dir_path.parent.joinpath(self.dir_path.name + ".zip").exists():
                 print("movielens file does not exist, downloading ...")
