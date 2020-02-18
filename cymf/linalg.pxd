@@ -33,11 +33,13 @@ cdef extern from 'cblas.h':
                        double alpha, double *A, int lda, double *B, int ldb,
                        double beta, double *C, int ldc) nogil
 
-
+cpdef double[:,::1] zeros(int M, int N) nogil
+cpdef double[:,::1] zeros_like(double[:,::1] A) nogil
+cpdef double[:,::1] eye(int N) nogil
 cpdef void matmul(double alpha, double[:,:] A, double[:,:] B, double beta, double[:,:] C) nogil
-cpdef double[:,::1] broadcast_hadamard(double[:,::1] A, double[:,::1] b)
-cpdef double[:,::1] atb_lambda(double alpha, double[:,::1] A, double[:,::1] B, double regularization)
-cpdef double[:,::1] atbt(double[:,::1] A, double[:,::1] B)
-cpdef double[:,::1] atb(double[:,::1] A, double[:,::1] B)
+cpdef double[:,::1] broadcast_hadamard(double[:,::1] A, double[:,::1] b) nogil
+cpdef double[:,::1] atb_lambda(double alpha, double[:,::1] A, double[:,::1] B, double regularization) nogil
+cpdef double[:,::1] atbt(double[:,::1] A, double[:,::1] B) nogil
+cpdef double[:,::1] atb(double[:,::1] A, double[:,::1] B) nogil
 cpdef double dot(double[::1] x, double[::1] y) nogil
 cpdef int solve(double[::1,:] A, double[::1,:] b) nogil

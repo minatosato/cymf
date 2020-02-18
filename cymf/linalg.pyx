@@ -12,9 +12,39 @@
 import numpy as np
 
 cimport cython
+from cython.view cimport array
 cimport numpy as np
 from libc.stdlib cimport malloc, free
 from scipy.linalg.cython_lapack cimport dgesv as lapack_dgesv
+
+@cython.boundscheck(False)
+@cython.wraparound(False)
+cpdef double[:,::1] zeros(int M, int N) nogil:
+    cdef double[:,::1] ret
+    with gil:
+        ret = array(shape=(M, N), itemsize=sizeof(double), format="d")
+    return ret
+
+@cython.boundscheck(False)
+@cython.wraparound(False)
+cpdef double[:,::1] zeros_like(double[:,::1] A) nogil:
+    cdef double[:,::1] ret
+    with gil:
+        ret = array(shape=(A.shape[0], A.shape[1]), itemsize=sizeof(double), format="d")
+    ret[:,:] = 0.0
+    return ret
+
+@cython.boundscheck(False)
+@cython.wraparound(False)
+cpdef double[:,::1] eye(int N) nogil:
+    cdef double[:,::1] ret
+    cdef size_t i = 0
+    with gil:
+        ret = array(shape=(N, N), itemsize=sizeof(double), format="d")
+    ret[:,:] = 0.0
+    for i in range(N):
+        ret[i,i] = 1.0
+    return ret
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
@@ -28,11 +58,11 @@ cpdef void matmul(double alpha, double[:,:] A, double[:,:] B, double beta, doubl
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-cpdef double[:,::1] broadcast_hadamard(double[:,::1] A, double[:,::1] b):
+cpdef double[:,::1] broadcast_hadamard(double[:,::1] A, double[:,::1] b) nogil:
     """
     C = A * b
     """
-    cdef double[:,::1] C = np.zeros_like(A).astype(np.float64)
+    cdef double[:,::1] C = zeros_like(A)
     cdef int i, j
     for i in range(C.shape[0]):
         for j in range(C.shape[1]):
@@ -41,14 +71,14 @@ cpdef double[:,::1] broadcast_hadamard(double[:,::1] A, double[:,::1] b):
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-cpdef double[:,::1] atb_lambda(double alpha, double[:,::1] A, double[:,::1] B, double regularization):
+cpdef double[:,::1] atb_lambda(double alpha, double[:,::1] A, double[:,::1] B, double regularization) nogil:
     """
     C = alpha * AT B   + regularization * C
     """
     cdef int M = A.shape[1] # ATの行数
     cdef int N = B.shape[1] # Bの列数
     cdef int K = B.shape[0] #
-    cdef double[:,::1] C = np.eye(M).astype(np.float64)
+    cdef double[:,::1] C = eye(M)
     cblas_dgemm(CblasRowMajor,CblasTrans,CblasNoTrans, M, N,
                 K, alpha, &A[0,0], A.shape[1], &B[0,0],
                 B.shape[1], regularization, &C[0,0], C.shape[1])
@@ -56,28 +86,28 @@ cpdef double[:,::1] atb_lambda(double alpha, double[:,::1] A, double[:,::1] B, d
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-cpdef double[:,::1] atbt(double[:,::1] A, double[:,::1] B):
+cpdef double[:,::1] atbt(double[:,::1] A, double[:,::1] B) nogil:
     """
     C = AT BT
     """
     cdef int M = A.shape[1] # ATの行数
     cdef int N = B.shape[0] # BTの列数
     cdef int K = B.shape[1] #
-    cdef double[:,::1] C = np.zeros((M, N))
+    cdef double[:,::1] C = zeros(M, N)
     cblas_dgemm(CblasRowMajor,CblasTrans,CblasTrans, M, N, K,
                 1.0, &A[0,0], A.shape[1], &B[0,0], B.shape[1], 0.0, &C[0,0], C.shape[1])
     return C
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-cpdef double[:,::1] atb(double[:,::1] A, double[:,::1] B):
+cpdef double[:,::1] atb(double[:,::1] A, double[:,::1] B) nogil:
     """
     C = AT B
     """
     cdef int M = A.shape[1] # ATの行数
     cdef int N = B.shape[1] # Bの列数
     cdef int K = B.shape[0] #
-    cdef double[:,::1] C = np.zeros((M, N))
+    cdef double[:,::1] C = zeros(M, N)
     cblas_dgemm(CblasRowMajor,CblasTrans,CblasNoTrans, M, N, K,
                 1.0, &A[0,0], A.shape[1], &B[0,0], B.shape[1], 0.0, &C[0,0], C.shape[1])
     return C
