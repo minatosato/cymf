@@ -48,3 +48,23 @@ sudo apt install libomp-dev libopenblas-base libopenblas-dev libatlas-base-dev
 pip install numpy scipy cython
 pip install git+https://github.com/satopirka/cymf
 ```
+
+## Quickstart
+
+```py
+import cymf
+
+dataset = cymf.dataset.MovieLens("ml-100k")
+
+Y_train = dataset.train.toarray()
+Y_test = dataset.test.toarray()
+
+evaluator = cymf.evaluator.Evaluator(Y_test, Y_train, k=5)
+model = cymf.BPR(num_components=20, learning_rate=0.01, weight_decay=0.01)
+model.fit(Y_train, num_iterations=30, num_threads=8, verbose=True)
+print(evaluator.evaluate(model.W @ model.H.T))
+
+# ITER=30, LOSS: 0.2627: 100%|████████████████████████████████████████████████████████████| 30/30 [00:00<00:00, 98.46it/s]
+# {'DCG@5': 0.1815916629140773, 'Recall@5': 0.24528176175220465, 'MAP@5': 0.21311784866390876}
+```
+
