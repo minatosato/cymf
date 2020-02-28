@@ -53,13 +53,13 @@ class ExpoMF(object):
         self.W = None
         self.H = None
 
-    def fit(self, X, int num_iterations = 10, bool verbose = False):
+    def fit(self, X, int num_epochs = 10, bool verbose = False):
         """
         Training ExpoMF model with EM Algorithm
 
         Args:
             X: A user-item interaction matrix.
-            num_iterations (int): A number of epochs.
+            num_epochs (int): A number of epochs.
             verbose (bool): Whether to show the progress of training.
         """
         if X is None:
@@ -73,7 +73,7 @@ class ExpoMF(object):
             self.W = np.random.uniform(low=-0.1, high=0.1, size=(X.shape[0], self.num_components)) / self.num_components
         if self.H is None:
             self.H = np.random.uniform(low=-0.1, high=0.1, size=(X.shape[1], self.num_components)) / self.num_components
-        self.__fit(X, num_iterations, verbose)
+        self.__fit(X, num_epochs, verbose)
 
     @cython.boundscheck(False)
     @cython.wraparound(False)

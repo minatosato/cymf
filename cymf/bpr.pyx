@@ -58,13 +58,13 @@ class BPR(object):
         if self.optimizer not in ("sgd", "adagrad", "adam"):
             raise Exception(f"{self.optimizer} is invalid.")
 
-    def fit(self, X, int num_iterations = 10, int num_threads = 8, bool verbose = False):
+    def fit(self, X, int num_epochs = 10, int num_threads = 8, bool verbose = False):
         """
         Training BPR model with Gradient Descent.
 
         Args:
             X: A user-item interaction matrix.
-            num_iterations (int): A number of epochs.
+            num_epochs (int): A number of epochs.
             num_threads (int): A number of threads in HOGWILD! (http://i.stanford.edu/hazy/papers/hogwild-nips.pdf)
             verbose (bool): Whether to show the progress of training.
         """
@@ -87,7 +87,7 @@ class BPR(object):
         return self._fit_bpr(users.astype(np.int32), 
                              positives.astype(np.int32),
                              X,
-                             num_iterations,
+                             num_epochs,
                              self.learning_rate,
                              self.weight_decay,
                              num_threads,
@@ -99,7 +99,7 @@ class BPR(object):
                  int[:] users,
                  int[:] positives,
                  np.ndarray[double, ndim=2] X,
-                 int num_iterations, 
+                 int num_epochs, 
                  double learning_rate,
                  double weight_decay,
                  int num_threads,
@@ -107,7 +107,7 @@ class BPR(object):
 
         cdef double[:,::1] W = self.W
         cdef double[:,::1] H = self.H
-        cdef int iterations = num_iterations
+        cdef int iterations = num_epochs
         cdef int N = users.shape[0]
         cdef int K = W.shape[1]
         cdef int u, l, iteration

@@ -71,13 +71,13 @@ class GloVe(object):
         self.x_max = x_max
         self.W = None
 
-    def fit(self, X, int num_iterations, int num_threads, bool verbose = False):
+    def fit(self, X, int num_epochs, int num_threads, bool verbose = False):
         """
         Training GloVe model with Gradient Descent.
 
         Args:
             X: A word-word cooccurrence matrix.
-            num_iterations (int): A number of epochs.
+            num_epochs (int): A number of epochs.
             num_threads (int): A number of threads in HOGWILD! (http://i.stanford.edu/hazy/papers/hogwild-nips.pdf)
             verbose (bool): Whether to show the progress of training.
         """
@@ -101,7 +101,7 @@ class GloVe(object):
                         self.bias,
                         _W,
                         _bias,
-                        num_iterations,
+                        num_epochs,
                         self.learning_rate,
                         self.x_max,
                         self.alpha,
@@ -121,13 +121,13 @@ class GloVe(object):
                    double[:] central_bias,
                    double[:,:] context_W,
                    double[:] context_bias,
-                   int num_iterations, 
+                   int num_epochs, 
                    double learning_rate,
                    double x_max,
                    double alpha,
                    int num_threads,
                    bool verbose):
-        cdef int iterations = num_iterations
+        cdef int iterations = num_epochs
         cdef int N = central_words.shape[0]
         cdef int N_K = central_W.shape[1]
         cdef double[:] loss = np.zeros(N)

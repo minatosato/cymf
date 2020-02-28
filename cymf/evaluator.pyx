@@ -99,3 +99,12 @@ class Evaluator(object):
 
         return buff
 
+class AverageOverAllEvaluator(Evaluator):
+    def __init__(self, X, X_train = None, list metrics = ["DCG", "Recall", "MAP"], k = 5, int num_negatives = 100):
+        super(AverageOverAllEvaluator, self).__init__(X, X_train, metrics, k, num_negatives, unbiased=False)
+
+AoaEvaluator = AverageOverAllEvaluator
+
+class UnbiasedEvaluator(Evaluator):
+    def __init__(self, X, X_train = None, list metrics = ["DCG", "Recall", "MAP"], k = 5, int num_negatives = 100):
+        super(UnbiasedEvaluator, self).__init__(X, X_train, metrics, k, num_negatives, unbiased=True)

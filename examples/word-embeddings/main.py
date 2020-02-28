@@ -31,7 +31,7 @@ print("text読み込み完了")
 embedding_size = 50
 
 model = GloVe(num_components=args.num_components, learning_rate=args.lr, alpha=args.alpha, x_max=args.x_max)
-model.fit(text8.X, num_iterations=args.iter, num_threads=args.threads, verbose=True)
+model.fit(text8.X, num_epochs=args.iter, num_threads=args.threads, verbose=True)
 
 output: Path = Path("./vectors.txt")
 with output.open("w") as f:

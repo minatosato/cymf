@@ -6,29 +6,23 @@
 # LICENSE file in the root directory of this source tree.
 #
 
-from tqdm import tqdm
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-
 import cymf
-from cymf.dataset import ImplicitFeedbackDataset, MovieLens, YahooMusic
 
 import argparse
 parser = argparse.ArgumentParser(description='')
-parser.add_argument('--iter', type=int, default=5)
+parser.add_argument('--num_epochs', type=int, default=5)
 parser.add_argument('--num_components', type=int, default=20)
 parser.add_argument('--weight_decay', type=float, default=0.1)
 
 args = parser.parse_args()
 
-dataset: ImplicitFeedbackDataset = MovieLens("ml-100k")
+dataset = cymf.dataset.MovieLens("ml-100k")
 Y_train = dataset.train.toarray()
 Y_test = dataset.test.toarray()
 
-evaluator = cymf.evaluator.Evaluator(Y_test, Y_train, k=5, unbiased=False)
+evaluator = cymf.evaluator.AverageOverAllEvaluator(Y_test, Y_train, k=5)
 model = cymf.ExpoMF(num_components=args.num_components, lam_y=args.weight_decay, weight_decay=args.weight_decay)
-for i in range(args.iter):
-    model.fit(Y_train, num_iterations=1, verbose=False)
+for i in range(args.num_epochs):
+    model.fit(Y_train, num_epochs=1, verbose=False)
     print(evaluator.evaluate(model.W @ model.H.T))
 
