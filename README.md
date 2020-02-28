@@ -59,7 +59,7 @@ dataset = cymf.dataset.MovieLens("ml-100k")
 Y_train = dataset.train.toarray()
 Y_test = dataset.test.toarray()
 
-evaluator = cymf.evaluator.Evaluator(Y_test, Y_train, k=5)
+evaluator = cymf.evaluator.AverageOverAllEvaluator(Y_test, Y_train, k=5)
 model = cymf.BPR(num_components=20, learning_rate=0.01, weight_decay=0.01)
 model.fit(Y_train, num_epochs=30, num_threads=8, verbose=True)
 print(evaluator.evaluate(model.W @ model.H.T))
