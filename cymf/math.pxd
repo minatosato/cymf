@@ -28,9 +28,23 @@ cdef extern from "math.h" nogil:
     double fmin(double x, double y)
     const double M_PI
 
+cdef extern from "<random>" namespace "std" nogil:
+    cdef cppclass mt19937:
+        mt19937()
+        mt19937(unsigned int)
+
+    cdef cppclass uniform_int_distribution[T] nogil:
+        uniform_int_distribution()
+        uniform_int_distribution(T, T)
+        T operator()(mt19937)
+
 cdef inline double square(double x) nogil:
     return x * x
 
 cdef inline floating sigmoid(floating x) nogil:
     return 1.0 / (1.0 + exp(-x))
 
+cdef class UniformGenerator(object):
+    cdef mt19937 rng
+    cdef uniform_int_distribution[long] uniform
+    cdef inline long generate(self) nogil

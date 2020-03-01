@@ -24,6 +24,7 @@ from libcpp cimport bool
 from libcpp.vector cimport vector
 from libcpp.set cimport set
 
+from .math cimport UniformGenerator
 from .model cimport BprModel
 from .optimizer cimport Optimizer
 from .optimizer cimport Sgd
@@ -32,16 +33,6 @@ from .optimizer cimport Adam
 
 cdef extern from "util.h" namespace "cymf" nogil:
     cdef int threadid()
-
-cdef extern from "<random>" namespace "std" nogil:
-    cdef cppclass mt19937:
-        mt19937()
-        mt19937(unsigned int)
-
-    cdef cppclass uniform_int_distribution[T] nogil:
-        uniform_int_distribution()
-        uniform_int_distribution(T, T)
-        T operator()(mt19937)
 
 class BPR(object):
     """
@@ -128,6 +119,8 @@ class BPR(object):
         cdef int iterations = num_epochs
         cdef int N = users.shape[0]
         cdef int K = W.shape[1]
+        cdef int U = X.shape[0]
+        cdef int I = X.shape[1]
         cdef int u, l, iteration
         cdef double[:] loss = np.zeros(N)
         cdef accum_loss
@@ -150,15 +143,13 @@ class BPR(object):
         optimizer.set_parameters(W, H)
 
         cdef BprModel bpr_model = BprModel(W, H, optimizer, weight_decay, num_threads)
-
-        cdef mt19937 rng = mt19937(1234)
-        cdef uniform_int_distribution[long] uniform = uniform_int_distribution[long](0, H.shape[0])
+        cdef UniformGenerator gen = UniformGenerator(0, I, seed=1234)
 
         with tqdm(total=iterations, leave=True, ncols=120, disable=not verbose) as progress:
             for iteration in range(iterations):
                 accum_loss = 0.0
                 for l in prange(N, nogil=True, num_threads=num_threads):
-                    negatives[threadid()] = uniform(rng)
+                    negatives[threadid()] = gen.generate()
                     if user_positives[users[l]].find(negatives[threadid()]) != user_positives[users[l]].end():
                         continue
                     loss[l] = bpr_model.forward(users[l], positives[l], negatives[threadid()])
