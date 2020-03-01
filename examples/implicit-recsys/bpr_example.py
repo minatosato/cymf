@@ -27,10 +27,11 @@ args = parser.parse_args()
 dataset: ImplicitFeedbackDataset = MovieLens("ml-100k")
 
 Y_train = dataset.train.toarray()
+Y_trian_csr = dataset.train.tocsr()
 Y_test = dataset.test.toarray()
 
 evaluator = cymf.evaluator.AverageOverAllEvaluator(Y_test, Y_train, k=5)
 model = cymf.BPR(num_components=args.num_components, learning_rate=0.01, weight_decay=args.weight_decay)
 for i in range(args.num_epochs):
-    model.fit(Y_train, num_epochs=1, num_threads=args.num_threads, verbose=False)
+    model.fit(Y_trian_csr, num_epochs=1, num_threads=args.num_threads, verbose=False)
     print(evaluator.evaluate(model.W @ model.H.T))

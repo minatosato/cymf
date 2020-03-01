@@ -8,6 +8,7 @@
 
 # cython: language_level=3
 # distutils: language=c++
+# distutils: extra_compile_args = -std=c++11
 
 import cython
 import multiprocessing
@@ -20,12 +21,27 @@ from tqdm import tqdm
 
 cimport numpy as np
 from libcpp cimport bool
+from libcpp.vector cimport vector
+from libcpp.set cimport set
 
 from .model cimport BprModel
 from .optimizer cimport Optimizer
 from .optimizer cimport Sgd
 from .optimizer cimport AdaGrad
 from .optimizer cimport Adam
+
+cdef extern from "util.h" namespace "cymf" nogil:
+    cdef int threadid()
+
+cdef extern from "<random>" namespace "std" nogil:
+    cdef cppclass mt19937:
+        mt19937()
+        mt19937(unsigned int)
+
+    cdef cppclass uniform_int_distribution[T] nogil:
+        uniform_int_distribution()
+        uniform_int_distribution(T, T)
+        T operator()(mt19937)
 
 class BPR(object):
     """
@@ -71,8 +87,10 @@ class BPR(object):
         if X is None:
             raise ValueError()
 
-        if isinstance(X, (sparse.lil_matrix, sparse.csr_matrix, sparse.csc_matrix)):
-            X = X.toarray()
+        if not isinstance(X, (sparse.lil_matrix, sparse.csr_matrix, sparse.csc_matrix)):
+            X = sparse.csr_matrix(X)
+        else:
+            X = X.tocsr()
         X = X.astype(np.float64)
         
         if self.W is None:
@@ -98,7 +116,7 @@ class BPR(object):
     def _fit_bpr(self,
                  int[:] users,
                  int[:] positives,
-                 np.ndarray[double, ndim=2] X,
+                 X,
                  int num_epochs, 
                  double learning_rate,
                  double weight_decay,
@@ -115,8 +133,11 @@ class BPR(object):
         cdef accum_loss
         cdef list description_list
 
-        cdef int[:] negative_samples
-        cdef int[:,:] negatives = np.zeros((N, iterations)).astype(np.int32)
+        cdef int[:] negatives = np.zeros(num_threads).astype(np.int32)
+        cdef vector[set[int]] user_positives = []
+
+        for u in range(W.shape[0]):
+            user_positives.push_back({*X[u].nonzero()[1]})
 
         cdef Optimizer optimizer
         if self.optimizer == "adam":
@@ -130,17 +151,18 @@ class BPR(object):
 
         cdef BprModel bpr_model = BprModel(W, H, optimizer, weight_decay, num_threads)
 
-        for l in range(N):
-            u = users[l]
-            negative_samples = np.random.choice((X[u]-1).nonzero()[0], iterations).astype(np.int32)
-            negatives[l][:] = negative_samples
+        cdef mt19937 rng = mt19937(1234)
+        cdef uniform_int_distribution[long] uniform = uniform_int_distribution[long](0, H.shape[0])
 
         with tqdm(total=iterations, leave=True, ncols=120, disable=not verbose) as progress:
             for iteration in range(iterations):
                 accum_loss = 0.0
                 for l in prange(N, nogil=True, num_threads=num_threads):
-                    loss[l] = bpr_model.forward(users[l], positives[l], negatives[l, iteration])
-                    bpr_model.backward(users[l], positives[l], negatives[l, iteration])
+                    negatives[threadid()] = uniform(rng)
+                    if user_positives[users[l]].find(negatives[threadid()]) != user_positives[users[l]].end():
+                        continue
+                    loss[l] = bpr_model.forward(users[l], positives[l], negatives[threadid()])
+                    bpr_model.backward(users[l], positives[l], negatives[threadid()])
 
                 for l in range(N):
                     accum_loss += loss[l]
