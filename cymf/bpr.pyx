@@ -128,11 +128,14 @@ class BPR(object):
 
         cdef int[:] negatives = np.zeros(num_threads).astype(np.int32)
         cdef vector[set[int]] user_positives = []
-
-        for u in range(W.shape[0]):
-            user_positives.push_back({*X[u].nonzero()[1]})
+        cdef UniformGenerator gen = UniformGenerator(0, I, seed=1234)
 
         cdef Optimizer optimizer
+        cdef BprModel bpr_model
+
+        for u in range(U):
+            user_positives.push_back({*X[u].nonzero()[1]})
+
         if self.optimizer == "adam":
             optimizer = Adam(self.learning_rate)
         elif self.optimizer == "adagrad":
@@ -141,9 +144,7 @@ class BPR(object):
             optimizer = Sgd(self.learning_rate)
 
         optimizer.set_parameters(W, H)
-
-        cdef BprModel bpr_model = BprModel(W, H, optimizer, weight_decay, num_threads)
-        cdef UniformGenerator gen = UniformGenerator(0, I, seed=1234)
+        bpr_model= BprModel(W, H, optimizer, weight_decay, num_threads)
 
         with tqdm(total=iterations, leave=True, ncols=120, disable=not verbose) as progress:
             for iteration in range(iterations):
