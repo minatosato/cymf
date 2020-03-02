@@ -23,6 +23,10 @@ from libcpp cimport bool
 from libcpp.vector cimport vector
 from libcpp.string cimport string
 from libcpp.unordered_map cimport unordered_map
+from libc.stdlib cimport malloc
+from libc.stdlib cimport free
+from libc.string cimport memcpy
+from libc.string cimport memset
 
 from .model cimport WmfModel
 from .optimizer cimport Optimizer
@@ -161,4 +165,31 @@ class WMF(object):
                 description_list.append(f"LOSS: {np.round(accum_loss/N, 4):.4f}")
                 progress.set_description(", ".join(description_list))
                 progress.update(1)
+
+    def _als(self, int[:] indptr, int[:] indices, int[:] data, double[:] X, double[:] Y):
+        cdef int K = X.shape[1]
+        cdef int i, ind
+
+        cdef double[:,:] YtY = np.dot(Y.T, Y)
+        cdef double[:,:] _A = YtY + self.weight_decay * np.eye(K).astype(np.float64)
+        cdef double[:] _b = np.zeros(K).astype(np.float64)
+
+        cdef double * A = <double *> malloc(sizeof(double) * K * K) # K行K列
+        cdef double * b = <double *> malloc(sizeof(double) * K * 1) # K行1列
+
+        for i in range(X.shape[0]):
+            if indptr[i] == indptr[i+1]:
+                memset(&X[u, 0], 0, sizeof(double) * K)
+
+            memcpy(A, &_A[0, 0], sizeof(double) * K * K)
+            memcpy(b, &_B[0], sizeof(double) * K)
+
+            for ind in range(indptr[i], indptr[i+1]):
+                index = indices[ind]
+
+                for k in range(K):
+                    b[k] += Y[index, k]
+            
+
+
 
