@@ -54,7 +54,7 @@ class GloVe(object):
         x_max (double): See the paper.
         W (np.ndarray[double, ndim=2]): Word vectors
     """
-    def __init__(self, int num_components,
+    def __init__(self, int num_components = 20,
                        double learning_rate = 0.01,
                        double alpha = 0.75,
                        double x_max = 10.0):

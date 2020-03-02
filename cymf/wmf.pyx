@@ -44,7 +44,7 @@ class WMF(object):
         W (np.ndarray[double, ndim=2]): User latent vectors
         H (np.ndarray[double, ndim=2]): Item latent vectors
     """
-    def __init__(self, int num_components,
+    def __init__(self, int num_components = 20,
                        double learning_rate = 0.001,
                        str optimizer = "adam",
                        double weight_decay = 0.01,
