@@ -43,3 +43,4 @@ cpdef double[:,::1] atbt(double[:,::1] A, double[:,::1] B) nogil
 cpdef double[:,::1] atb(double[:,::1] A, double[:,::1] B) nogil
 cpdef double dot(double[::1] x, double[::1] y) nogil
 cpdef int solve(double[::1,:] A, double[::1,:] b) nogil
+cdef int solvep(double* A, double* b, int K) nogil
