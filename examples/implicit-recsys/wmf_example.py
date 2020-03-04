@@ -12,6 +12,7 @@ import argparse
 parser = argparse.ArgumentParser(description='')
 parser.add_argument('--num_epochs', type=int, default=10)
 parser.add_argument('--num_components', type=int, default=20)
+parser.add_argument('--weight', type=float, default=10.0)
 parser.add_argument('--weight_decay', type=float, default=1e-2)
 parser.add_argument('--num_threads', type=int, default=8)
 
@@ -23,7 +24,7 @@ Y_train_csr = dataset.train.tocsr()
 Y_test = dataset.test.toarray()
 
 evaluator = cymf.evaluator.AverageOverAllEvaluator(Y_test, Y_train, k=5)
-model = cymf.WMF(num_components=args.num_components, weight_decay=args.weight_decay)
+model = cymf.WMF(num_components=args.num_components, weight=args.weight, weight_decay=args.weight_decay)
 
 for i in range(args.num_epochs):
     model.fit_als(Y_train_csr, num_epochs=1, num_threads=args.num_threads, verbose=False)

@@ -65,7 +65,7 @@ class BPR(object):
         if self.optimizer not in ("sgd", "adagrad", "adam"):
             raise Exception(f"{self.optimizer} is invalid.")
 
-    def fit(self, X, int num_epochs = 10, int num_threads = 8, bool verbose = False):
+    def fit(self, X, int num_epochs = 10, int num_threads = 8, bool verbose = True):
         """
         Training BPR model with Gradient Descent.
 
