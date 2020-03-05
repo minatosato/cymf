@@ -9,17 +9,18 @@
 Cython implementation of matrix-factorization based algorithms.
 
 ### Implicit RecSys
-- Bayesian Personlized Ranking (BPR) [Steffen Rendle et al. 2009]
-- Weighted Matrix Factorization (WMF) [Yifan Hu et al. 2008]
-- Exposure Matrix Factorization (ExpoMF) [Dawen Liang et al. 2016]
+- Bayesian Personlized Ranking (BPR) [[Steffen Rendle et al. 2009]](https://arxiv.org/pdf/1205.2618.pdf)
+- Weighted Matrix Factorization (WMF) [[Yifan Hu et al. 2008]](http://yifanhu.net/PUB/cf.pdf)
+- Exposure Matrix Factorization (ExpoMF) [[Dawen Liang et al. 2016]](https://arxiv.org/pdf/1510.07025.pdf)
 
 ### Word Embeddings
-- GloVe [Jeffrey Pennington et al. 2014]
+- GloVe [[Jeffrey Pennington et al. 2014]](https://nlp.stanford.edu/projects/glove/)
 
 ## Requiremts
-- GCC 7.4.0
+- GCC >= 7.4.0
 - OpenMP
 - OpenBLAS
+- Python >= 3.7
 - Python packages
     - see `requirements.txt`
 
