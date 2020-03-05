@@ -15,7 +15,6 @@ import numpy as np
 from scipy import sparse
 from collections import Counter
 from cython.parallel import prange
-from cython.parallel import threadid
 from sklearn import utils
 from tqdm import tqdm
 from cython.operator import dereference, postincrement
