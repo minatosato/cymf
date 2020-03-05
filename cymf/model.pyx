@@ -13,7 +13,6 @@
 import cython
 import numpy as np
 from cython.parallel import prange
-from cython.parallel import threadid
 from sklearn import utils
 from tqdm import tqdm
 
@@ -27,6 +26,9 @@ from .math cimport square
 from .math cimport sigmoid
 from .math cimport log
 from .math cimport exp
+
+cdef extern from "util.h" namespace "cymf" nogil:
+    cdef int threadid()
 
 cdef inline double weight_func(double x, double x_max, double alpha) nogil:
     return fmin(pow(x / x_max, alpha), 1.0)
