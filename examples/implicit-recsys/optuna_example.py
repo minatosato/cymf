@@ -38,15 +38,14 @@ def expomf_objective(trial: optuna.Trial):
     epochs = trial.suggest_int("epochs", 1, 5)
     weight_decay = trial.suggest_loguniform("weight_decay", 1e-4, 1e-1)
     model = cymf.ExpoMF(num_components=args.num_components, lam_y=weight_decay, weight_decay=weight_decay)
-    model.fit(dataset.train, num_epochs=epochs, verbose=False)
+    model.fit(dataset.train, num_epochs=epochs, num_threads=args.threads, verbose=False)
     return valid_evaluator.evaluate(model.W@model.H.T)["DCG@5"]
 
 def wmf_objective(trial: optuna.Trial):
-    epochs = trial.suggest_int("epochs", 1, 10)
-    alpha = trial.suggest_loguniform("alpha", 1e-5, 1e-1)
+    epochs = trial.suggest_int("epochs", 1, 30)
     weight_decay = trial.suggest_loguniform("weight_decay", 1e-4, 1e-1)
     weight = trial.suggest_loguniform("weight", 1, 30)
-    model = cymf.WMF(num_components=args.num_components, learning_rate=alpha, weight_decay=weight_decay, weight=weight)
+    model = cymf.WMF(num_components=args.num_components, weight_decay=weight_decay, weight=weight)
     model.fit(dataset.train, num_epochs=epochs, num_threads=args.threads, verbose=False)
     return valid_evaluator.evaluate(model.W@model.H.T)["DCG@5"]
 
@@ -79,7 +78,7 @@ study = optuna.create_study(direction="maximize")
 study.optimize(wmf_objective, n_trials=args.trials)
 print(study.best_params)
 result = []
-model = cymf.WMF(num_components=args.num_components, learning_rate=study.best_params["alpha"], weight_decay=study.best_params["weight_decay"], weight=study.best_params["weight"])
+model = cymf.WMF(num_components=args.num_components, weight_decay=study.best_params["weight_decay"], weight=study.best_params["weight"])
 model.fit(dataset.train, num_epochs=study.best_params["epochs"], num_threads=args.threads, verbose=False)
 for i in range(5):
     result.append(test_evaluator.evaluate(model.W @ model.H.T))

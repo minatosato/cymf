@@ -27,5 +27,5 @@ evaluator = cymf.evaluator.AverageOverAllEvaluator(Y_test, Y_train, k=5)
 model = cymf.WMF(num_components=args.num_components, weight=args.weight, weight_decay=args.weight_decay)
 
 for i in range(args.num_epochs):
-    model.fit_als(Y_train_csr, num_epochs=1, num_threads=args.num_threads, verbose=False)
+    model.fit(Y_train_csr, num_epochs=1, num_threads=args.num_threads, verbose=False)
     print(evaluator.evaluate(model.W @ model.H.T))
