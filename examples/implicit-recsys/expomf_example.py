@@ -18,12 +18,10 @@ parser.add_argument('--num_threads', type=int, default=8)
 args = parser.parse_args()
 
 dataset = cymf.dataset.MovieLens("ml-100k")
-Y_train = dataset.train.toarray()
-Y_test = dataset.test.toarray()
 
-evaluator = cymf.evaluator.AverageOverAllEvaluator(Y_test, Y_train, k=5)
+evaluator = cymf.evaluator.AverageOverAllEvaluator(dataset.test, dataset.train, k=5)
 model = cymf.ExpoMF(num_components=args.num_components, lam_y=args.weight_decay, weight_decay=args.weight_decay)
 for i in range(args.num_epochs):
-    model.fit(Y_train, num_epochs=1, num_threads=args.num_threads, verbose=False)
-    print(evaluator.evaluate(model.W @ model.H.T))
+    model.fit(dataset.train, num_epochs=1, num_threads=args.num_threads, verbose=False)
+    print(evaluator.evaluate(model.W, model.H))
 

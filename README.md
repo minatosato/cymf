@@ -56,13 +56,10 @@ import cymf
 
 dataset = cymf.dataset.MovieLens("ml-100k")
 
-Y_train = dataset.train.toarray()
-Y_test = dataset.test.toarray()
-
-evaluator = cymf.evaluator.AverageOverAllEvaluator(Y_test, Y_train, k=5)
+evaluator = cymf.evaluator.AverageOverAllEvaluator(dataset.test, dataset.train, k=5)
 model = cymf.BPR(num_components=20, learning_rate=0.01, weight_decay=0.01)
-model.fit(Y_train, num_epochs=30, num_threads=8, verbose=True)
-print(evaluator.evaluate(model.W @ model.H.T))
+model.fit(dataset.train, num_epochs=30, num_threads=8, verbose=True)
+print(evaluator.evaluate(model.W, model.H))
 
 # ITER=30, LOSS: 0.2627: 100%|█████████████████████████████████████████████| 30/30 [00:00<00:00, 98.46it/s]
 # {'DCG@5': 0.1815916629140773, 'Recall@5': 0.24528176175220465, 'MAP@5': 0.21311784866390876}

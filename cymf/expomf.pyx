@@ -69,14 +69,15 @@ class ExpoMF(object):
             num_epochs (int): A number of epochs.
             verbose (bool): Whether to show the progress of training.
         """
-
         if X is None:
             raise ValueError()
 
-        if not isinstance(X, (sparse.lil_matrix, sparse.csr_matrix, sparse.csc_matrix)):
+        if sparse.isspmatrix(X):
+            X = X.tocsr()
+        elif isinstance(X, np.ndarray):
             X = sparse.csr_matrix(X)
         else:
-            X = X.tocsr()
+            raise ValueError()
         X = X.astype(np.float64)
         
         if self.W is None:

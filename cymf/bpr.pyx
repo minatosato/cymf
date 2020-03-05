@@ -78,10 +78,12 @@ class BPR(object):
         if X is None:
             raise ValueError()
 
-        if not isinstance(X, (sparse.lil_matrix, sparse.csr_matrix, sparse.csc_matrix)):
+        if sparse.isspmatrix(X):
+            X = X.tocsr()
+        elif isinstance(X, np.ndarray):
             X = sparse.csr_matrix(X)
         else:
-            X = X.tocsr()
+            raise ValueError()
         X = X.astype(np.float64)
         
         if self.W is None:
@@ -126,7 +128,7 @@ class BPR(object):
         cdef accum_loss
         cdef list description_list
 
-        cdef int[:] negatives = np.zeros(num_threads).astype(np.int32)
+        cdef int user, positive, negative
         cdef vector[set[int]] user_positives = []
         cdef UniformGenerator gen = UniformGenerator(0, I, seed=1234)
 
@@ -150,11 +152,13 @@ class BPR(object):
             for iteration in range(iterations):
                 accum_loss = 0.0
                 for l in prange(N, nogil=True, num_threads=num_threads):
-                    negatives[threadid()] = gen.generate()
-                    if user_positives[users[l]].find(negatives[threadid()]) != user_positives[users[l]].end():
+                    user = users[l]
+                    positive = positives[l]
+                    negative = gen.generate()
+                    if user_positives[user].find(negative) != user_positives[user].end():
                         continue
-                    loss[l] = bpr_model.forward(users[l], positives[l], negatives[threadid()])
-                    bpr_model.backward(users[l], positives[l], negatives[threadid()])
+                    loss[l] = bpr_model.forward(user, positive, negative)
+                    bpr_model.backward(user, positive, negative)
 
                 for l in range(N):
                     accum_loss += loss[l]
