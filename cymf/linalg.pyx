@@ -139,3 +139,25 @@ cpdef int solve(double[::1,:] A, double[::1,:] b) nogil:
     lapack_dgesv(&n, &nrhs, &A[0,0], &n, p_ipiv, &b[0,0], &n, &info)
     free( <void*>p_ipiv )
     return info
+@cython.boundscheck(False)
+@cython.wraparound(False)
+cdef int solvep(double* A, double* b, int K) nogil:
+    """
+    倍精度実一般行列 A による連立一次方程式
+    A x = b
+    n: 連立一次方程式の式数 (= Aの行数)
+    nrhs: bの列数
+    A: 実行後は行列AをLU分解した結果が代入される．
+    lda: n
+    ipiv: 
+    b: 実行後はxが入る．
+    ldb: 通常はAの行数．
+    info: 0なら正常終了．
+    """
+    cdef int n = K
+    cdef int nrhs = 1
+    cdef int* p_ipiv = <int*> malloc( n*sizeof(int) )
+    cdef int info
+    lapack_dgesv(&n, &nrhs, A, &n, p_ipiv, b, &n, &info)
+    free( <void*>p_ipiv )
+    return info
