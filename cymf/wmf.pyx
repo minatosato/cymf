@@ -26,6 +26,10 @@ from libc.string cimport memset
 
 from .linalg cimport solvep
 
+cdef extern from "util.h" namespace "cymf" nogil:
+    cdef int threadid()
+    cdef int cpucount()
+
 class WMF(object):
     """
     Weighted Matrix Factorization (WMF)
@@ -116,6 +120,8 @@ class WMF(object):
         cdef double[::1,:] _b = np.zeros((K, 1)).astype(np.float64)
         cdef double* A
         cdef double* b
+
+        num_threads = num_threads if num_threads > 0 else cpucount()
         
         for i in prange(X.shape[0], nogil=True, num_threads=num_threads, schedule="guided"):
             A = <double *> malloc(sizeof(double) * K * K) # K行K列

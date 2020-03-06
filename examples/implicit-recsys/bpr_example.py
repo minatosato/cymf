@@ -6,13 +6,7 @@
 # LICENSE file in the root directory of this source tree.
 #
 
-from tqdm import tqdm
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-
 import cymf
-from cymf.dataset import ImplicitFeedbackDataset, MovieLens, YahooMusic
 
 import argparse
 parser = argparse.ArgumentParser(description='')

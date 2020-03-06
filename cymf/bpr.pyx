@@ -11,7 +11,6 @@
 # distutils: extra_compile_args = -std=c++11
 
 import cython
-import multiprocessing
 import numpy as np
 import pandas as pd
 from scipy import sparse
@@ -33,6 +32,7 @@ from .optimizer cimport Adam
 
 cdef extern from "util.h" namespace "cymf" nogil:
     cdef int threadid()
+    cdef int cpucount()
 
 class BPR(object):
     """
@@ -65,7 +65,7 @@ class BPR(object):
         if self.optimizer not in ("sgd", "adagrad", "adam"):
             raise Exception(f"{self.optimizer} is invalid.")
 
-    def fit(self, X, int num_epochs = 10, int num_threads = 8, bool verbose = True):
+    def fit(self, X, int num_epochs = 10, int num_threads = 1, bool verbose = True):
         """
         Training BPR model with Gradient Descent.
 
@@ -92,7 +92,7 @@ class BPR(object):
         if self.H is None:
             self.H = np.random.uniform(low=-0.1, high=0.1, size=(X.shape[1], self.num_components)) / self.num_components
 
-        num_threads = min(num_threads, multiprocessing.cpu_count())
+        num_threads = num_threads if num_threads > 0 else cpucount()
         users, positives = utils.shuffle(*(X.nonzero()))
 
         return self._fit_bpr(users.astype(np.int32), 

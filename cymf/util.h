@@ -13,7 +13,9 @@
 namespace cymf {
 #ifdef _OPENMP
 inline int threadid() { return omp_get_thread_num(); }
+inline int cpucount() { return omp_get_max_threads(); }
 #else
 inline int threadid() { return 0; }
+inline int cpucount() { return 1; }
 #endif
 } 

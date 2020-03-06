@@ -36,6 +36,10 @@ from .math cimport exp
 from .math cimport square
 from .math cimport M_PI
 
+cdef extern from "util.h" namespace "cymf" nogil:
+    cdef int threadid()
+    cdef int cpucount()
+
 class ExpoMF(object):
     """
     Exposure Matrix Factorization (ExpoMF)
@@ -141,6 +145,8 @@ class ExpoMF(object):
         cdef double[:,:] _b = np.zeros((K, 1)).astype(np.float64)
         cdef double* A
         cdef double* b
+
+        num_threads = num_threads if num_threads > 0 else cpucount()
         
         for i in prange(X.shape[0], nogil=True, num_threads=num_threads, schedule="guided"):
             A = <double *> malloc(sizeof(double) * K * K) # K行K列
