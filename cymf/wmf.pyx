@@ -12,7 +12,6 @@
 import cython
 import multiprocessing
 import numpy as np
-import pandas as pd
 from scipy import sparse
 from cython.parallel import prange
 from sklearn import utils
@@ -20,15 +19,11 @@ from tqdm import tqdm
 
 cimport numpy as np
 from libcpp cimport bool
-from libcpp.vector cimport vector
-from libcpp.string cimport string
-from libcpp.unordered_map cimport unordered_map
 from libc.stdlib cimport malloc
 from libc.stdlib cimport free
 from libc.string cimport memcpy
 from libc.string cimport memset
 
-from .model cimport WmfModel
 from .linalg cimport solvep
 
 class WMF(object):
@@ -122,7 +117,7 @@ class WMF(object):
         cdef double* A
         cdef double* b
         
-        for i in prange(X.shape[0], nogil=True, num_threads=num_threads):
+        for i in prange(X.shape[0], nogil=True, num_threads=num_threads, schedule="guided"):
             A = <double *> malloc(sizeof(double) * K * K) # K行K列
             b = <double *> malloc(sizeof(double) * K * 1) # K行1列
             

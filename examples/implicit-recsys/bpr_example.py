@@ -24,7 +24,7 @@ parser.add_argument('--num_threads', type=int, default=8)
 
 args = parser.parse_args()
 
-dataset: ImplicitFeedbackDataset = MovieLens("ml-100k")
+dataset = cymf.dataset.MovieLens("ml-100k")
 
 evaluator = cymf.evaluator.AverageOverAllEvaluator(dataset.test, dataset.train, k=5)
 model = cymf.BPR(num_components=args.num_components, learning_rate=0.01, weight_decay=args.weight_decay)

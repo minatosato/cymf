@@ -124,9 +124,7 @@ class BPR(object):
         cdef int U = X.shape[0]
         cdef int I = X.shape[1]
         cdef int u, l, iteration
-        cdef double[:] loss = np.zeros(N)
-        cdef accum_loss
-        cdef list description_list
+        cdef double accum_loss
 
         cdef int user, positive, negative
         cdef vector[set[int]] user_positives = []
@@ -151,23 +149,17 @@ class BPR(object):
         with tqdm(total=iterations, leave=True, ncols=120, disable=not verbose) as progress:
             for iteration in range(iterations):
                 accum_loss = 0.0
-                for l in prange(N, nogil=True, num_threads=num_threads):
+                for l in prange(N, nogil=True, num_threads=num_threads, schedule="guided"):
                     user = users[l]
                     positive = positives[l]
                     negative = gen.generate()
                     if user_positives[user].find(negative) != user_positives[user].end():
                         continue
-                    loss[l] = bpr_model.forward(user, positive, negative)
+                    accum_loss += bpr_model.forward(user, positive, negative)
                     bpr_model.backward(user, positive, negative)
 
-                for l in range(N):
-                    accum_loss += loss[l]
                 accum_loss /= N
 
-                description_list = []
-                description_list.append(f"ITER={iteration+1:{len(str(iterations))}}")
-                description_list.append(f"LOSS: {np.round(accum_loss, 4):.4f}")
-
-                progress.set_description(', '.join(description_list))
+                progress.set_description(f"ITER={iteration+1}")
                 progress.update(1)
 

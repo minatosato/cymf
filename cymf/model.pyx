@@ -33,7 +33,7 @@ cdef extern from "util.h" namespace "cymf" nogil:
 cdef inline double weight_func(double x, double x_max, double alpha) nogil:
     return fmin(pow(x / x_max, alpha), 1.0)
 
-cdef class MfModel:
+cdef class BprModel(object):
     def __init__(self, double[:,:] W, double[:,:] H, Optimizer optimizer, double weight_decay, int num_threads):
         self.W = W
         self.H = H
@@ -41,13 +41,9 @@ cdef class MfModel:
         self.optimizer = optimizer
         self.weight_decay = weight_decay
 
-cdef class BprModel(MfModel):
-    def __init__(self, double[:,:] W, double[:,:] H, Optimizer optimizer, double weight_decay, int num_threads):
-        super(BprModel, self).__init__(W, H, optimizer, weight_decay, num_threads)
-
     @cython.boundscheck(False)
     @cython.wraparound(False)
-    cdef double forward(self, int u, int i, int j) nogil:
+    cdef inline double forward(self, int u, int i, int j) nogil:
         cdef int thread_id = threadid() # 自分のスレッドidを元に参照すべきdouble[:] x_uijを決定する
 
         cdef double loss, l2_norm
@@ -66,7 +62,7 @@ cdef class BprModel(MfModel):
 
     @cython.boundscheck(False)
     @cython.wraparound(False)
-    cdef void backward(self, int u, int i, int j) nogil:
+    cdef inline void backward(self, int u, int i, int j) nogil:
         cdef int thread_id = threadid()
 
         cdef int N = self.W.shape[0]
@@ -88,47 +84,6 @@ cdef class BprModel(MfModel):
             self.optimizer.update_W(u, k, grad_wuk)
             self.optimizer.update_H(i, k, grad_hik)
             self.optimizer.update_H(j, k, grad_hjk)
-
-cdef class WmfModel(MfModel):
-    def __init__(self, double[:,:] W, double[:,:] H, Optimizer optimizer, double weight_decay, int num_threads, double weight):
-        super(WmfModel, self).__init__(W, H, optimizer, weight_decay, num_threads)
-        self.weight = weight
-
-    @cython.boundscheck(False)
-    @cython.wraparound(False)
-    cdef double forward(self, int u, int i, double r) nogil:
-        cdef int thread_id = threadid()
-        cdef int K = self.W.shape[1]
-        cdef int k
-        cdef double loss, l2_norm
-
-        self.tmp[thread_id] = 0.0
-        l2_norm = 0.0
-        for k in range(K):
-            self.tmp[thread_id] += self.W[u, k] * self.H[i, k]
-            l2_norm += square(self.W[u, k]) + square(self.H[i, k])
-        self.tmp[thread_id] = r - self.tmp[thread_id]
-        if r != 0.0:
-            self.tmp[thread_id] *= self.weight
-
-        loss = square(self.tmp[thread_id]) + self.weight_decay * l2_norm
-        return loss
-
-    @cython.boundscheck(False)
-    @cython.wraparound(False)
-    cdef void backward(self, int u, int i) nogil:
-        cdef int thread_id = threadid()
-        cdef int K = self.W.shape[1]
-        cdef int k
-        cdef double grad_wuk
-        cdef double grad_hik
-
-        for k in range(K):
-            grad_wuk = - self.tmp[thread_id] * self.H[i, k]
-            grad_hik = - self.tmp[thread_id] * self.W[u, k]
-
-            self.optimizer.update_W(u, k, grad_wuk)
-            self.optimizer.update_H(i, k, grad_hik)
 
 
 cdef class GloVeModel:

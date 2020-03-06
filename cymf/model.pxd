@@ -11,33 +11,17 @@
 
 import cython
 
-cimport numpy as np
-from cython cimport floating
-from cython cimport integral
-from libcpp cimport bool
-from libcpp.vector cimport vector
-from libcpp.string cimport string
-from libcpp.map cimport map
-from libcpp.unordered_map cimport unordered_map
-
 from .optimizer cimport Optimizer
 from .optimizer cimport GloVeAdaGrad
 
-cdef class MfModel:
+cdef class BprModel(object):
     cdef public double[:,:] W
     cdef public double[:,:] H
     cdef public double[:] tmp
     cdef public double weight_decay
     cdef public Optimizer optimizer
-
-cdef class BprModel(MfModel):
-    cdef double forward(self, int u, int i, int j) nogil
-    cdef void backward(self, int u, int i, int j) nogil
-
-cdef class WmfModel(MfModel):
-    cdef public double weight
-    cdef double forward(self, int u, int i, double r) nogil
-    cdef void backward(self, int u, int i) nogil
+    cdef inline double forward(self, int u, int i, int j) nogil
+    cdef inline void backward(self, int u, int i, int j) nogil
 
 cdef class GloVeModel(object):
     cdef public double[:,:] W

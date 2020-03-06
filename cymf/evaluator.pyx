@@ -42,6 +42,9 @@ class Evaluator(object):
         self.user_positives = self.X.copy()
         if X_train is not None:
             self.user_positives += sparse.csr_matrix(X_train)
+        
+        self.X = self.X.astype(np.float64)
+        self.user_positives = self.user_positives.astype(np.float64)
 
         self.propensity_scores = np.maximum(X.mean(axis=0), 1e-3)
         self.metrics = metrics

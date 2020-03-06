@@ -142,7 +142,7 @@ class ExpoMF(object):
         cdef double* A
         cdef double* b
         
-        for i in prange(X.shape[0], nogil=True, num_threads=num_threads):
+        for i in prange(X.shape[0], nogil=True, num_threads=num_threads, schedule="guided"):
             A = <double *> malloc(sizeof(double) * K * K) # K行K列
             b = <double *> malloc(sizeof(double) * K * 1) # K行1列
             
