@@ -7,6 +7,7 @@
 #
 
 import cymf
+import numpy as np
 
 import argparse
 parser = argparse.ArgumentParser(description='')
@@ -22,6 +23,6 @@ dataset = cymf.dataset.MovieLens("ml-100k")
 evaluator = cymf.evaluator.AverageOverAllEvaluator(dataset.test, dataset.train, k=5)
 model = cymf.ExpoMF(num_components=args.num_components, lam_y=args.weight_decay, weight_decay=args.weight_decay)
 for i in range(args.num_epochs):
-    model.fit(dataset.train, num_epochs=100, num_threads=args.num_threads, verbose=False)
-    print(evaluator.evaluate(model.W, model.H))
+    model.fit(dataset.train, num_epochs=1, num_threads=args.num_threads, verbose=False)
+    print(evaluator.evaluate(model.W, model.H.astype(np.float32)))
 

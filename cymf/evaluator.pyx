@@ -52,7 +52,9 @@ class Evaluator(object):
         self.num_negatives = num_negatives
         self.unbiased = unbiased
 
-    def evaluate(self, np.ndarray[double, ndim=2] W, np.ndarray[double, ndim=2] H):
+    def evaluate(self, np.ndarray W, np.ndarray H):
+        cdef np.ndarray[double, ndim=2] _W = W.astype(np.float64)
+        cdef np.ndarray[double, ndim=2] _H = H.astype(np.float64)
         cdef dict buff = {}
         cdef str metric
         cdef np.ndarray[int, ndim=1] positives
@@ -94,18 +96,18 @@ class Evaluator(object):
                 for metric in self.metrics:
                     if self.unbiased:
                         if metric == "DCG":
-                            buff[f"{metric}@{k}"][user] = dcg_at_k_with_ips(ratings, np.dot(H[items], W[user]), k, self.propensity_scores)
+                            buff[f"{metric}@{k}"][user] = dcg_at_k_with_ips(ratings, np.dot(_H[items], _W[user]), k, self.propensity_scores)
                         elif metric == "Recall":
-                            buff[f"{metric}@{k}"][user] = recall_at_k_with_ips(ratings, np.dot(H[items], W[user]), k, self.propensity_scores)
+                            buff[f"{metric}@{k}"][user] = recall_at_k_with_ips(ratings, np.dot(_H[items], _W[user]), k, self.propensity_scores)
                         elif metric == "MAP":
-                            buff[f"{metric}@{k}"][user] = average_precision_at_k_with_ips(ratings, np.dot(H[items], W[user]), k, self.propensity_scores)
+                            buff[f"{metric}@{k}"][user] = average_precision_at_k_with_ips(ratings, np.dot(_H[items], _W[user]), k, self.propensity_scores)
                     else:
                         if metric == "DCG":
-                            buff[f"{metric}@{k}"][user] = dcg_at_k(ratings, np.dot(H[items], W[user]), k)
+                            buff[f"{metric}@{k}"][user] = dcg_at_k(ratings, np.dot(_H[items], _W[user]), k)
                         elif metric == "Recall":
-                            buff[f"{metric}@{k}"][user] = recall_at_k(ratings, np.dot(H[items], W[user]), k)
+                            buff[f"{metric}@{k}"][user] = recall_at_k(ratings, np.dot(_H[items], _W[user]), k)
                         elif metric == "MAP":
-                            buff[f"{metric}@{k}"][user] = average_precision_at_k(ratings, np.dot(H[items], W[user]), k)
+                            buff[f"{metric}@{k}"][user] = average_precision_at_k(ratings, np.dot(_H[items], _W[user]), k)
         
         for k in self.k:
             for metric in self.metrics:
