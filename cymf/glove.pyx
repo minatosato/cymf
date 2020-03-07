@@ -17,7 +17,8 @@ from collections import Counter
 from cython.parallel import prange
 from sklearn import utils
 from tqdm import tqdm
-from cython.operator import dereference, postincrement
+from cython.operator import dereference
+from cython.operator import postincrement
 
 cimport numpy as np
 from cython cimport floating
@@ -189,7 +190,7 @@ def read_text(str fname, int min_count = 5, int window_size = 10):
     for i in tqdm(range(len(lines)), ncols=100, leave=False):
         words = lines[i].split(" ")
         tmp = []
-        for j in range(len(words)):
+        for j in tqdm(range(len(words)), ncols=100, leave=False):
             if words[j] not in w2i and count[words[j]] >= min_count:
                 index = len(w2i)
                 w2i[words[j]] = index
@@ -202,34 +203,22 @@ def read_text(str fname, int min_count = 5, int window_size = 10):
 
     vocab_size = len(w2i)
 
-    try:
-        matrix = np.zeros(shape=(vocab_size, vocab_size))
-        for i in tqdm(range(len(x)), ncols=100, leave=False):
-            for j in range(len(x[i])):
-                for k in range(imax(0, j-window_size), j):
-                    matrix[x[i][j], x[i][k]] += 1.0 / iabs(j - k)
-        from scipy import sparse
-        ret = sparse.csr_matrix(matrix)
-        return ret, i2w
-    except MemoryError:
-        for i in tqdm(range(len(x)), ncols=100, leave=False):
-            for j in range(len(x[i])):
-                for k in range(imax(0, j-window_size), j):
-                    sparse_matrix[((<long> x[i][j]) + (<long> x[i][k]) * (<long>vocab_size))] += 1.0 / iabs(j - k)
-                    
-    
-        from scipy import sparse
-        row = np.zeros(sparse_matrix.size(), dtype=np.int64)
-        col = np.zeros(sparse_matrix.size(), dtype=np.int64)
-        data = np.zeros(sparse_matrix.size())
+    for i in tqdm(range(len(x)), ncols=100, leave=False):
+        for j in tqdm(range(len(x[i])), ncols=100, leave=False):
+            for k in range(imax(0, j-window_size), j):
+                sparse_matrix[((<long> x[i][j]) + (<long> x[i][k]) * (<long>vocab_size))] += 1.0 / iabs(j - k)
+                
+    row = np.zeros(sparse_matrix.size(), dtype=np.int64)
+    col = np.zeros(sparse_matrix.size(), dtype=np.int64)
+    data = np.zeros(sparse_matrix.size())
 
-        i = 0
-        _iterator = sparse_matrix.begin()
-        while _iterator != sparse_matrix.end():
-            row[i] = dereference(_iterator).first % vocab_size
-            col[i] = dereference(_iterator).first / vocab_size
-            data[i] = dereference(_iterator).second
-            postincrement(_iterator)
-            i += 1
-        ret = sparse.csr_matrix((data, (row, col)), shape=(vocab_size, vocab_size))
-        return ret, i2w
+    i = 0
+    _iterator = sparse_matrix.begin()
+    while _iterator != sparse_matrix.end():
+        row[i] = dereference(_iterator).first % vocab_size
+        col[i] = dereference(_iterator).first / vocab_size
+        data[i] = dereference(_iterator).second
+        postincrement(_iterator)
+        i += 1
+    ret = sparse.csr_matrix((data, (row, col)), shape=(vocab_size, vocab_size))
+    return ret, i2w

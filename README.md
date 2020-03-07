@@ -8,7 +8,7 @@
 
 Cython implementation of matrix-factorization based algorithms.
 
-### Implicit RecSys
+### Implicit Recommender Learning
 - Bayesian Personlized Ranking (BPR) [[Steffen Rendle et al. 2009]](https://arxiv.org/pdf/1205.2618.pdf)
 - Weighted Matrix Factorization (WMF) [[Yifan Hu et al. 2008]](http://yifanhu.net/PUB/cf.pdf)
 - Exposure Matrix Factorization (ExpoMF) [[Dawen Liang et al. 2016]](https://arxiv.org/pdf/1510.07025.pdf)
