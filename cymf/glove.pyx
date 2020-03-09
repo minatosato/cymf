@@ -161,6 +161,22 @@ class GloVe(object):
                 progress.set_description(', '.join(description_list))
                 progress.update(1)
 
+    def save_word2vec_format(self, path, index2word):
+        """
+        Save the model as gensim.models.KeyedVectors word2vec format.
+
+        Args:
+            path (str): A path to save file.
+            num_epochs (dict): A index-to-word map.
+        """
+        from pathlib import Path
+        output = Path(path)
+        with output.open("w") as f:
+            f.write(f"{self.W.shape[0]} {self.W.shape[1]}\n")
+            for i in range(self.W.shape[0]):
+                f.write(f"{index2word[i]} " + " ".join(list(map(str, self.W[i]))) + "\n")
+
+
 @cython.boundscheck(False)
 @cython.wraparound(False)
 @cython.cdivision(True) 

@@ -19,16 +19,30 @@ from typing import Dict
 from typing import Union
 
 class Text8(CooccurrrenceDataset):
-    def __init__(self, min_count: int = 5, window_size = 10):
-        super().__init__("text8", min_count, window_size)
+    def __init__(self, lang: str = "en", min_count: int = 5, window_size = 10):
+        fname: str
+        if lang == "en":
+            fname = "text8"
+        elif lang == "ja":
+            fname = "ja.text8"
+        else:
+            raise ValueError("An argument 'lang' must be 'en' or 'ja'.")
+
+        super().__init__(fname, min_count, window_size)
 
         if not self.path.exists():
             zip_path: Path = self.path.parent.joinpath(self.path.name + ".zip")
             if not zip_path.exists():
-                wget.download(
-                    f"http://mattmahoney.net/dc/{self.path.name}.zip",
-                    out=str(zip_path)
-                )
+                if lang == "en":
+                    wget.download(
+                        "http://mattmahoney.net/dc/text8.zip",
+                        out=str(zip_path)
+                    )
+                elif lang == "ja":
+                    wget.download(
+                        "https://s3-ap-northeast-1.amazonaws.com/dev.tech-sketch.jp/chakki/public/ja.text8.zip",
+                        out=str(zip_path)
+                    )
 
             with zipfile.ZipFile(zip_path) as zf:
                 zf.extractall(self.path.parent)
