@@ -7,16 +7,14 @@
 #
 
 from gensim.models import KeyedVectors
-from scipy import sparse
 from pathlib import Path
-from cymf import GloVe
-from cymf.dataset import Text8
-from cymf.dataset import CooccurrrenceDataset
+
+import cymf
 
 import argparse
 parser = argparse.ArgumentParser(description='')
 parser.add_argument('--min_count', type=int, default=5)
-parser.add_argument('--iter', type=int, default=15)
+parser.add_argument('--num_epochs', type=int, default=15)
 parser.add_argument('--num_components', type=int, default=50)
 parser.add_argument('--lr', type=float, default=0.05)
 parser.add_argument('--alpha', type=float, default=0.75)
@@ -25,15 +23,13 @@ parser.add_argument('--threads', type=int, default=8)
 
 args = parser.parse_args()
 
-print("text読み込み開始")
-text8: CooccurrrenceDataset = Text8(min_count=args.min_count)
-print("text読み込み完了")
-embedding_size = 50
+print("loading text8...")
+text8 = cymf.dataset.Text8(min_count=args.min_count)
 
-model = GloVe(num_components=args.num_components, learning_rate=args.lr, alpha=args.alpha, x_max=args.x_max)
-model.fit(text8.X, num_epochs=args.iter, num_threads=args.threads, verbose=True)
+model = cymf.GloVe(num_components=args.num_components, learning_rate=args.lr, alpha=args.alpha, x_max=args.x_max)
+model.fit(text8.X, num_epochs=args.num_epochs, num_threads=args.threads, verbose=True)
 
-output: Path = Path("./vectors.txt")
+output = Path("./vectors.txt")
 with output.open("w") as f:
     f.write(f"{model.W.shape[0]} {embedding_size}\n")
     for i in range(model.W.shape[0]):

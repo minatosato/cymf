@@ -10,7 +10,6 @@
 # distutils: language=c++
 
 import cython
-import multiprocessing
 import numpy as np
 from scipy import sparse
 from collections import Counter
@@ -21,7 +20,6 @@ from cython.operator import dereference
 from cython.operator import postincrement
 
 cimport numpy as np
-from cython cimport floating
 from cython cimport integral
 from libcpp cimport bool
 from libcpp.vector cimport vector
@@ -29,6 +27,9 @@ from libcpp.unordered_map cimport unordered_map
 
 from .model cimport GloVeModel
 from .optimizer cimport GloVeAdaGrad
+
+cdef extern from "util.h" namespace "cymf" nogil:
+    cdef int cpucount()
 
 cdef inline int imax(int a, int b) nogil:
     if (a > b):
@@ -54,7 +55,7 @@ class GloVe(object):
         x_max (double): See the paper.
         W (np.ndarray[double, ndim=2]): Word vectors
     """
-    def __init__(self, int num_components = 20,
+    def __init__(self, int num_components = 50,
                        double learning_rate = 0.01,
                        double alpha = 0.75,
                        double x_max = 10.0):
@@ -92,7 +93,7 @@ class GloVe(object):
         _W = np.random.uniform(low=-0.5, high=0.5, size=(X.shape[1], self.num_components)) / self.num_components
         _bias = np.random.uniform(low=-0.5, high=0.5, size=(X.shape[0],)) / self.num_components
 
-        num_threads = min(num_threads, multiprocessing.cpu_count())
+        num_threads = num_threads if num_threads > 0 else cpucount()
         central_words, context_words = X.nonzero()
         counts = X.data
 
@@ -168,10 +169,10 @@ def read_text(str fname, int min_count = 5, int window_size = 10):
     cdef str raw
     cdef list words
     cdef list lines
-    cdef vector[vector[int]] x = []
-    cdef vector[int] tmp = []
-    cdef int i, j, k, index
-    cdef long vocab_size
+    cdef vector[vector[long]] x = []
+    cdef vector[long] tmp = []
+    cdef int i, j, k
+    cdef long vocab_size, index
     cdef double[:,:] matrix
     cdef unordered_map[long, double] sparse_matrix
     cdef unordered_map[long, double].iterator _iterator
@@ -206,7 +207,7 @@ def read_text(str fname, int min_count = 5, int window_size = 10):
     for i in tqdm(range(len(x)), ncols=100, leave=False):
         for j in tqdm(range(len(x[i])), ncols=100, leave=False):
             for k in range(imax(0, j-window_size), j):
-                sparse_matrix[((<long> x[i][j]) + (<long> x[i][k]) * (<long>vocab_size))] += 1.0 / iabs(j - k)
+                sparse_matrix[x[i][j]+x[i][k]*vocab_size] += 1.0 / iabs(j - k)
                 
     row = np.zeros(sparse_matrix.size(), dtype=np.int64)
     col = np.zeros(sparse_matrix.size(), dtype=np.int64)

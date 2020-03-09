@@ -22,6 +22,6 @@ dataset = cymf.dataset.MovieLens("ml-100k")
 
 evaluator = cymf.evaluator.AverageOverAllEvaluator(dataset.test, dataset.train, k=5)
 model = cymf.BPR(num_components=args.num_components, learning_rate=0.01, weight_decay=args.weight_decay)
-for i in range(args.num_epochs):
-    model.fit(dataset.train, num_epochs=1, num_threads=args.num_threads, verbose=False)
+for i in range(args.num_epochs//5):
+    model.fit(dataset.train, num_epochs=5, num_threads=args.num_threads, verbose=False)
     print(evaluator.evaluate(model.W, model.H))

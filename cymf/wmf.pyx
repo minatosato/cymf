@@ -10,7 +10,6 @@
 # distutils: language=c++
 
 import cython
-import multiprocessing
 import numpy as np
 from scipy import sparse
 from cython.parallel import prange
@@ -95,16 +94,12 @@ class WMF(object):
         cdef int epoch
         cdef int U = X.shape[0]
         cdef int I = X.shape[1]
-        cdef list description_list
 
         with tqdm(total=num_epochs, leave=True, ncols=100, disable=not verbose) as progress:
             for epoch in range(num_epochs):
                 self._als(X.indptr, X.indices, self.W, self.H, num_threads)
                 self._als(X.T.tocsr().indptr, X.T.tocsr().indices, self.H, self.W, num_threads)
-
-                description_list = []
-                description_list.append(f"EPOCH={epoch+1:{len(str(num_epochs))}}")
-                progress.set_description(", ".join(description_list))
+                progress.set_description(f"EPOCH={epoch+1:{len(str(num_epochs))}}")
                 progress.update(1)
 
     @cython.boundscheck(False)

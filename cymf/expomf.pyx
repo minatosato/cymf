@@ -24,11 +24,6 @@ from libc.string cimport memcpy
 from libc.string cimport memset
 
 from .linalg cimport solvep
-from .linalg cimport solve
-from .linalg cimport broadcast_hadamard
-from .linalg cimport atb_lambda
-from .linalg cimport atbt
-from .linalg cimport atb
 from .linalg cimport dot
 
 from .math cimport sqrt
@@ -102,7 +97,6 @@ class ExpoMF(object):
         cdef int U = X.shape[0]
         cdef int I = X.shape[1]
         cdef double[:,:] _X = X.toarray()
-        cdef list description_list
 
         cdef double[:,:] Exposure = np.zeros(shape=X.shape, dtype=np.float64)
         cdef double alpha_1 = 1.0
@@ -129,9 +123,7 @@ class ExpoMF(object):
 
                 mu = (alpha_1 + np.array(Exposure).sum(axis=0) - 1.) / (alpha_1 + alpha_2 + U - 2.)
 
-                description_list = []
-                description_list.append(f"EPOCH={epoch+1:{len(str(num_epochs))}}")
-                progress.set_description(", ".join(description_list))
+                progress.set_description(f"EPOCH={epoch+1:{len(str(num_epochs))}}")
                 progress.update(1)
 
     @cython.boundscheck(False)
