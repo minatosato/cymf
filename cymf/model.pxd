@@ -23,6 +23,15 @@ cdef class BprModel(object):
     cdef inline double forward(self, int u, int i, int j) nogil
     cdef inline void backward(self, int u, int i, int j) nogil
 
+cdef class RelMfModel(object):
+    cdef public double[:,:] W
+    cdef public double[:,:] H
+    cdef public double[:] tmp
+    cdef public double weight_decay
+    cdef public Optimizer optimizer
+    cdef inline double forward(self, int u, int i, double r, double p, double M) nogil
+    cdef inline void backward(self, int u, int i, double r, double p, double M) nogil
+
 cdef class GloVeModel(object):
     cdef public double[:,:] W
     cdef public double[:,:] H

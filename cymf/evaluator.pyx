@@ -46,7 +46,7 @@ class Evaluator(object):
         self.X = self.X.astype(np.float64)
         self.user_positives = self.user_positives.astype(np.float64)
 
-        self.propensity_scores = np.maximum(X.mean(axis=0), 1e-3)
+        self.propensity_scores = np.array(np.maximum(X.mean(axis=0), 1e-3)).flatten()
         self.metrics = metrics
         self.k = k
         self.num_negatives = num_negatives
