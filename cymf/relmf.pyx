@@ -76,7 +76,7 @@ class RelMF(object):
             X = X.toarray()
         X = X.astype(np.float64)
 
-        propensities = np.maximum(X.mean(axis=0), 1e-3)
+        propensities = np.maximum(X.mean(axis=0), 1e-5)**0.5
         
         if self.W is None:
             np.random.seed(4321)

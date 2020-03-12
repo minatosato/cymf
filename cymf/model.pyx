@@ -128,8 +128,15 @@ cdef class RelMfModel(object):
         cdef double grad_hik
 
         for k in range(K):
-            grad_wuk = - ((r/dmax(p, M))*(1. - self.tmp[thread_id]) * self.H[i, k] + (1 - r/dmax(p, M)) * (0. - self.tmp[thread_id]) * self.H[i, k]) + self.weight_decay * self.H[i, k] 
-            grad_hik = - ((r/dmax(p, M))*(1. - self.tmp[thread_id]) * self.W[u, k] + (1 - r/dmax(p, M)) * (0. - self.tmp[thread_id]) * self.W[u, k]) + self.weight_decay * self.W[u, k]
+            grad_wuk = - (
+                (    r/dmax(p, M)) * (1. - self.tmp[thread_id]) * self.H[i, k] + \
+                (1 - r/dmax(p, M)) * (0. - self.tmp[thread_id]) * self.H[i, k]   \
+            ) + self.weight_decay * self.W[u, k] 
+            
+            grad_hik = - (
+                (    r/dmax(p, M)) * (1. - self.tmp[thread_id]) * self.W[u, k] + \
+                (1 - r/dmax(p, M)) * (0. - self.tmp[thread_id]) * self.W[u, k]   \
+            ) + self.weight_decay * self.H[i, k]
 
             self.optimizer.update_W(u, k, grad_wuk)
             self.optimizer.update_H(i, k, grad_hik)
