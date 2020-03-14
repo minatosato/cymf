@@ -65,7 +65,7 @@ class BPR(object):
         if self.optimizer not in ("sgd", "adagrad", "adam"):
             raise Exception(f"{self.optimizer} is invalid.")
 
-    def fit(self, X, int num_epochs = 10, int num_threads = 1, bool verbose = True):
+    def fit(self, X, int num_epochs = 10, int num_threads = 1, valid_evaluator = None, bool early_stopping = False, bool verbose = True):
         """
         Training BPR model with Gradient Descent.
 
@@ -85,6 +85,14 @@ class BPR(object):
         else:
             raise ValueError()
         X = X.astype(np.float64)
+        
+        self.valid_evaluator = valid_evaluator
+        self.valid_dcg = - np.inf
+        self.count = 0
+        self.early_stopping = early_stopping
+
+        if early_stopping and self.valid_evaluator is None:
+            raise ValueError()
         
         if self.W is None:
             np.random.seed(4321)
@@ -118,12 +126,11 @@ class BPR(object):
 
         cdef double[:,::1] W = self.W
         cdef double[:,::1] H = self.H
-        cdef int iterations = num_epochs
         cdef int N = users.shape[0]
         cdef int K = W.shape[1]
         cdef int U = X.shape[0]
         cdef int I = X.shape[1]
-        cdef int u, l, iteration
+        cdef int u, l, epoch
         cdef double accum_loss
 
         cdef int user, positive, negative
@@ -146,8 +153,8 @@ class BPR(object):
         optimizer.set_parameters(W, H)
         bpr_model= BprModel(W, H, optimizer, weight_decay, num_threads)
 
-        with tqdm(total=iterations, leave=True, ncols=120, disable=not verbose) as progress:
-            for iteration in range(iterations):
+        with tqdm(total=num_epochs, leave=True, ncols=120, disable=not verbose) as progress:
+            for epoch in range(num_epochs):
                 accum_loss = 0.0
                 for l in prange(N, nogil=True, num_threads=num_threads, schedule="guided"):
                     user = users[l]
@@ -160,6 +167,16 @@ class BPR(object):
 
                 accum_loss /= N
 
-                progress.set_description(f"ITER={iteration+1}")
+                if self.valid_evaluator:
+                    valid_dcg = self.valid_evaluator.evaluate(self.W, self.H)["DCG@5"]
+                    if self.early_stopping and self.valid_dcg > valid_dcg and count > 5:
+                        break
+                    elif self.early_stopping and self.valid_dcg > valid_dcg:
+                        count += 1
+                    else:
+                        count = 0
+                        self.valid_dcg = valid_dcg
+
+                progress.set_description(f"EPOCH={epoch+1:{len(str(num_epochs))}}, DCG@5={np.round(valid_dcg,3) if self.valid_evaluator else ''}")
                 progress.update(1)
 

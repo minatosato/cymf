@@ -7,11 +7,10 @@
 #
 
 import cymf
-import numpy as np
 
 import argparse
 parser = argparse.ArgumentParser(description='')
-parser.add_argument('--num_epochs', type=int, default=10)
+parser.add_argument('--max_epochs', type=int, default=300)
 parser.add_argument('--num_components', type=int, default=20)
 parser.add_argument('--weight_decay', type=float, default=0.1)
 parser.add_argument('--num_threads', type=int, default=8)
@@ -20,9 +19,9 @@ args = parser.parse_args()
 
 dataset = cymf.dataset.MovieLens("ml-100k")
 
-evaluator = cymf.evaluator.AverageOverAllEvaluator(dataset.test, dataset.train, k=5)
+valid_evaluator = cymf.evaluator.AverageOverAllEvaluator(dataset.valid, dataset.train, metrics=["DCG"], k=5)
+test_evaluator = cymf.evaluator.AverageOverAllEvaluator(dataset.test, dataset.train, k=5)
 model = cymf.ExpoMF(num_components=args.num_components, lam_y=args.weight_decay, weight_decay=args.weight_decay)
-for i in range(args.num_epochs):
-    model.fit(dataset.train, num_epochs=1, num_threads=args.num_threads, verbose=False)
-    print(evaluator.evaluate(model.W, model.H))
+model.fit(dataset.train, num_epochs=args.max_epochs, num_threads=args.num_threads, valid_evaluator=valid_evaluator, early_stopping=True)
+print(test_evaluator.evaluate(model.W, model.H))
 
