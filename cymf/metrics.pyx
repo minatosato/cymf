@@ -21,9 +21,7 @@ from .math cimport log2
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-cpdef double dcg_at_k(np.ndarray[int, ndim=1] y_true, np.ndarray[double, ndim=1] y_score, int k):
-    cdef int[:] y_true_sorted_by_score = y_true[y_score.argsort()[::-1]]
-
+cpdef double dcg_at_k(int[:] y_true_sorted_by_score, int k) nogil:
     cdef int i
     cdef double dcg_tmp
     cdef double dcg_score = 0.0
@@ -46,10 +44,7 @@ cpdef double dcg_at_k(np.ndarray[int, ndim=1] y_true, np.ndarray[double, ndim=1]
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-cpdef double dcg_at_k_with_ips(np.ndarray[int, ndim=1] y_true, np.ndarray[double, ndim=1] y_score, int k, np.ndarray[double, ndim=1] propensity_scores):
-    cdef int[:] y_true_sorted_by_score = y_true[y_score.argsort()[::-1]]
-    cdef double[:] p_scores_sorted_by_score = propensity_scores[y_score.argsort()[::-1]]
-
+cpdef double dcg_at_k_with_ips(int[:] y_true_sorted_by_score, double[:] p_scores_sorted_by_score, int k) nogil:
     cdef int i
     cdef double dcg_tmp
     cdef double dcg_score = 0.0
@@ -73,9 +68,7 @@ cpdef double dcg_at_k_with_ips(np.ndarray[int, ndim=1] y_true, np.ndarray[double
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-cpdef double recall_at_k(np.ndarray[int, ndim=1] y_true, np.ndarray[double, ndim=1] y_score, int k):
-    cdef int[:] y_true_sorted_by_score = y_true[y_score.argsort()[::-1]]
-
+cpdef double recall_at_k(int[:] y_true_sorted_by_score, int k) nogil:
     cdef int i
     cdef double recall_score = 0.0
     cdef double counter = 0.0
@@ -93,10 +86,7 @@ cpdef double recall_at_k(np.ndarray[int, ndim=1] y_true, np.ndarray[double, ndim
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-cpdef double recall_at_k_with_ips(np.ndarray[int, ndim=1] y_true, np.ndarray[double, ndim=1] y_score, int k, np.ndarray[double, ndim=1] propensity_scores):
-    cdef int[:] y_true_sorted_by_score = y_true[y_score.argsort()[::-1]]
-    cdef double[:] p_scores_sorted_by_score = propensity_scores[y_score.argsort()[::-1]]
-
+cpdef double recall_at_k_with_ips(int[:] y_true_sorted_by_score, double[:] p_scores_sorted_by_score, int k) nogil:
     cdef int i
     cdef double recall_score = 0.0
     cdef double sn = 0.0 # self normalizer
@@ -116,8 +106,7 @@ cpdef double recall_at_k_with_ips(np.ndarray[int, ndim=1] y_true, np.ndarray[dou
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-cpdef double average_precision_at_k(np.ndarray[int, ndim=1] y_true, np.ndarray[double, ndim=1] y_score, int k):
-    cdef int[:] y_true_sorted_by_score = y_true[y_score.argsort()[::-1]]
+cpdef double average_precision_at_k(int[:] y_true_sorted_by_score, int k) nogil:
     cdef double average_precision_score = 0.0
     cdef double tmp
     cdef double counter = 0.0
@@ -137,10 +126,7 @@ cpdef double average_precision_at_k(np.ndarray[int, ndim=1] y_true, np.ndarray[d
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-cpdef double average_precision_at_k_with_ips(np.ndarray[int, ndim=1] y_true, np.ndarray[double, ndim=1] y_score, int k, np.ndarray[double, ndim=1] propensity_scores):
-    cdef int[:] y_true_sorted_by_score = y_true[y_score.argsort()[::-1]]
-    cdef double[:] p_scores_sorted_by_score = propensity_scores[y_score.argsort()[::-1]]
-
+cpdef double average_precision_at_k_with_ips(int[:] y_true_sorted_by_score, double[:] p_scores_sorted_by_score, int k) nogil:
     cdef double average_precision_score = 0.0
     cdef double tmp
     cdef double counter = 0.0
