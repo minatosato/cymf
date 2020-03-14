@@ -118,7 +118,7 @@ class WMF(object):
                         count = 0
                         self.valid_dcg = valid_dcg
 
-                progress.set_description(f"EPOCH={epoch+1:{len(str(num_epochs))}}, DCG@5={np.round(valid_dcg,3) if self.valid_evaluator else ''}")
+                progress.set_description(f"EPOCH={epoch+1:{len(str(num_epochs))}} {(', DCG@5=' + str(np.round(valid_dcg,3))) if self.valid_evaluator else ''}")
                 progress.update(1)
 
     @cython.boundscheck(False)
