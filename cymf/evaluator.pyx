@@ -53,7 +53,7 @@ class Evaluator(object):
         self.num_negatives = num_negatives
         self.unbiased = unbiased
 
-    def evaluate(self, np.ndarray W, np.ndarray H):
+    def evaluate(self, np.ndarray W, np.ndarray H, int seed = 1234):
         cdef np.ndarray[double, ndim=2] _W = W.astype(np.float64)
         cdef np.ndarray[double, ndim=2] _H = H.astype(np.float64)
         cdef dict buff = {}
@@ -78,7 +78,7 @@ class Evaluator(object):
         U = self.X.shape[0]
         I = self.X.shape[1]
         
-        gen = UniformGenerator(0, I, seed=1234)
+        gen = UniformGenerator(0, I, seed=seed)
 
         if type(self.k) == int:
             self.k = [self.k]
