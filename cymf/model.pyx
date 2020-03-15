@@ -26,6 +26,7 @@ from .math cimport square
 from .math cimport sigmoid
 from .math cimport log
 from .math cimport exp
+from .math cimport dmax
 
 cdef extern from "util.h" namespace "cymf" nogil:
     cdef int threadid()
@@ -84,6 +85,61 @@ cdef class BprModel(object):
             self.optimizer.update_W(u, k, grad_wuk)
             self.optimizer.update_H(i, k, grad_hik)
             self.optimizer.update_H(j, k, grad_hjk)
+
+cdef class RelMfModel(object):
+    def __init__(self, double[:,:] W, double[:,:] H, Optimizer optimizer, double weight_decay, int num_threads):
+        self.W = W
+        self.H = H
+        self.tmp = np.zeros(num_threads)
+        self.optimizer = optimizer
+        self.weight_decay = weight_decay
+
+    @cython.boundscheck(False)
+    @cython.wraparound(False)
+    cdef inline double forward(self, int u, int i, double r, double p, double M) nogil:
+        """
+        user index u
+        item index i
+        rating value (i.e. 0/1)
+        propensity score for ui
+        """
+        cdef int thread_id = threadid()
+        cdef int K = self.W.shape[1]
+        cdef int k
+        cdef double loss, l2_norm
+
+        self.tmp[thread_id] = 0.0
+        l2_norm = 0.0
+        for k in range(K):
+            self.tmp[thread_id] += self.W[u, k] * self.H[i, k]
+            l2_norm += square(self.W[u, k]) + square(self.H[i, k])
+
+        loss = (r/dmax(p, M)) * square(1. - self.tmp[thread_id]) + (1 - r/dmax(p, M)) * square(self.tmp[thread_id]) + self.weight_decay * l2_norm
+
+        return loss
+
+    @cython.boundscheck(False)
+    @cython.wraparound(False)
+    cdef inline void backward(self, int u, int i, double r, double p, double M) nogil:
+        cdef int thread_id = threadid()
+        cdef int K = self.W.shape[1]
+        cdef int k
+        cdef double grad_wuk
+        cdef double grad_hik
+
+        for k in range(K):
+            grad_wuk = - (
+                (    r/dmax(p, M)) * (1. - self.tmp[thread_id]) * self.H[i, k] + \
+                (1 - r/dmax(p, M)) * (0. - self.tmp[thread_id]) * self.H[i, k]   \
+            ) + self.weight_decay * self.W[u, k] 
+            
+            grad_hik = - (
+                (    r/dmax(p, M)) * (1. - self.tmp[thread_id]) * self.W[u, k] + \
+                (1 - r/dmax(p, M)) * (0. - self.tmp[thread_id]) * self.W[u, k]   \
+            ) + self.weight_decay * self.H[i, k]
+
+            self.optimizer.update_W(u, k, grad_wuk)
+            self.optimizer.update_H(i, k, grad_hik)
 
 
 cdef class GloVeModel:
