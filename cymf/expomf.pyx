@@ -18,6 +18,8 @@ cimport numpy as np
 from cython.parallel cimport prange
 from libcpp cimport bool
 
+from .evaluator import Evaluator
+
 from libc.stdlib cimport malloc
 from libc.stdlib cimport free
 from libc.string cimport memcpy
@@ -59,7 +61,7 @@ class ExpoMF(object):
         self.W = None
         self.H = None
 
-    def fit(self, X, int num_epochs = 5, int num_threads = 1, bool verbose = True):
+    def fit(self, X, int num_epochs = 5, int num_threads = 1, valid_evaluator = None, bool early_stopping = False, bool verbose = True):
         """
         Training ExpoMF model with EM Algorithm
 
@@ -78,7 +80,15 @@ class ExpoMF(object):
         else:
             raise ValueError()
         X = X.astype(np.float64)
-        
+
+        self.valid_evaluator = valid_evaluator
+        self.valid_dcg = - np.inf
+        self.count = 0
+        self.early_stopping = early_stopping
+
+        if early_stopping and self.valid_evaluator is None:
+            raise ValueError()
+                
         if self.W is None:
             np.random.seed(4321)
             self.W = np.random.uniform(low=-0.1, high=0.1, size=(X.shape[0], self.num_components)) / self.num_components
@@ -123,7 +133,17 @@ class ExpoMF(object):
 
                 mu = (alpha_1 + np.array(Exposure).sum(axis=0) - 1.) / (alpha_1 + alpha_2 + U - 2.)
 
-                progress.set_description(f"EPOCH={epoch+1:{len(str(num_epochs))}}")
+                if self.valid_evaluator:
+                    valid_dcg = self.valid_evaluator.evaluate(self.W, self.H)["DCG@5"]
+                    if self.early_stopping and self.valid_dcg > valid_dcg and count > 5:
+                        break
+                    elif self.early_stopping and self.valid_dcg > valid_dcg:
+                        count += 1
+                    else:
+                        count = 0
+                        self.valid_dcg = valid_dcg
+
+                progress.set_description(f"EPOCH={epoch+1:{len(str(num_epochs))}} {(', DCG@5=' + str(np.round(valid_dcg,3))) if self.valid_evaluator else ''}")
                 progress.update(1)
 
     @cython.boundscheck(False)
