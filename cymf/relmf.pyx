@@ -60,7 +60,7 @@ class RelMF(object):
         if self.optimizer not in ("sgd", "adagrad", "adam"):
             raise Exception(f"{self.optimizer} is invalid.")
 
-    def fit(self, X, int num_epochs, int num_threads, bool verbose = False):
+    def fit(self, X, int num_epochs = 10, int num_threads = 1, valid_evaluator = None, bool early_stopping = False, bool verbose = False):
         """
         Training WMF model with Gradient Descent.
         Args:
@@ -75,6 +75,11 @@ class RelMF(object):
         if isinstance(X, (sparse.lil_matrix, sparse.csr_matrix, sparse.csc_matrix)):
             X = X.toarray()
         X = X.astype(np.float64)
+
+        self.valid_evaluator = valid_evaluator
+        self.valid_dcg = - np.inf
+        self.count = 0
+        self.early_stopping = early_stopping
 
         propensities = np.maximum(X.mean(axis=0), 1e-5)**0.5
         
@@ -117,10 +122,9 @@ class RelMF(object):
         cdef double[:,:] W = self.W
         cdef double[:,:] H = self.H
 
-        cdef int iterations = num_epochs
         cdef int N = users.shape[0]
         cdef int K = W.shape[1]
-        cdef int u, i, j, k, l, iteration
+        cdef int u, i, j, k, l, epoch
         cdef double[:] prediction = np.zeros(N)
         cdef double[:] w_uk = np.zeros(N)
         cdef double[:] l2_norm = np.zeros(N)
@@ -129,8 +133,6 @@ class RelMF(object):
         cdef double accum_loss
 
         cdef double M = self.clip_value
-        
-        cdef list description_list
 
         cdef Optimizer optimizer
         if self.optimizer == "adam":
@@ -143,8 +145,8 @@ class RelMF(object):
         optimizer.set_parameters(W, H)
         cdef RelMfModel relmf_model = RelMfModel(W, H, optimizer, self.weight_decay, num_threads)
 
-        with tqdm(total=iterations, leave=True, ncols=100, disable=not verbose) as progress:
-            for iteration in range(iterations):
+        with tqdm(total=num_epochs, leave=True, ncols=100, disable=not verbose) as progress:
+            for epoch in range(num_epochs):
                 accum_loss = 0.0
                 for l in prange(N, nogil=True, num_threads=num_threads):
                     loss[l] = relmf_model.forward(users[l], items[l], ratings[l], propensities[items[l]], M)
@@ -153,8 +155,15 @@ class RelMF(object):
                 for l in range(N):                
                     accum_loss += loss[l]
 
-                description_list = []
-                description_list.append(f"ITER={iteration+1:{len(str(iterations))}}")
-                description_list.append(f"LOSS: {np.round(accum_loss/N, 4):.4f}")
-                progress.set_description(", ".join(description_list))
+                if self.valid_evaluator:
+                    valid_dcg = self.valid_evaluator.evaluate(self.W, self.H)["DCG@5"]
+                    if self.early_stopping and self.valid_dcg > valid_dcg and count > 5:
+                        break
+                    elif self.early_stopping and self.valid_dcg > valid_dcg:
+                        count += 1
+                    else:
+                        count = 0
+                        self.valid_dcg = valid_dcg
+
+                progress.set_description(f"EPOCH={epoch+1:{len(str(num_epochs))}} {(', DCG@5=' + str(np.round(valid_dcg,3))) if self.valid_evaluator else ''}")
                 progress.update(1)

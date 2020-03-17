@@ -46,12 +46,11 @@ def wmf_objective(trial: optuna.Trial):
     return valid_evaluator.evaluate(model.W, model.H)["DCG@5"]
 
 def relmf_objective(trial: optuna.Trial):
-    epochs = trial.suggest_int("epochs", 1, 30)
     alpha = trial.suggest_loguniform("alpha", 1e-5, 1e-1)
     weight_decay = trial.suggest_loguniform("weight_decay", 1e-4, 1e-1)
     clip_value = trial.suggest_loguniform("clip_value", 0.01, 0.1)
     model = cymf.RelMF(num_components=args.num_components, learning_rate=alpha, weight_decay=weight_decay, clip_value=clip_value)
-    model.fit(dataset.train, num_epochs=epochs, num_threads=args.threads, verbose=False)
+    model.fit(dataset.train, num_epochs=args.max_epochs, num_threads=args.num_threads, valid_evaluator=valid_evaluator, early_stopping=True, verbose=True)
     return valid_evaluator.evaluate(model.W, model.H)["DCG@5"]
 
 summary = {}
@@ -61,9 +60,9 @@ study.optimize(relmf_objective, n_trials=args.trials)
 print(study.best_params)
 result = []
 model = cymf.RelMF(num_components=args.num_components, learning_rate=study.best_params["alpha"], clip_value=study.best_params["clip_value"])
-model.fit(dataset.train, num_epochs=study.best_params["epochs"], num_threads=args.threads, verbose=False)
+model.fit(dataset.train, num_epochs=args.max_epochs, num_threads=args.num_threads, valid_evaluator=valid_evaluator, early_stopping=True, verbose=False)
 for i in range(5):
-    result.append(test_evaluator.evaluate(model.W, model.H))
+    result.append(test_evaluator.evaluate(model.W, model.H, seed=i))
 summary["RelMF"] = dict(pd.DataFrame(result).describe().loc[["mean", "std"]].T["mean"]) 
 print(summary["RelMF"])
 
