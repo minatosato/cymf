@@ -81,7 +81,7 @@ class RelMF(object):
         self.count = 0
         self.early_stopping = early_stopping
 
-        propensities = np.maximum(X.mean(axis=0), 1e-5)**0.5
+        propensities = np.maximum(X.mean(axis=0)/X.mean(axis=0).max(), 1e-5)**0.5
         
         if self.W is None:
             np.random.seed(4321)
