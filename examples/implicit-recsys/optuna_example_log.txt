@@ -1,160 +1,413 @@
-[I 2020-03-05 21:27:31,180] Finished trial#0 resulted in value: 0.19731054340432427. Current best value is 0.19731054340432427 with parameters: {'epochs': 81, 'alpha': 0.0003307845312114387, 'weight_decay': 0.00027005761439518174}.
-[I 2020-03-05 21:27:32,317] Finished trial#1 resulted in value: 0.23168805959038016. Current best value is 0.23168805959038016 with parameters: {'epochs': 75, 'alpha': 0.0014464477970535378, 'weight_decay': 0.0011821098585822953}.
-[I 2020-03-05 21:27:33,655] Finished trial#2 resulted in value: 0.26185482015402634. Current best value is 0.26185482015402634 with parameters: {'epochs': 97, 'alpha': 0.010823121252180717, 'weight_decay': 0.0003383563438670225}.
-[I 2020-03-05 21:27:34,921] Finished trial#3 resulted in value: 0.23355700781756947. Current best value is 0.26185482015402634 with parameters: {'epochs': 97, 'alpha': 0.010823121252180717, 'weight_decay': 0.0003383563438670225}.
-[I 2020-03-05 21:27:36,175] Finished trial#4 resulted in value: 0.29871972581418615. Current best value is 0.29871972581418615 with parameters: {'epochs': 80, 'alpha': 0.0150435212855439, 'weight_decay': 0.021171709296010754}.
-[I 2020-03-05 21:27:37,140] Finished trial#5 resulted in value: 0.1967154020692407. Current best value is 0.29871972581418615 with parameters: {'epochs': 80, 'alpha': 0.0150435212855439, 'weight_decay': 0.021171709296010754}.
-[I 2020-03-05 21:27:38,159] Finished trial#6 resulted in value: 0.29470511067870553. Current best value is 0.29871972581418615 with parameters: {'epochs': 80, 'alpha': 0.0150435212855439, 'weight_decay': 0.021171709296010754}.
-[I 2020-03-05 21:27:39,381] Finished trial#7 resulted in value: 0.2516854259060821. Current best value is 0.29871972581418615 with parameters: {'epochs': 80, 'alpha': 0.0150435212855439, 'weight_decay': 0.021171709296010754}.
-[I 2020-03-05 21:27:40,819] Finished trial#8 resulted in value: 0.20274199521446515. Current best value is 0.29871972581418615 with parameters: {'epochs': 80, 'alpha': 0.0150435212855439, 'weight_decay': 0.021171709296010754}.
-[I 2020-03-05 21:27:41,784] Finished trial#9 resulted in value: 0.28015861524974667. Current best value is 0.29871972581418615 with parameters: {'epochs': 80, 'alpha': 0.0150435212855439, 'weight_decay': 0.021171709296010754}.
-[I 2020-03-05 21:27:43,080] Finished trial#10 resulted in value: 0.18993615570688419. Current best value is 0.29871972581418615 with parameters: {'epochs': 80, 'alpha': 0.0150435212855439, 'weight_decay': 0.021171709296010754}.
-[I 2020-03-05 21:27:44,202] Finished trial#11 resulted in value: 0.28713449857133777. Current best value is 0.29871972581418615 with parameters: {'epochs': 80, 'alpha': 0.0150435212855439, 'weight_decay': 0.021171709296010754}.
-[I 2020-03-05 21:27:45,351] Finished trial#12 resulted in value: 0.28068220619358397. Current best value is 0.29871972581418615 with parameters: {'epochs': 80, 'alpha': 0.0150435212855439, 'weight_decay': 0.021171709296010754}.
-[I 2020-03-05 21:27:46,456] Finished trial#13 resulted in value: 0.27700988592024256. Current best value is 0.29871972581418615 with parameters: {'epochs': 80, 'alpha': 0.0150435212855439, 'weight_decay': 0.021171709296010754}.
-[I 2020-03-05 21:27:47,751] Finished trial#14 resulted in value: 0.24811807176268347. Current best value is 0.29871972581418615 with parameters: {'epochs': 80, 'alpha': 0.0150435212855439, 'weight_decay': 0.021171709296010754}.
-[I 2020-03-05 21:27:48,633] Finished trial#15 resulted in value: 0.267180650577637. Current best value is 0.29871972581418615 with parameters: {'epochs': 80, 'alpha': 0.0150435212855439, 'weight_decay': 0.021171709296010754}.
-[I 2020-03-05 21:27:50,159] Finished trial#16 resulted in value: 0.18653937284018865. Current best value is 0.29871972581418615 with parameters: {'epochs': 80, 'alpha': 0.0150435212855439, 'weight_decay': 0.021171709296010754}.
-[I 2020-03-05 21:27:51,439] Finished trial#17 resulted in value: 0.2737720920866929. Current best value is 0.29871972581418615 with parameters: {'epochs': 80, 'alpha': 0.0150435212855439, 'weight_decay': 0.021171709296010754}.
-[I 2020-03-05 21:27:52,828] Finished trial#18 resulted in value: 0.29332196672328276. Current best value is 0.29871972581418615 with parameters: {'epochs': 80, 'alpha': 0.0150435212855439, 'weight_decay': 0.021171709296010754}.
-[I 2020-03-05 21:27:54,072] Finished trial#19 resulted in value: 0.19809515824152063. Current best value is 0.29871972581418615 with parameters: {'epochs': 80, 'alpha': 0.0150435212855439, 'weight_decay': 0.021171709296010754}.
-[I 2020-03-05 21:27:55,448] Finished trial#20 resulted in value: 0.18988181711196572. Current best value is 0.29871972581418615 with parameters: {'epochs': 80, 'alpha': 0.0150435212855439, 'weight_decay': 0.021171709296010754}.
-[I 2020-03-05 21:27:56,772] Finished trial#21 resulted in value: 0.2972224126318706. Current best value is 0.29871972581418615 with parameters: {'epochs': 80, 'alpha': 0.0150435212855439, 'weight_decay': 0.021171709296010754}.
-[I 2020-03-05 21:27:57,888] Finished trial#22 resulted in value: 0.2691312638042011. Current best value is 0.29871972581418615 with parameters: {'epochs': 80, 'alpha': 0.0150435212855439, 'weight_decay': 0.021171709296010754}.
-[I 2020-03-05 21:27:59,470] Finished trial#23 resulted in value: 0.27663033892908445. Current best value is 0.29871972581418615 with parameters: {'epochs': 80, 'alpha': 0.0150435212855439, 'weight_decay': 0.021171709296010754}.
-[I 2020-03-05 21:28:00,678] Finished trial#24 resulted in value: 0.2517980910548769. Current best value is 0.29871972581418615 with parameters: {'epochs': 80, 'alpha': 0.0150435212855439, 'weight_decay': 0.021171709296010754}.
-[I 2020-03-05 21:28:01,901] Finished trial#25 resulted in value: 0.2776184471275952. Current best value is 0.29871972581418615 with parameters: {'epochs': 80, 'alpha': 0.0150435212855439, 'weight_decay': 0.021171709296010754}.
-[I 2020-03-05 21:28:03,135] Finished trial#26 resulted in value: 0.29794660780075016. Current best value is 0.29871972581418615 with parameters: {'epochs': 80, 'alpha': 0.0150435212855439, 'weight_decay': 0.021171709296010754}.
-[I 2020-03-05 21:28:04,420] Finished trial#27 resulted in value: 0.29795921268590553. Current best value is 0.29871972581418615 with parameters: {'epochs': 80, 'alpha': 0.0150435212855439, 'weight_decay': 0.021171709296010754}.
-[I 2020-03-05 21:28:05,869] Finished trial#28 resulted in value: 0.2869015188770022. Current best value is 0.29871972581418615 with parameters: {'epochs': 80, 'alpha': 0.0150435212855439, 'weight_decay': 0.021171709296010754}.
-[I 2020-03-05 21:28:07,847] Finished trial#29 resulted in value: 0.28720331979981195. Current best value is 0.29871972581418615 with parameters: {'epochs': 80, 'alpha': 0.0150435212855439, 'weight_decay': 0.021171709296010754}.
-[I 2020-03-05 21:28:09,255] Finished trial#30 resulted in value: 0.2787427359474193. Current best value is 0.29871972581418615 with parameters: {'epochs': 80, 'alpha': 0.0150435212855439, 'weight_decay': 0.021171709296010754}.
-[I 2020-03-05 21:28:10,489] Finished trial#31 resulted in value: 0.290498634733305. Current best value is 0.29871972581418615 with parameters: {'epochs': 80, 'alpha': 0.0150435212855439, 'weight_decay': 0.021171709296010754}.
-[I 2020-03-05 21:28:11,857] Finished trial#32 resulted in value: 0.22549622443267753. Current best value is 0.29871972581418615 with parameters: {'epochs': 80, 'alpha': 0.0150435212855439, 'weight_decay': 0.021171709296010754}.
-[I 2020-03-05 21:28:13,233] Finished trial#33 resulted in value: 0.26277274394751093. Current best value is 0.29871972581418615 with parameters: {'epochs': 80, 'alpha': 0.0150435212855439, 'weight_decay': 0.021171709296010754}.
-[I 2020-03-05 21:28:14,633] Finished trial#34 resulted in value: 0.28785959101208636. Current best value is 0.29871972581418615 with parameters: {'epochs': 80, 'alpha': 0.0150435212855439, 'weight_decay': 0.021171709296010754}.
-[I 2020-03-05 21:28:15,924] Finished trial#35 resulted in value: 0.28297488027556283. Current best value is 0.29871972581418615 with parameters: {'epochs': 80, 'alpha': 0.0150435212855439, 'weight_decay': 0.021171709296010754}.
-[I 2020-03-05 21:28:17,178] Finished trial#36 resulted in value: 0.2457756707960217. Current best value is 0.29871972581418615 with parameters: {'epochs': 80, 'alpha': 0.0150435212855439, 'weight_decay': 0.021171709296010754}.
-[I 2020-03-05 21:28:18,453] Finished trial#37 resulted in value: 0.2832332041412991. Current best value is 0.29871972581418615 with parameters: {'epochs': 80, 'alpha': 0.0150435212855439, 'weight_decay': 0.021171709296010754}.
-[I 2020-03-05 21:28:19,820] Finished trial#38 resulted in value: 0.22055645839156124. Current best value is 0.29871972581418615 with parameters: {'epochs': 80, 'alpha': 0.0150435212855439, 'weight_decay': 0.021171709296010754}.
-[I 2020-03-05 21:28:20,835] Finished trial#39 resulted in value: 0.22126638189893424. Current best value is 0.29871972581418615 with parameters: {'epochs': 80, 'alpha': 0.0150435212855439, 'weight_decay': 0.021171709296010754}.
-[I 2020-03-05 21:28:21,875] Finished trial#40 resulted in value: 0.26935510774061294. Current best value is 0.29871972581418615 with parameters: {'epochs': 80, 'alpha': 0.0150435212855439, 'weight_decay': 0.021171709296010754}.
-[I 2020-03-05 21:28:23,016] Finished trial#41 resulted in value: 0.28317158673450044. Current best value is 0.29871972581418615 with parameters: {'epochs': 80, 'alpha': 0.0150435212855439, 'weight_decay': 0.021171709296010754}.
-[I 2020-03-05 21:28:24,191] Finished trial#42 resulted in value: 0.29893120426866776. Current best value is 0.29893120426866776 with parameters: {'epochs': 64, 'alpha': 0.007225793926549284, 'weight_decay': 0.0386944034605668}.
-[I 2020-03-05 21:28:25,347] Finished trial#43 resulted in value: 0.2970116957540547. Current best value is 0.29893120426866776 with parameters: {'epochs': 64, 'alpha': 0.007225793926549284, 'weight_decay': 0.0386944034605668}.
-[I 2020-03-05 21:28:26,629] Finished trial#44 resulted in value: 0.295673857427426. Current best value is 0.29893120426866776 with parameters: {'epochs': 64, 'alpha': 0.007225793926549284, 'weight_decay': 0.0386944034605668}.
-[I 2020-03-05 21:28:27,789] Finished trial#45 resulted in value: 0.25838888595715553. Current best value is 0.29893120426866776 with parameters: {'epochs': 64, 'alpha': 0.007225793926549284, 'weight_decay': 0.0386944034605668}.
-[I 2020-03-05 21:28:29,078] Finished trial#46 resulted in value: 0.2941244401971763. Current best value is 0.29893120426866776 with parameters: {'epochs': 64, 'alpha': 0.007225793926549284, 'weight_decay': 0.0386944034605668}.
-[I 2020-03-05 21:28:30,175] Finished trial#47 resulted in value: 0.28997720961789575. Current best value is 0.29893120426866776 with parameters: {'epochs': 64, 'alpha': 0.007225793926549284, 'weight_decay': 0.0386944034605668}.
-[I 2020-03-05 21:28:31,396] Finished trial#48 resulted in value: 0.29461316552734407. Current best value is 0.29893120426866776 with parameters: {'epochs': 64, 'alpha': 0.007225793926549284, 'weight_decay': 0.0386944034605668}.
-[I 2020-03-05 21:28:32,421] Finished trial#49 resulted in value: 0.2797184933750402. Current best value is 0.29893120426866776 with parameters: {'epochs': 64, 'alpha': 0.007225793926549284, 'weight_decay': 0.0386944034605668}.
-{'epochs': 64, 'alpha': 0.007225793926549284, 'weight_decay': 0.0386944034605668}
-{'DCG@5': 0.19277114006567858, 'Recall@5': 0.2582893758523604, 'MAP@5': 0.23225450739606476}
-[I 2020-03-05 21:28:37,209] Finished trial#0 resulted in value: 0.16088230628217545. Current best value is 0.16088230628217545 with parameters: {'epochs': 1, 'weight_decay': 0.0006988437179312771}.
-[I 2020-03-05 21:28:42,099] Finished trial#1 resulted in value: 0.20897640310373175. Current best value is 0.20897640310373175 with parameters: {'epochs': 8, 'weight_decay': 0.0009519067100155007}.
-[I 2020-03-05 21:28:44,729] Finished trial#2 resulted in value: 0.24749023860276026. Current best value is 0.24749023860276026 with parameters: {'epochs': 4, 'weight_decay': 0.0024037358680162302}.
-[I 2020-03-05 21:28:46,266] Finished trial#3 resulted in value: 0.20794863978053393. Current best value is 0.24749023860276026 with parameters: {'epochs': 4, 'weight_decay': 0.0024037358680162302}.
-[I 2020-03-05 21:28:47,248] Finished trial#4 resulted in value: 0.16088230628217545. Current best value is 0.24749023860276026 with parameters: {'epochs': 4, 'weight_decay': 0.0024037358680162302}.
-[I 2020-03-05 21:28:48,737] Finished trial#5 resulted in value: 0.24126219722684686. Current best value is 0.24749023860276026 with parameters: {'epochs': 4, 'weight_decay': 0.0024037358680162302}.
-[I 2020-03-05 21:28:54,823] Finished trial#6 resulted in value: 0.20682806298295972. Current best value is 0.24749023860276026 with parameters: {'epochs': 4, 'weight_decay': 0.0024037358680162302}.
-[I 2020-03-05 21:28:56,906] Finished trial#7 resulted in value: 0.23900098847631787. Current best value is 0.24749023860276026 with parameters: {'epochs': 4, 'weight_decay': 0.0024037358680162302}.
-[I 2020-03-05 21:29:01,923] Finished trial#8 resulted in value: 0.20829149623552332. Current best value is 0.24749023860276026 with parameters: {'epochs': 4, 'weight_decay': 0.0024037358680162302}.
-[I 2020-03-05 21:29:07,940] Finished trial#9 resulted in value: 0.21990224567209118. Current best value is 0.24749023860276026 with parameters: {'epochs': 4, 'weight_decay': 0.0024037358680162302}.
-[I 2020-03-05 21:29:11,305] Finished trial#10 resulted in value: 0.274915687084015. Current best value is 0.274915687084015 with parameters: {'epochs': 5, 'weight_decay': 0.03566153444852026}.
-[I 2020-03-05 21:29:14,541] Finished trial#11 resulted in value: 0.27019687311279966. Current best value is 0.274915687084015 with parameters: {'epochs': 5, 'weight_decay': 0.03566153444852026}.
-[I 2020-03-05 21:29:18,322] Finished trial#12 resulted in value: 0.2813375154683984. Current best value is 0.2813375154683984 with parameters: {'epochs': 6, 'weight_decay': 0.059730532464541526}.
-[I 2020-03-05 21:29:22,599] Finished trial#13 resulted in value: 0.28716481969785085. Current best value is 0.28716481969785085 with parameters: {'epochs': 7, 'weight_decay': 0.09648248597812477}.
-[I 2020-03-05 21:29:27,094] Finished trial#14 resulted in value: 0.2857305344075494. Current best value is 0.28716481969785085 with parameters: {'epochs': 7, 'weight_decay': 0.09648248597812477}.
-[I 2020-03-05 21:29:31,498] Finished trial#15 resulted in value: 0.24373356897194193. Current best value is 0.28716481969785085 with parameters: {'epochs': 7, 'weight_decay': 0.09648248597812477}.
-[I 2020-03-05 21:29:36,384] Finished trial#16 resulted in value: 0.2867253478883519. Current best value is 0.28716481969785085 with parameters: {'epochs': 7, 'weight_decay': 0.09648248597812477}.
-[I 2020-03-05 21:29:42,067] Finished trial#17 resulted in value: 0.2859059757850671. Current best value is 0.28716481969785085 with parameters: {'epochs': 7, 'weight_decay': 0.09648248597812477}.
-[I 2020-03-05 21:29:47,080] Finished trial#18 resulted in value: 0.25885027372032476. Current best value is 0.28716481969785085 with parameters: {'epochs': 7, 'weight_decay': 0.09648248597812477}.
-[I 2020-03-05 21:29:52,039] Finished trial#19 resulted in value: 0.23860543972812023. Current best value is 0.28716481969785085 with parameters: {'epochs': 7, 'weight_decay': 0.09648248597812477}.
-[I 2020-03-05 21:29:59,012] Finished trial#20 resulted in value: 0.23628702217142064. Current best value is 0.28716481969785085 with parameters: {'epochs': 7, 'weight_decay': 0.09648248597812477}.
-[I 2020-03-05 21:30:04,768] Finished trial#21 resulted in value: 0.28466364223564694. Current best value is 0.28716481969785085 with parameters: {'epochs': 7, 'weight_decay': 0.09648248597812477}.
-[I 2020-03-05 21:30:10,301] Finished trial#22 resulted in value: 0.26697866401311143. Current best value is 0.28716481969785085 with parameters: {'epochs': 7, 'weight_decay': 0.09648248597812477}.
-[I 2020-03-05 21:30:14,688] Finished trial#23 resulted in value: 0.2858272894660648. Current best value is 0.28716481969785085 with parameters: {'epochs': 7, 'weight_decay': 0.09648248597812477}.
-[I 2020-03-05 21:30:20,571] Finished trial#24 resulted in value: 0.2440306833434088. Current best value is 0.28716481969785085 with parameters: {'epochs': 7, 'weight_decay': 0.09648248597812477}.
-[I 2020-03-05 21:30:25,260] Finished trial#25 resulted in value: 0.2855037185379834. Current best value is 0.28716481969785085 with parameters: {'epochs': 7, 'weight_decay': 0.09648248597812477}.
-[I 2020-03-05 21:30:30,552] Finished trial#26 resulted in value: 0.2765235820208465. Current best value is 0.28716481969785085 with parameters: {'epochs': 7, 'weight_decay': 0.09648248597812477}.
-[I 2020-03-05 21:30:35,407] Finished trial#27 resulted in value: 0.22059089764502743. Current best value is 0.28716481969785085 with parameters: {'epochs': 7, 'weight_decay': 0.09648248597812477}.
-[I 2020-03-05 21:30:39,464] Finished trial#28 resulted in value: 0.250372372840049. Current best value is 0.28716481969785085 with parameters: {'epochs': 7, 'weight_decay': 0.09648248597812477}.
-[I 2020-03-05 21:30:44,319] Finished trial#29 resulted in value: 0.2704633088385588. Current best value is 0.28716481969785085 with parameters: {'epochs': 7, 'weight_decay': 0.09648248597812477}.
-[I 2020-03-05 21:30:49,933] Finished trial#30 resulted in value: 0.24145447515568985. Current best value is 0.28716481969785085 with parameters: {'epochs': 7, 'weight_decay': 0.09648248597812477}.
-[I 2020-03-05 21:30:54,152] Finished trial#31 resulted in value: 0.2856179956355617. Current best value is 0.28716481969785085 with parameters: {'epochs': 7, 'weight_decay': 0.09648248597812477}.
-[I 2020-03-05 21:30:58,434] Finished trial#32 resulted in value: 0.27969159956456674. Current best value is 0.28716481969785085 with parameters: {'epochs': 7, 'weight_decay': 0.09648248597812477}.
-[I 2020-03-05 21:31:03,423] Finished trial#33 resulted in value: 0.20847173430607718. Current best value is 0.28716481969785085 with parameters: {'epochs': 7, 'weight_decay': 0.09648248597812477}.
-[I 2020-03-05 21:31:06,553] Finished trial#34 resulted in value: 0.29196636158783196. Current best value is 0.29196636158783196 with parameters: {'epochs': 5, 'weight_decay': 0.09368629871603949}.
-[I 2020-03-05 21:31:09,354] Finished trial#35 resulted in value: 0.27921762030279096. Current best value is 0.29196636158783196 with parameters: {'epochs': 5, 'weight_decay': 0.09368629871603949}.
-[I 2020-03-05 21:31:12,485] Finished trial#36 resulted in value: 0.291651738794394. Current best value is 0.29196636158783196 with parameters: {'epochs': 5, 'weight_decay': 0.09368629871603949}.
-[I 2020-03-05 21:31:14,604] Finished trial#37 resulted in value: 0.27641983876020887. Current best value is 0.29196636158783196 with parameters: {'epochs': 5, 'weight_decay': 0.09368629871603949}.
-[I 2020-03-05 21:31:17,389] Finished trial#38 resulted in value: 0.24694573406209783. Current best value is 0.29196636158783196 with parameters: {'epochs': 5, 'weight_decay': 0.09368629871603949}.
-[I 2020-03-05 21:31:20,878] Finished trial#39 resulted in value: 0.24343058439929233. Current best value is 0.29196636158783196 with parameters: {'epochs': 5, 'weight_decay': 0.09368629871603949}.
-[I 2020-03-05 21:31:23,084] Finished trial#40 resulted in value: 0.2846312969993447. Current best value is 0.29196636158783196 with parameters: {'epochs': 5, 'weight_decay': 0.09368629871603949}.
-[I 2020-03-05 21:31:25,862] Finished trial#41 resulted in value: 0.2907978724885774. Current best value is 0.29196636158783196 with parameters: {'epochs': 5, 'weight_decay': 0.09368629871603949}.
-[I 2020-03-05 21:31:28,888] Finished trial#42 resulted in value: 0.2881172109357958. Current best value is 0.29196636158783196 with parameters: {'epochs': 5, 'weight_decay': 0.09368629871603949}.
-[I 2020-03-05 21:31:31,455] Finished trial#43 resulted in value: 0.27758182355690575. Current best value is 0.29196636158783196 with parameters: {'epochs': 5, 'weight_decay': 0.09368629871603949}.
-[I 2020-03-05 21:31:33,728] Finished trial#44 resulted in value: 0.2393690578519604. Current best value is 0.29196636158783196 with parameters: {'epochs': 5, 'weight_decay': 0.09368629871603949}.
-[I 2020-03-05 21:31:35,315] Finished trial#45 resulted in value: 0.2361335080970102. Current best value is 0.29196636158783196 with parameters: {'epochs': 5, 'weight_decay': 0.09368629871603949}.
-[I 2020-03-05 21:31:37,986] Finished trial#46 resulted in value: 0.2581578352965524. Current best value is 0.29196636158783196 with parameters: {'epochs': 5, 'weight_decay': 0.09368629871603949}.
-[I 2020-03-05 21:31:41,732] Finished trial#47 resulted in value: 0.2674936227277279. Current best value is 0.29196636158783196 with parameters: {'epochs': 5, 'weight_decay': 0.09368629871603949}.
-[I 2020-03-05 21:31:45,033] Finished trial#48 resulted in value: 0.28666873557834816. Current best value is 0.29196636158783196 with parameters: {'epochs': 5, 'weight_decay': 0.09368629871603949}.
-[I 2020-03-05 21:31:47,585] Finished trial#49 resulted in value: 0.28022829860408993. Current best value is 0.29196636158783196 with parameters: {'epochs': 5, 'weight_decay': 0.09368629871603949}.
-{'epochs': 5, 'weight_decay': 0.09368629871603949}
-{'DCG@5': 0.19281754734639733, 'Recall@5': 0.25950651896675375, 'MAP@5': 0.231419390884475}
-[I 2020-03-05 21:31:56,856] Finished trial#0 resulted in value: 0.28554365114898744. Current best value is 0.28554365114898744 with parameters: {'epochs': 12, 'weight_decay': 0.05421385244338139, 'weight': 13.229746231932369}.
-[I 2020-03-05 21:31:57,626] Finished trial#1 resulted in value: 0.2863590071999875. Current best value is 0.2863590071999875 with parameters: {'epochs': 9, 'weight_decay': 0.0007510100297267905, 'weight': 4.757213153635458}.
-[I 2020-03-05 21:31:58,130] Finished trial#2 resulted in value: 0.1528000493895696. Current best value is 0.2863590071999875 with parameters: {'epochs': 9, 'weight_decay': 0.0007510100297267905, 'weight': 4.757213153635458}.
-[I 2020-03-05 21:31:59,339] Finished trial#3 resulted in value: 0.2831551878468035. Current best value is 0.2863590071999875 with parameters: {'epochs': 9, 'weight_decay': 0.0007510100297267905, 'weight': 4.757213153635458}.
-[I 2020-03-05 21:32:00,378] Finished trial#4 resulted in value: 0.2695518186603517. Current best value is 0.2863590071999875 with parameters: {'epochs': 9, 'weight_decay': 0.0007510100297267905, 'weight': 4.757213153635458}.
-[I 2020-03-05 21:32:02,113] Finished trial#5 resulted in value: 0.2725450666497675. Current best value is 0.2863590071999875 with parameters: {'epochs': 9, 'weight_decay': 0.0007510100297267905, 'weight': 4.757213153635458}.
-[I 2020-03-05 21:32:03,123] Finished trial#6 resulted in value: 0.28049837526852267. Current best value is 0.2863590071999875 with parameters: {'epochs': 9, 'weight_decay': 0.0007510100297267905, 'weight': 4.757213153635458}.
-[I 2020-03-05 21:32:04,247] Finished trial#7 resulted in value: 0.2888891016263858. Current best value is 0.2888891016263858 with parameters: {'epochs': 17, 'weight_decay': 0.0020809177602941794, 'weight': 5.895009642670649}.
-[I 2020-03-05 21:32:05,221] Finished trial#8 resulted in value: 0.27792323592106344. Current best value is 0.2888891016263858 with parameters: {'epochs': 17, 'weight_decay': 0.0020809177602941794, 'weight': 5.895009642670649}.
-[I 2020-03-05 21:32:06,407] Finished trial#9 resulted in value: 0.27458425608934944. Current best value is 0.2888891016263858 with parameters: {'epochs': 17, 'weight_decay': 0.0020809177602941794, 'weight': 5.895009642670649}.
-[I 2020-03-05 21:32:07,889] Finished trial#10 resulted in value: 0.2861783873486007. Current best value is 0.2888891016263858 with parameters: {'epochs': 17, 'weight_decay': 0.0020809177602941794, 'weight': 5.895009642670649}.
-[I 2020-03-05 21:32:08,561] Finished trial#11 resulted in value: 0.26805014159946927. Current best value is 0.2888891016263858 with parameters: {'epochs': 17, 'weight_decay': 0.0020809177602941794, 'weight': 5.895009642670649}.
-[I 2020-03-05 21:32:09,268] Finished trial#12 resulted in value: 0.27994942022016694. Current best value is 0.2888891016263858 with parameters: {'epochs': 17, 'weight_decay': 0.0020809177602941794, 'weight': 5.895009642670649}.
-[I 2020-03-05 21:32:10,035] Finished trial#13 resulted in value: 0.27981228558668786. Current best value is 0.2888891016263858 with parameters: {'epochs': 17, 'weight_decay': 0.0020809177602941794, 'weight': 5.895009642670649}.
-[I 2020-03-05 21:32:11,362] Finished trial#14 resulted in value: 0.28630807699700994. Current best value is 0.2888891016263858 with parameters: {'epochs': 17, 'weight_decay': 0.0020809177602941794, 'weight': 5.895009642670649}.
-[I 2020-03-05 21:32:12,595] Finished trial#15 resulted in value: 0.278013519990952. Current best value is 0.2888891016263858 with parameters: {'epochs': 17, 'weight_decay': 0.0020809177602941794, 'weight': 5.895009642670649}.
-[I 2020-03-05 21:32:13,477] Finished trial#16 resulted in value: 0.2788444892678081. Current best value is 0.2888891016263858 with parameters: {'epochs': 17, 'weight_decay': 0.0020809177602941794, 'weight': 5.895009642670649}.
-[I 2020-03-05 21:32:15,290] Finished trial#17 resulted in value: 0.28324509419252125. Current best value is 0.2888891016263858 with parameters: {'epochs': 17, 'weight_decay': 0.0020809177602941794, 'weight': 5.895009642670649}.
-[I 2020-03-05 21:32:15,996] Finished trial#18 resulted in value: 0.222138228565461. Current best value is 0.2888891016263858 with parameters: {'epochs': 17, 'weight_decay': 0.0020809177602941794, 'weight': 5.895009642670649}.
-[I 2020-03-05 21:32:17,325] Finished trial#19 resulted in value: 0.28458293871181856. Current best value is 0.2888891016263858 with parameters: {'epochs': 17, 'weight_decay': 0.0020809177602941794, 'weight': 5.895009642670649}.
-[I 2020-03-05 21:32:18,348] Finished trial#20 resulted in value: 0.28675226902078077. Current best value is 0.2888891016263858 with parameters: {'epochs': 17, 'weight_decay': 0.0020809177602941794, 'weight': 5.895009642670649}.
-[I 2020-03-05 21:32:19,219] Finished trial#21 resulted in value: 0.28612679702271426. Current best value is 0.2888891016263858 with parameters: {'epochs': 17, 'weight_decay': 0.0020809177602941794, 'weight': 5.895009642670649}.
-[I 2020-03-05 21:32:20,211] Finished trial#22 resulted in value: 0.2838008598912248. Current best value is 0.2888891016263858 with parameters: {'epochs': 17, 'weight_decay': 0.0020809177602941794, 'weight': 5.895009642670649}.
-[I 2020-03-05 21:32:20,919] Finished trial#23 resulted in value: 0.2744232446402516. Current best value is 0.2888891016263858 with parameters: {'epochs': 17, 'weight_decay': 0.0020809177602941794, 'weight': 5.895009642670649}.
-[I 2020-03-05 21:32:22,055] Finished trial#24 resulted in value: 0.27752868499796635. Current best value is 0.2888891016263858 with parameters: {'epochs': 17, 'weight_decay': 0.0020809177602941794, 'weight': 5.895009642670649}.
-[I 2020-03-05 21:32:23,013] Finished trial#25 resulted in value: 0.2835681220833826. Current best value is 0.2888891016263858 with parameters: {'epochs': 17, 'weight_decay': 0.0020809177602941794, 'weight': 5.895009642670649}.
-[I 2020-03-05 21:32:24,411] Finished trial#26 resulted in value: 0.2859490231599691. Current best value is 0.2888891016263858 with parameters: {'epochs': 17, 'weight_decay': 0.0020809177602941794, 'weight': 5.895009642670649}.
-[I 2020-03-05 21:32:25,177] Finished trial#27 resulted in value: 0.2636799093864507. Current best value is 0.2888891016263858 with parameters: {'epochs': 17, 'weight_decay': 0.0020809177602941794, 'weight': 5.895009642670649}.
-[I 2020-03-05 21:32:26,837] Finished trial#28 resulted in value: 0.2836970611715389. Current best value is 0.2888891016263858 with parameters: {'epochs': 17, 'weight_decay': 0.0020809177602941794, 'weight': 5.895009642670649}.
-[I 2020-03-05 21:32:27,940] Finished trial#29 resulted in value: 0.2828757692278718. Current best value is 0.2888891016263858 with parameters: {'epochs': 17, 'weight_decay': 0.0020809177602941794, 'weight': 5.895009642670649}.
-[I 2020-03-05 21:32:29,115] Finished trial#30 resulted in value: 0.2829385814149942. Current best value is 0.2888891016263858 with parameters: {'epochs': 17, 'weight_decay': 0.0020809177602941794, 'weight': 5.895009642670649}.
-[I 2020-03-05 21:32:30,747] Finished trial#31 resulted in value: 0.28641880332749414. Current best value is 0.2888891016263858 with parameters: {'epochs': 17, 'weight_decay': 0.0020809177602941794, 'weight': 5.895009642670649}.
-[I 2020-03-05 21:32:32,875] Finished trial#32 resulted in value: 0.2860307872966584. Current best value is 0.2888891016263858 with parameters: {'epochs': 17, 'weight_decay': 0.0020809177602941794, 'weight': 5.895009642670649}.
-[I 2020-03-05 21:32:34,568] Finished trial#33 resulted in value: 0.2868326551614214. Current best value is 0.2888891016263858 with parameters: {'epochs': 17, 'weight_decay': 0.0020809177602941794, 'weight': 5.895009642670649}.
-[I 2020-03-05 21:32:36,051] Finished trial#34 resulted in value: 0.28763323699955745. Current best value is 0.2888891016263858 with parameters: {'epochs': 17, 'weight_decay': 0.0020809177602941794, 'weight': 5.895009642670649}.
-[I 2020-03-05 21:32:37,730] Finished trial#35 resulted in value: 0.2816126895589778. Current best value is 0.2888891016263858 with parameters: {'epochs': 17, 'weight_decay': 0.0020809177602941794, 'weight': 5.895009642670649}.
-[I 2020-03-05 21:32:39,674] Finished trial#36 resulted in value: 0.2874034251810661. Current best value is 0.2888891016263858 with parameters: {'epochs': 17, 'weight_decay': 0.0020809177602941794, 'weight': 5.895009642670649}.
-[I 2020-03-05 21:32:41,307] Finished trial#37 resulted in value: 0.28821156044073587. Current best value is 0.2888891016263858 with parameters: {'epochs': 17, 'weight_decay': 0.0020809177602941794, 'weight': 5.895009642670649}.
-[I 2020-03-05 21:32:43,076] Finished trial#38 resulted in value: 0.2796505357086172. Current best value is 0.2888891016263858 with parameters: {'epochs': 17, 'weight_decay': 0.0020809177602941794, 'weight': 5.895009642670649}.
-[I 2020-03-05 21:32:44,748] Finished trial#39 resulted in value: 0.28581613631116476. Current best value is 0.2888891016263858 with parameters: {'epochs': 17, 'weight_decay': 0.0020809177602941794, 'weight': 5.895009642670649}.
-[I 2020-03-05 21:32:46,288] Finished trial#40 resulted in value: 0.2750005151684886. Current best value is 0.2888891016263858 with parameters: {'epochs': 17, 'weight_decay': 0.0020809177602941794, 'weight': 5.895009642670649}.
-[I 2020-03-05 21:32:47,869] Finished trial#41 resulted in value: 0.28708355164271265. Current best value is 0.2888891016263858 with parameters: {'epochs': 17, 'weight_decay': 0.0020809177602941794, 'weight': 5.895009642670649}.
-[I 2020-03-05 21:32:49,688] Finished trial#42 resulted in value: 0.28971362846150583. Current best value is 0.28971362846150583 with parameters: {'epochs': 21, 'weight_decay': 0.01523452849060514, 'weight': 9.04797880789064}.
-[I 2020-03-05 21:32:51,424] Finished trial#43 resulted in value: 0.290359312601816. Current best value is 0.290359312601816 with parameters: {'epochs': 22, 'weight_decay': 0.08503636072332234, 'weight': 9.001270364480595}.
-[I 2020-03-05 21:32:52,944] Finished trial#44 resulted in value: 0.28720143267981413. Current best value is 0.290359312601816 with parameters: {'epochs': 22, 'weight_decay': 0.08503636072332234, 'weight': 9.001270364480595}.
-[I 2020-03-05 21:32:54,352] Finished trial#45 resulted in value: 0.2893678714218591. Current best value is 0.290359312601816 with parameters: {'epochs': 22, 'weight_decay': 0.08503636072332234, 'weight': 9.001270364480595}.
-[I 2020-03-05 21:32:55,775] Finished trial#46 resulted in value: 0.2841460427221109. Current best value is 0.290359312601816 with parameters: {'epochs': 22, 'weight_decay': 0.08503636072332234, 'weight': 9.001270364480595}.
-[I 2020-03-05 21:32:57,420] Finished trial#47 resulted in value: 0.2888616382380215. Current best value is 0.290359312601816 with parameters: {'epochs': 22, 'weight_decay': 0.08503636072332234, 'weight': 9.001270364480595}.
-[I 2020-03-05 21:32:58,899] Finished trial#48 resulted in value: 0.2857414049432132. Current best value is 0.290359312601816 with parameters: {'epochs': 22, 'weight_decay': 0.08503636072332234, 'weight': 9.001270364480595}.
-[I 2020-03-05 21:33:00,088] Finished trial#49 resulted in value: 0.2889921465282221. Current best value is 0.290359312601816 with parameters: {'epochs': 22, 'weight_decay': 0.08503636072332234, 'weight': 9.001270364480595}.
-{'epochs': 22, 'weight_decay': 0.08503636072332234, 'weight': 9.001270364480595}
-{'DCG@5': 0.18749759076385233, 'Recall@5': 0.25033857060923104, 'MAP@5': 0.22315428895698336}
-               BPR    ExpoMF       WMF
-DCG@5     0.192771  0.192818  0.187498
-Recall@5  0.258289  0.259507  0.250339
-MAP@5     0.232255  0.231419  0.223154
+EPOCH= 40 , DCG@5=0.108:  13%|████▉                                | 40/300 [00:11<01:17,  3.37it/s]
+[I 2020-03-18 20:50:28,681] Finished trial#0 resulted in value: 0.12122620087658043. Current best value is 0.12122620087658043 with parameters: {'alpha': 0.09037039639637705, 'weight_decay': 0.04021972379913419, 'clip_value': 0.2801389686469403}.
+EPOCH= 24 , DCG@5=0.289:   8%|██▉                                  | 24/300 [00:07<01:28,  3.12it/s]
+[I 2020-03-18 20:50:36,716] Finished trial#1 resulted in value: 0.2961140767568387. Current best value is 0.2961140767568387 with parameters: {'alpha': 0.0012664215578985902, 'weight_decay': 0.0012743355562729304, 'clip_value': 0.4323062684654274}.
+EPOCH= 29 , DCG@5=0.23:  10%|███▋                                  | 29/300 [00:09<01:25,  3.17it/s]
+[I 2020-03-18 20:50:46,215] Finished trial#2 resulted in value: 0.23682965069177273. Current best value is 0.2961140767568387 with parameters: {'alpha': 0.0012664215578985902, 'weight_decay': 0.0012743355562729304, 'clip_value': 0.4323062684654274}.
+EPOCH= 14 , DCG@5=0.177:   5%|█▋                                   | 14/300 [00:04<01:38,  2.89it/s]
+[I 2020-03-18 20:50:51,458] Finished trial#3 resulted in value: 0.18123151185500058. Current best value is 0.2961140767568387 with parameters: {'alpha': 0.0012664215578985902, 'weight_decay': 0.0012743355562729304, 'clip_value': 0.4323062684654274}.
+EPOCH= 70 , DCG@5=0.296:  23%|████████▋                            | 70/300 [00:24<01:19,  2.89it/s]
+[I 2020-03-18 20:51:16,140] Finished trial#4 resulted in value: 0.2999907491947962. Current best value is 0.2999907491947962 with parameters: {'alpha': 0.0004153154924221683, 'weight_decay': 0.0016412047521298795, 'clip_value': 0.3436817547902239}.
+EPOCH= 12 , DCG@5=0.158:   4%|█▍                                   | 12/300 [00:04<01:36,  2.98it/s]
+[I 2020-03-18 20:51:20,474] Finished trial#5 resulted in value: 0.18134768933970355. Current best value is 0.2999907491947962 with parameters: {'alpha': 0.0004153154924221683, 'weight_decay': 0.0016412047521298795, 'clip_value': 0.3436817547902239}.
+EPOCH= 17 , DCG@5=0.276:   6%|██                                   | 17/300 [00:05<01:38,  2.88it/s]
+[I 2020-03-18 20:51:26,747] Finished trial#6 resulted in value: 0.2965321358117252. Current best value is 0.2999907491947962 with parameters: {'alpha': 0.0004153154924221683, 'weight_decay': 0.0016412047521298795, 'clip_value': 0.3436817547902239}.
+EPOCH= 28 , DCG@5=0.11:   9%|███▌                                  | 28/300 [00:09<01:34,  2.87it/s]
+[I 2020-03-18 20:51:36,869] Finished trial#7 resulted in value: 0.12273261899407896. Current best value is 0.2999907491947962 with parameters: {'alpha': 0.0004153154924221683, 'weight_decay': 0.0016412047521298795, 'clip_value': 0.3436817547902239}.
+EPOCH= 14 , DCG@5=0.129:   5%|█▋                                   | 14/300 [00:04<01:35,  2.98it/s]
+[I 2020-03-18 20:51:41,908] Finished trial#8 resulted in value: 0.13956812742513763. Current best value is 0.2999907491947962 with parameters: {'alpha': 0.0004153154924221683, 'weight_decay': 0.0016412047521298795, 'clip_value': 0.3436817547902239}.
+EPOCH= 14 , DCG@5=0.182:   5%|█▋                                   | 14/300 [00:04<01:36,  2.97it/s]
+[I 2020-03-18 20:51:46,978] Finished trial#9 resulted in value: 0.19037368538347577. Current best value is 0.2999907491947962 with parameters: {'alpha': 0.0004153154924221683, 'weight_decay': 0.0016412047521298795, 'clip_value': 0.3436817547902239}.
+EPOCH= 31 , DCG@5=0.261:  10%|███▊                                 | 31/300 [00:10<01:27,  3.08it/s]
+[I 2020-03-18 20:51:57,368] Finished trial#10 resulted in value: 0.26291312923980403. Current best value is 0.2999907491947962 with parameters: {'alpha': 0.0004153154924221683, 'weight_decay': 0.0016412047521298795, 'clip_value': 0.3436817547902239}.
+EPOCH= 17 , DCG@5=0.279:   6%|██                                   | 17/300 [00:05<01:33,  3.02it/s]
+[I 2020-03-18 20:52:03,347] Finished trial#11 resulted in value: 0.2969502551930711. Current best value is 0.2999907491947962 with parameters: {'alpha': 0.0004153154924221683, 'weight_decay': 0.0016412047521298795, 'clip_value': 0.3436817547902239}.
+EPOCH= 51 , DCG@5=0.287:  17%|██████▎                              | 51/300 [00:17<01:26,  2.88it/s]
+[I 2020-03-18 20:52:21,405] Finished trial#12 resulted in value: 0.29408746983202716. Current best value is 0.2999907491947962 with parameters: {'alpha': 0.0004153154924221683, 'weight_decay': 0.0016412047521298795, 'clip_value': 0.3436817547902239}.
+EPOCH= 14 , DCG@5=0.273:   5%|█▋                                   | 14/300 [00:04<01:33,  3.05it/s]
+[I 2020-03-18 20:52:26,348] Finished trial#13 resulted in value: 0.28377616543128337. Current best value is 0.2999907491947962 with parameters: {'alpha': 0.0004153154924221683, 'weight_decay': 0.0016412047521298795, 'clip_value': 0.3436817547902239}.
+EPOCH= 19 , DCG@5=0.282:   6%|██▎                                  | 19/300 [00:06<01:31,  3.08it/s]
+[I 2020-03-18 20:52:32,869] Finished trial#14 resulted in value: 0.30297278642609304. Current best value is 0.30297278642609304 with parameters: {'alpha': 0.0019218115601159086, 'weight_decay': 0.0010355256610696268, 'clip_value': 0.41017277521832735}.
+EPOCH= 51 , DCG@5=0.29:  17%|██████▍                               | 51/300 [00:16<01:20,  3.11it/s]
+[I 2020-03-18 20:52:49,632] Finished trial#15 resulted in value: 0.29431672089504113. Current best value is 0.30297278642609304 with parameters: {'alpha': 0.0019218115601159086, 'weight_decay': 0.0010355256610696268, 'clip_value': 0.41017277521832735}.
+EPOCH= 23 , DCG@5=0.278:   8%|██▊                                  | 23/300 [00:07<01:29,  3.09it/s]
+[I 2020-03-18 20:52:57,380] Finished trial#16 resulted in value: 0.28926913245644503. Current best value is 0.30297278642609304 with parameters: {'alpha': 0.0019218115601159086, 'weight_decay': 0.0010355256610696268, 'clip_value': 0.41017277521832735}.
+EPOCH= 13 , DCG@5=0.183:   4%|█▌                                   | 13/300 [00:04<01:33,  3.06it/s]
+[I 2020-03-18 20:53:01,975] Finished trial#17 resulted in value: 0.1911899012848742. Current best value is 0.30297278642609304 with parameters: {'alpha': 0.0019218115601159086, 'weight_decay': 0.0010355256610696268, 'clip_value': 0.41017277521832735}.
+EPOCH= 15 , DCG@5=0.266:   5%|█▊                                   | 15/300 [00:04<01:34,  3.03it/s]
+[I 2020-03-18 20:53:07,270] Finished trial#18 resulted in value: 0.27450025956805774. Current best value is 0.30297278642609304 with parameters: {'alpha': 0.0019218115601159086, 'weight_decay': 0.0010355256610696268, 'clip_value': 0.41017277521832735}.
+EPOCH= 24 , DCG@5=0.273:   8%|██▉                                  | 24/300 [00:07<01:28,  3.13it/s]
+[I 2020-03-18 20:53:15,296] Finished trial#19 resulted in value: 0.29219900792539316. Current best value is 0.30297278642609304 with parameters: {'alpha': 0.0019218115601159086, 'weight_decay': 0.0010355256610696268, 'clip_value': 0.41017277521832735}.
+EPOCH= 12 , DCG@5=0.19:   4%|█▌                                    | 12/300 [00:03<01:35,  3.00it/s]
+[I 2020-03-18 20:53:19,644] Finished trial#20 resulted in value: 0.1942184967313197. Current best value is 0.30297278642609304 with parameters: {'alpha': 0.0019218115601159086, 'weight_decay': 0.0010355256610696268, 'clip_value': 0.41017277521832735}.
+EPOCH= 15 , DCG@5=0.278:   5%|█▊                                   | 15/300 [00:04<01:32,  3.08it/s]
+[I 2020-03-18 20:53:24,871] Finished trial#21 resulted in value: 0.29569863981557043. Current best value is 0.30297278642609304 with parameters: {'alpha': 0.0019218115601159086, 'weight_decay': 0.0010355256610696268, 'clip_value': 0.41017277521832735}.
+EPOCH= 18 , DCG@5=0.274:   6%|██▏                                  | 18/300 [00:05<01:30,  3.10it/s]
+[I 2020-03-18 20:53:31,028] Finished trial#22 resulted in value: 0.3020430308571786. Current best value is 0.30297278642609304 with parameters: {'alpha': 0.0019218115601159086, 'weight_decay': 0.0010355256610696268, 'clip_value': 0.41017277521832735}.
+EPOCH= 15 , DCG@5=0.255:   5%|█▊                                   | 15/300 [00:04<01:32,  3.08it/s]
+[I 2020-03-18 20:53:36,258] Finished trial#23 resulted in value: 0.25815354403469737. Current best value is 0.30297278642609304 with parameters: {'alpha': 0.0019218115601159086, 'weight_decay': 0.0010355256610696268, 'clip_value': 0.41017277521832735}.
+EPOCH= 23 , DCG@5=0.282:   8%|██▊                                  | 23/300 [00:07<01:28,  3.14it/s]
+[I 2020-03-18 20:53:43,938] Finished trial#24 resulted in value: 0.29422330293827986. Current best value is 0.30297278642609304 with parameters: {'alpha': 0.0019218115601159086, 'weight_decay': 0.0010355256610696268, 'clip_value': 0.41017277521832735}.
+EPOCH= 47 , DCG@5=0.295:  16%|█████▊                               | 47/300 [00:14<01:20,  3.14it/s]
+[I 2020-03-18 20:53:59,253] Finished trial#25 resulted in value: 0.3018016684031203. Current best value is 0.30297278642609304 with parameters: {'alpha': 0.0019218115601159086, 'weight_decay': 0.0010355256610696268, 'clip_value': 0.41017277521832735}.
+EPOCH= 68 , DCG@5=0.303:  23%|████████▍                            | 68/300 [00:21<01:13,  3.17it/s]
+[I 2020-03-18 20:54:21,046] Finished trial#26 resulted in value: 0.30708504235120726. Current best value is 0.30708504235120726 with parameters: {'alpha': 0.0008203002054740014, 'weight_decay': 0.011912410843822946, 'clip_value': 0.4424097448925992}.
+EPOCH= 18 , DCG@5=0.171:   6%|██▏                                  | 18/300 [00:05<01:33,  3.02it/s]
+[I 2020-03-18 20:54:27,368] Finished trial#27 resulted in value: 0.1732741382726557. Current best value is 0.30708504235120726 with parameters: {'alpha': 0.0008203002054740014, 'weight_decay': 0.011912410843822946, 'clip_value': 0.4424097448925992}.
+EPOCH= 33 , DCG@5=0.299:  11%|████                                 | 33/300 [00:10<01:23,  3.19it/s]
+[I 2020-03-18 20:54:38,058] Finished trial#28 resulted in value: 0.3027042299304726. Current best value is 0.30708504235120726 with parameters: {'alpha': 0.0008203002054740014, 'weight_decay': 0.011912410843822946, 'clip_value': 0.4424097448925992}.
+EPOCH= 66 , DCG@5=0.291:  22%|████████▏                            | 66/300 [00:21<01:14,  3.13it/s]
+[I 2020-03-18 20:54:59,488] Finished trial#29 resulted in value: 0.3010774315283642. Current best value is 0.30708504235120726 with parameters: {'alpha': 0.0008203002054740014, 'weight_decay': 0.011912410843822946, 'clip_value': 0.4424097448925992}.
+EPOCH= 12 , DCG@5=0.176:   4%|█▍                                   | 12/300 [00:03<01:35,  3.02it/s]
+[I 2020-03-18 20:55:03,819] Finished trial#30 resulted in value: 0.1805264879549854. Current best value is 0.30708504235120726 with parameters: {'alpha': 0.0008203002054740014, 'weight_decay': 0.011912410843822946, 'clip_value': 0.4424097448925992}.
+EPOCH= 22 , DCG@5=0.285:   7%|██▋                                  | 22/300 [00:07<01:28,  3.13it/s]
+[I 2020-03-18 20:55:11,200] Finished trial#31 resulted in value: 0.3012101069815237. Current best value is 0.30708504235120726 with parameters: {'alpha': 0.0008203002054740014, 'weight_decay': 0.011912410843822946, 'clip_value': 0.4424097448925992}.
+EPOCH= 26 , DCG@5=0.283:   9%|███▏                                 | 26/300 [00:08<01:29,  3.07it/s]
+[I 2020-03-18 20:55:20,030] Finished trial#32 resulted in value: 0.2996008833811226. Current best value is 0.30708504235120726 with parameters: {'alpha': 0.0008203002054740014, 'weight_decay': 0.011912410843822946, 'clip_value': 0.4424097448925992}.
+EPOCH= 25 , DCG@5=0.295:   8%|███                                  | 25/300 [00:07<01:27,  3.13it/s]
+[I 2020-03-18 20:55:28,361] Finished trial#33 resulted in value: 0.29984107936785814. Current best value is 0.30708504235120726 with parameters: {'alpha': 0.0008203002054740014, 'weight_decay': 0.011912410843822946, 'clip_value': 0.4424097448925992}.
+EPOCH= 62 , DCG@5=0.25:  21%|███████▊                              | 62/300 [00:19<01:16,  3.12it/s]
+[I 2020-03-18 20:55:48,583] Finished trial#34 resulted in value: 0.2570610786874531. Current best value is 0.30708504235120726 with parameters: {'alpha': 0.0008203002054740014, 'weight_decay': 0.011912410843822946, 'clip_value': 0.4424097448925992}.
+EPOCH= 48 , DCG@5=0.296:  16%|█████▉                               | 48/300 [00:15<01:19,  3.18it/s]
+[I 2020-03-18 20:56:04,030] Finished trial#35 resulted in value: 0.3030934126311895. Current best value is 0.30708504235120726 with parameters: {'alpha': 0.0008203002054740014, 'weight_decay': 0.011912410843822946, 'clip_value': 0.4424097448925992}.
+EPOCH= 15 , DCG@5=0.174:   5%|█▊                                   | 15/300 [00:04<01:34,  3.01it/s]
+[I 2020-03-18 20:56:09,376] Finished trial#36 resulted in value: 0.17836074856427866. Current best value is 0.30708504235120726 with parameters: {'alpha': 0.0008203002054740014, 'weight_decay': 0.011912410843822946, 'clip_value': 0.4424097448925992}.
+EPOCH= 12 , DCG@5=0.18:   4%|█▌                                    | 12/300 [00:04<01:36,  2.98it/s]
+[I 2020-03-18 20:56:13,757] Finished trial#37 resulted in value: 0.18967491980948434. Current best value is 0.30708504235120726 with parameters: {'alpha': 0.0008203002054740014, 'weight_decay': 0.011912410843822946, 'clip_value': 0.4424097448925992}.
+EPOCH= 13 , DCG@5=0.176:   4%|█▌                                   | 13/300 [00:04<01:32,  3.09it/s]
+[I 2020-03-18 20:56:18,307] Finished trial#38 resulted in value: 0.1803196594373404. Current best value is 0.30708504235120726 with parameters: {'alpha': 0.0008203002054740014, 'weight_decay': 0.011912410843822946, 'clip_value': 0.4424097448925992}.
+EPOCH= 13 , DCG@5=0.187:   4%|█▌                                   | 13/300 [00:04<01:34,  3.05it/s]
+[I 2020-03-18 20:56:22,913] Finished trial#39 resulted in value: 0.19085806232554153. Current best value is 0.30708504235120726 with parameters: {'alpha': 0.0008203002054740014, 'weight_decay': 0.011912410843822946, 'clip_value': 0.4424097448925992}.
+EPOCH= 24 , DCG@5=0.282:   8%|██▉                                  | 24/300 [00:07<01:28,  3.12it/s]
+[I 2020-03-18 20:56:30,953] Finished trial#40 resulted in value: 0.296645654839181. Current best value is 0.30708504235120726 with parameters: {'alpha': 0.0008203002054740014, 'weight_decay': 0.011912410843822946, 'clip_value': 0.4424097448925992}.
+EPOCH= 79 , DCG@5=0.286:  26%|█████████▋                           | 79/300 [00:25<01:10,  3.14it/s]
+[I 2020-03-18 20:56:56,494] Finished trial#41 resulted in value: 0.28892075449959687. Current best value is 0.30708504235120726 with parameters: {'alpha': 0.0008203002054740014, 'weight_decay': 0.011912410843822946, 'clip_value': 0.4424097448925992}.
+EPOCH= 33 , DCG@5=0.29:  11%|████▏                                 | 33/300 [00:10<01:26,  3.09it/s]
+[I 2020-03-18 20:57:07,539] Finished trial#42 resulted in value: 0.3046385314596214. Current best value is 0.30708504235120726 with parameters: {'alpha': 0.0008203002054740014, 'weight_decay': 0.011912410843822946, 'clip_value': 0.4424097448925992}.
+EPOCH= 37 , DCG@5=0.299:  12%|████▌                                | 37/300 [00:11<01:24,  3.11it/s]
+[I 2020-03-18 20:57:19,766] Finished trial#43 resulted in value: 0.30583798177746635. Current best value is 0.30708504235120726 with parameters: {'alpha': 0.0008203002054740014, 'weight_decay': 0.011912410843822946, 'clip_value': 0.4424097448925992}.
+EPOCH= 21 , DCG@5=0.277:   7%|██▌                                  | 21/300 [00:06<01:29,  3.13it/s]
+[I 2020-03-18 20:57:26,816] Finished trial#44 resulted in value: 0.29776858812090484. Current best value is 0.30708504235120726 with parameters: {'alpha': 0.0008203002054740014, 'weight_decay': 0.011912410843822946, 'clip_value': 0.4424097448925992}.
+EPOCH= 12 , DCG@5=0.186:   4%|█▍                                   | 12/300 [00:03<01:35,  3.02it/s]
+[I 2020-03-18 20:57:31,134] Finished trial#45 resulted in value: 0.19117285987388324. Current best value is 0.30708504235120726 with parameters: {'alpha': 0.0008203002054740014, 'weight_decay': 0.011912410843822946, 'clip_value': 0.4424097448925992}.
+EPOCH= 85 , DCG@5=0.304:  28%|██████████▍                          | 85/300 [00:26<01:07,  3.17it/s]
+[I 2020-03-18 20:57:58,288] Finished trial#46 resulted in value: 0.30685330177960085. Current best value is 0.30708504235120726 with parameters: {'alpha': 0.0008203002054740014, 'weight_decay': 0.011912410843822946, 'clip_value': 0.4424097448925992}.
+EPOCH= 13 , DCG@5=0.185:   4%|█▌                                   | 13/300 [00:04<01:34,  3.03it/s]
+[I 2020-03-18 20:58:02,922] Finished trial#47 resulted in value: 0.18725990142471996. Current best value is 0.30708504235120726 with parameters: {'alpha': 0.0008203002054740014, 'weight_decay': 0.011912410843822946, 'clip_value': 0.4424097448925992}.
+EPOCH= 14 , DCG@5=0.182:   5%|█▋                                   | 14/300 [00:04<01:33,  3.05it/s]
+[I 2020-03-18 20:58:07,864] Finished trial#48 resulted in value: 0.1901295079807557. Current best value is 0.30708504235120726 with parameters: {'alpha': 0.0008203002054740014, 'weight_decay': 0.011912410843822946, 'clip_value': 0.4424097448925992}.
+EPOCH= 39 , DCG@5=0.298:  13%|████▊                                | 39/300 [00:12<01:24,  3.09it/s]
+[I 2020-03-18 20:58:20,816] Finished trial#49 resulted in value: 0.3030941376917728. Current best value is 0.30708504235120726 with parameters: {'alpha': 0.0008203002054740014, 'weight_decay': 0.011912410843822946, 'clip_value': 0.4424097448925992}.
+{'alpha': 0.0008203002054740014, 'weight_decay': 0.011912410843822946, 'clip_value': 0.4424097448925992}
+EPOCH= 63 , DCG@5=0.301:  21%|███████▊                             | 63/300 [00:20<01:16,  3.09it/s]
+{'DCG@5': 0.1929029533238549, 'Recall@5': 0.25799495446216303, 'MAP@5': 0.2315219642433261}
+EPOCH= 39 , DCG@5=0.192:  13%|███████▍                                                 | 39/300 [00:02<00:16, 15.70it/s]
+[I 2020-03-18 20:58:44,586] Finished trial#0 resulted in value: 0.1922284141952009. Current best value is 0.1922284141952009 with parameters: {'alpha': 4.5532929589192356e-05, 'weight_decay': 0.007350952354835131}.
+EPOCH= 18 , DCG@5=0.273:   6%|███▍                                                     | 18/300 [00:01<00:18, 15.46it/s]
+[I 2020-03-18 20:58:46,032] Finished trial#1 resulted in value: 0.27075667798260644. Current best value is 0.27075667798260644 with parameters: {'alpha': 0.010699462466921522, 'weight_decay': 0.002082773889857136}.
+EPOCH= 26 , DCG@5=0.289:   9%|████▉                                                    | 26/300 [00:01<00:16, 16.29it/s]
+[I 2020-03-18 20:58:47,909] Finished trial#2 resulted in value: 0.2826605805244195. Current best value is 0.2826605805244195 with parameters: {'alpha': 0.025223347977742682, 'weight_decay': 0.025296766008905635}.
+EPOCH= 35 , DCG@5=0.21:  12%|██████▊                                                   | 35/300 [00:02<00:15, 17.04it/s]
+[I 2020-03-18 20:58:50,237] Finished trial#3 resulted in value: 0.21001372744941035. Current best value is 0.2826605805244195 with parameters: {'alpha': 0.025223347977742682, 'weight_decay': 0.025296766008905635}.
+EPOCH= 41 , DCG@5=0.193:  14%|███████▊                                                 | 41/300 [00:02<00:15, 17.01it/s]
+[I 2020-03-18 20:58:52,920] Finished trial#4 resulted in value: 0.19208888412899552. Current best value is 0.2826605805244195 with parameters: {'alpha': 0.025223347977742682, 'weight_decay': 0.025296766008905635}.
+EPOCH= 99 , DCG@5=0.191:  33%|██████████████████▊                                      | 99/300 [00:05<00:12, 16.67it/s]
+[I 2020-03-18 20:58:59,146] Finished trial#5 resulted in value: 0.19184719457540098. Current best value is 0.2826605805244195 with parameters: {'alpha': 0.025223347977742682, 'weight_decay': 0.025296766008905635}.
+EPOCH= 68 , DCG@5=0.286:  23%|████████████▉                                            | 68/300 [00:04<00:14, 15.84it/s]
+[I 2020-03-18 20:59:03,721] Finished trial#6 resulted in value: 0.2844497696258342. Current best value is 0.2844497696258342 with parameters: {'alpha': 0.0033807876045053426, 'weight_decay': 0.0001005438277335173}.
+EPOCH= 36 , DCG@5=0.278:  12%|██████▊                                                  | 36/300 [00:02<00:16, 16.00it/s]
+[I 2020-03-18 20:59:06,250] Finished trial#7 resulted in value: 0.2773832026509026. Current best value is 0.2844497696258342 with parameters: {'alpha': 0.0033807876045053426, 'weight_decay': 0.0001005438277335173}.
+EPOCH= 87 , DCG@5=0.192:  29%|████████████████▌                                        | 87/300 [00:05<00:12, 16.53it/s]
+[I 2020-03-18 20:59:11,794] Finished trial#8 resulted in value: 0.1927097523049657. Current best value is 0.2844497696258342 with parameters: {'alpha': 0.0033807876045053426, 'weight_decay': 0.0001005438277335173}.
+EPOCH= 23 , DCG@5=0.226:   8%|████▎                                                    | 23/300 [00:01<00:18, 15.17it/s]
+[I 2020-03-18 20:59:13,595] Finished trial#9 resulted in value: 0.2166514796732246. Current best value is 0.2844497696258342 with parameters: {'alpha': 0.0033807876045053426, 'weight_decay': 0.0001005438277335173}.
+EPOCH= 47 , DCG@5=0.204:  16%|████████▉                                                | 47/300 [00:02<00:15, 16.77it/s]
+[I 2020-03-18 20:59:16,682] Finished trial#10 resulted in value: 0.2039995987705322. Current best value is 0.2844497696258342 with parameters: {'alpha': 0.0033807876045053426, 'weight_decay': 0.0001005438277335173}.
+EPOCH= 21 , DCG@5=0.277:   7%|███▉                                                     | 21/300 [00:01<00:17, 16.09it/s]
+[I 2020-03-18 20:59:18,265] Finished trial#11 resulted in value: 0.2794519387296419. Current best value is 0.2844497696258342 with parameters: {'alpha': 0.0033807876045053426, 'weight_decay': 0.0001005438277335173}.
+EPOCH= 53 , DCG@5=0.294:  18%|██████████                                               | 53/300 [00:03<00:14, 16.70it/s]
+[I 2020-03-18 20:59:21,716] Finished trial#12 resulted in value: 0.29793804906465265. Current best value is 0.29793804906465265 with parameters: {'alpha': 0.005798194046858906, 'weight_decay': 0.020663751797959064}.
+EPOCH= 56 , DCG@5=0.275:  19%|██████████▋                                              | 56/300 [00:03<00:14, 16.85it/s]
+[I 2020-03-18 20:59:25,317] Finished trial#13 resulted in value: 0.27538402792417394. Current best value is 0.29793804906465265 with parameters: {'alpha': 0.005798194046858906, 'weight_decay': 0.020663751797959064}.
+EPOCH= 16 , DCG@5=0.191:   5%|███                                                      | 16/300 [00:00<00:17, 16.11it/s]
+[I 2020-03-18 20:59:26,588] Finished trial#14 resulted in value: 0.19197778104860508. Current best value is 0.29793804906465265 with parameters: {'alpha': 0.005798194046858906, 'weight_decay': 0.020663751797959064}.
+EPOCH= 69 , DCG@5=0.296:  23%|█████████████                                            | 69/300 [00:04<00:13, 16.71it/s]
+[I 2020-03-18 20:59:30,998] Finished trial#15 resulted in value: 0.2961077999081568. Current best value is 0.29793804906465265 with parameters: {'alpha': 0.005798194046858906, 'weight_decay': 0.020663751797959064}.
+EPOCH= 42 , DCG@5=0.195:  14%|███████▉                                                 | 42/300 [00:02<00:16, 16.12it/s]
+[I 2020-03-18 20:59:33,889] Finished trial#16 resulted in value: 0.19526877786216276. Current best value is 0.29793804906465265 with parameters: {'alpha': 0.005798194046858906, 'weight_decay': 0.020663751797959064}.
+EPOCH= 83 , DCG@5=0.292:  28%|███████████████▊                                         | 83/300 [00:05<00:13, 16.15it/s]
+[I 2020-03-18 20:59:39,310] Finished trial#17 resulted in value: 0.2916298402662256. Current best value is 0.29793804906465265 with parameters: {'alpha': 0.005798194046858906, 'weight_decay': 0.020663751797959064}.
+EPOCH= 26 , DCG@5=0.277:   9%|████▉                                                    | 26/300 [00:01<00:16, 16.35it/s]
+[I 2020-03-18 20:59:41,184] Finished trial#18 resulted in value: 0.277855710875006. Current best value is 0.29793804906465265 with parameters: {'alpha': 0.005798194046858906, 'weight_decay': 0.020663751797959064}.
+EPOCH= 50 , DCG@5=0.189:  17%|█████████▌                                               | 50/300 [00:02<00:14, 16.69it/s]
+[I 2020-03-18 20:59:44,459] Finished trial#19 resulted in value: 0.1888525259321843. Current best value is 0.29793804906465265 with parameters: {'alpha': 0.005798194046858906, 'weight_decay': 0.020663751797959064}.
+EPOCH= 21 , DCG@5=0.263:   7%|███▉                                                     | 21/300 [00:01<00:17, 15.97it/s]
+[I 2020-03-18 20:59:46,057] Finished trial#20 resulted in value: 0.263712909381743. Current best value is 0.29793804906465265 with parameters: {'alpha': 0.005798194046858906, 'weight_decay': 0.020663751797959064}.
+EPOCH= 22 , DCG@5=0.211:   7%|████▏                                                    | 22/300 [00:01<00:17, 16.06it/s]
+[I 2020-03-18 20:59:47,708] Finished trial#21 resulted in value: 0.21122348584868397. Current best value is 0.29793804906465265 with parameters: {'alpha': 0.005798194046858906, 'weight_decay': 0.020663751797959064}.
+EPOCH=142 , DCG@5=0.293:  47%|██████████████████████████▌                             | 142/300 [00:08<00:09, 16.92it/s]
+[I 2020-03-18 20:59:56,383] Finished trial#22 resulted in value: 0.2920724730101553. Current best value is 0.29793804906465265 with parameters: {'alpha': 0.005798194046858906, 'weight_decay': 0.020663751797959064}.
+EPOCH= 37 , DCG@5=0.295:  12%|███████                                                  | 37/300 [00:02<00:16, 15.76it/s]
+[I 2020-03-18 20:59:59,014] Finished trial#23 resulted in value: 0.29507435529575565. Current best value is 0.29793804906465265 with parameters: {'alpha': 0.005798194046858906, 'weight_decay': 0.020663751797959064}.
+EPOCH= 36 , DCG@5=0.296:  12%|██████▊                                                  | 36/300 [00:02<00:16, 15.55it/s]
+[I 2020-03-18 21:00:01,623] Finished trial#24 resulted in value: 0.2982363675395243. Current best value is 0.2982363675395243 with parameters: {'alpha': 0.009244345900350961, 'weight_decay': 0.017151582520873933}.
+EPOCH= 20 , DCG@5=0.275:   7%|███▊                                                     | 20/300 [00:01<00:18, 15.54it/s]
+[I 2020-03-18 21:00:03,202] Finished trial#25 resulted in value: 0.27495925848916747. Current best value is 0.2982363675395243 with parameters: {'alpha': 0.009244345900350961, 'weight_decay': 0.017151582520873933}.
+EPOCH= 52 , DCG@5=0.294:  17%|█████████▉                                               | 52/300 [00:03<00:15, 16.52it/s]
+[I 2020-03-18 21:00:06,633] Finished trial#26 resulted in value: 0.29568155816369085. Current best value is 0.2982363675395243 with parameters: {'alpha': 0.009244345900350961, 'weight_decay': 0.017151582520873933}.
+EPOCH= 43 , DCG@5=0.201:  14%|████████▏                                                | 43/300 [00:02<00:15, 16.47it/s]
+[I 2020-03-18 21:00:09,521] Finished trial#27 resulted in value: 0.2027855427651636. Current best value is 0.2982363675395243 with parameters: {'alpha': 0.009244345900350961, 'weight_decay': 0.017151582520873933}.
+EPOCH= 38 , DCG@5=0.271:  13%|███████▏                                                 | 38/300 [00:02<00:15, 16.71it/s]
+[I 2020-03-18 21:00:12,075] Finished trial#28 resulted in value: 0.2701320649741774. Current best value is 0.2982363675395243 with parameters: {'alpha': 0.009244345900350961, 'weight_decay': 0.017151582520873933}.
+EPOCH= 20 , DCG@5=0.206:   7%|███▊                                                     | 20/300 [00:01<00:17, 16.00it/s]
+[I 2020-03-18 21:00:13,608] Finished trial#29 resulted in value: 0.20787081853463643. Current best value is 0.2982363675395243 with parameters: {'alpha': 0.009244345900350961, 'weight_decay': 0.017151582520873933}.
+EPOCH= 60 , DCG@5=0.296:  20%|███████████▍                                             | 60/300 [00:03<00:14, 16.85it/s]
+[I 2020-03-18 21:00:17,452] Finished trial#30 resulted in value: 0.29227664023958555. Current best value is 0.2982363675395243 with parameters: {'alpha': 0.009244345900350961, 'weight_decay': 0.017151582520873933}.
+EPOCH= 54 , DCG@5=0.295:  18%|██████████▎                                              | 54/300 [00:03<00:14, 16.91it/s]
+[I 2020-03-18 21:00:20,925] Finished trial#31 resulted in value: 0.2953885631494341. Current best value is 0.2982363675395243 with parameters: {'alpha': 0.009244345900350961, 'weight_decay': 0.017151582520873933}.
+EPOCH= 55 , DCG@5=0.293:  18%|██████████▍                                              | 55/300 [00:03<00:15, 16.10it/s]
+[I 2020-03-18 21:00:24,634] Finished trial#32 resulted in value: 0.29042166703816996. Current best value is 0.2982363675395243 with parameters: {'alpha': 0.009244345900350961, 'weight_decay': 0.017151582520873933}.
+EPOCH= 25 , DCG@5=0.292:   8%|████▊                                                    | 25/300 [00:01<00:17, 15.56it/s]
+[I 2020-03-18 21:00:26,533] Finished trial#33 resulted in value: 0.28580156719449684. Current best value is 0.2982363675395243 with parameters: {'alpha': 0.009244345900350961, 'weight_decay': 0.017151582520873933}.
+EPOCH= 48 , DCG@5=0.281:  16%|█████████                                                | 48/300 [00:02<00:15, 16.62it/s]
+[I 2020-03-18 21:00:29,706] Finished trial#34 resulted in value: 0.2823790283170995. Current best value is 0.2982363675395243 with parameters: {'alpha': 0.009244345900350961, 'weight_decay': 0.017151582520873933}.
+EPOCH= 34 , DCG@5=0.269:  11%|██████▍                                                  | 34/300 [00:02<00:15, 16.73it/s]
+[I 2020-03-18 21:00:32,016] Finished trial#35 resulted in value: 0.2713367825494048. Current best value is 0.2982363675395243 with parameters: {'alpha': 0.009244345900350961, 'weight_decay': 0.017151582520873933}.
+EPOCH= 43 , DCG@5=0.197:  14%|████████▏                                                | 43/300 [00:02<00:15, 16.76it/s]
+[I 2020-03-18 21:00:34,861] Finished trial#36 resulted in value: 0.19767183507895714. Current best value is 0.2982363675395243 with parameters: {'alpha': 0.009244345900350961, 'weight_decay': 0.017151582520873933}.
+EPOCH=148 , DCG@5=0.283:  49%|███████████████████████████▋                            | 148/300 [00:08<00:09, 16.79it/s]
+[I 2020-03-18 21:00:43,958] Finished trial#37 resulted in value: 0.282794950594079. Current best value is 0.2982363675395243 with parameters: {'alpha': 0.009244345900350961, 'weight_decay': 0.017151582520873933}.
+EPOCH= 32 , DCG@5=0.293:  11%|██████                                                   | 32/300 [00:01<00:16, 16.11it/s]
+[I 2020-03-18 21:00:46,233] Finished trial#38 resulted in value: 0.29175313111425943. Current best value is 0.2982363675395243 with parameters: {'alpha': 0.009244345900350961, 'weight_decay': 0.017151582520873933}.
+EPOCH= 31 , DCG@5=0.234:  10%|█████▉                                                   | 31/300 [00:01<00:17, 15.74it/s]
+[I 2020-03-18 21:00:48,485] Finished trial#39 resulted in value: 0.23701590529500996. Current best value is 0.2982363675395243 with parameters: {'alpha': 0.009244345900350961, 'weight_decay': 0.017151582520873933}.
+EPOCH= 20 , DCG@5=0.264:   7%|███▊                                                     | 20/300 [00:01<00:18, 15.41it/s]
+[I 2020-03-18 21:00:50,070] Finished trial#40 resulted in value: 0.2691801255444606. Current best value is 0.2982363675395243 with parameters: {'alpha': 0.009244345900350961, 'weight_decay': 0.017151582520873933}.
+EPOCH= 29 , DCG@5=0.279:  10%|█████▌                                                   | 29/300 [00:01<00:16, 16.50it/s]
+[I 2020-03-18 21:00:52,119] Finished trial#41 resulted in value: 0.28166705910506856. Current best value is 0.2982363675395243 with parameters: {'alpha': 0.009244345900350961, 'weight_decay': 0.017151582520873933}.
+EPOCH= 65 , DCG@5=0.294:  22%|████████████▎                                            | 65/300 [00:03<00:13, 16.79it/s]
+[I 2020-03-18 21:00:56,267] Finished trial#42 resulted in value: 0.29187250015029703. Current best value is 0.2982363675395243 with parameters: {'alpha': 0.009244345900350961, 'weight_decay': 0.017151582520873933}.
+EPOCH= 72 , DCG@5=0.28:  24%|█████████████▉                                            | 72/300 [00:04<00:13, 16.93it/s]
+[I 2020-03-18 21:01:00,802] Finished trial#43 resulted in value: 0.280412154453144. Current best value is 0.2982363675395243 with parameters: {'alpha': 0.009244345900350961, 'weight_decay': 0.017151582520873933}.
+EPOCH= 50 , DCG@5=0.304:  17%|█████████▌                                               | 50/300 [00:03<00:15, 16.25it/s]
+[I 2020-03-18 21:01:04,168] Finished trial#44 resulted in value: 0.3010543112415234. Current best value is 0.3010543112415234 with parameters: {'alpha': 0.009253233158691972, 'weight_decay': 0.022534127451435078}.
+EPOCH= 39 , DCG@5=0.205:  13%|███████▍                                                 | 39/300 [00:02<00:16, 16.02it/s]
+[I 2020-03-18 21:01:06,887] Finished trial#45 resulted in value: 0.20378459628664253. Current best value is 0.3010543112415234 with parameters: {'alpha': 0.009253233158691972, 'weight_decay': 0.022534127451435078}.
+EPOCH= 46 , DCG@5=0.286:  15%|████████▋                                                | 46/300 [00:02<00:15, 16.08it/s]
+[I 2020-03-18 21:01:10,031] Finished trial#46 resulted in value: 0.2852990855035156. Current best value is 0.3010543112415234 with parameters: {'alpha': 0.009253233158691972, 'weight_decay': 0.022534127451435078}.
+EPOCH= 30 , DCG@5=0.279:  10%|█████▋                                                   | 30/300 [00:01<00:16, 16.41it/s]
+[I 2020-03-18 21:01:12,151] Finished trial#47 resulted in value: 0.2800734515727033. Current best value is 0.3010543112415234 with parameters: {'alpha': 0.009253233158691972, 'weight_decay': 0.022534127451435078}.
+EPOCH= 39 , DCG@5=0.288:  13%|███████▍                                                 | 39/300 [00:02<00:15, 16.62it/s]
+[I 2020-03-18 21:01:14,774] Finished trial#48 resulted in value: 0.286003388042288. Current best value is 0.3010543112415234 with parameters: {'alpha': 0.009253233158691972, 'weight_decay': 0.022534127451435078}.
+EPOCH= 35 , DCG@5=0.198:  12%|██████▋                                                  | 35/300 [00:02<00:15, 16.70it/s]
+[I 2020-03-18 21:01:17,154] Finished trial#49 resulted in value: 0.1977920605433901. Current best value is 0.3010543112415234 with parameters: {'alpha': 0.009253233158691972, 'weight_decay': 0.022534127451435078}.
+{'alpha': 0.009253233158691972, 'weight_decay': 0.022534127451435078}
+{'DCG@5': 0.18960329266256823, 'Recall@5': 0.25524018784363706, 'MAP@5': 0.22661361689589068}
+EPOCH= 15 , DCG@5=0.183:   5%|█▊                                   | 15/300 [00:08<02:33,  1.86it/s]
+[I 2020-03-18 21:01:28,577] Finished trial#0 resulted in value: 0.2448069097543801. Current best value is 0.2448069097543801 with parameters: {'weight_decay': 0.0001029302297576417}.
+EPOCH= 15 , DCG@5=0.184:   5%|█▊                                   | 15/300 [00:08<02:40,  1.77it/s]
+[I 2020-03-18 21:01:37,196] Finished trial#1 resulted in value: 0.24632734918203544. Current best value is 0.24632734918203544 with parameters: {'weight_decay': 0.0010257046265202254}.
+EPOCH= 15 , DCG@5=0.187:   5%|█▊                                   | 15/300 [00:08<02:40,  1.78it/s]
+[I 2020-03-18 21:01:45,774] Finished trial#2 resulted in value: 0.24944746701720394. Current best value is 0.24944746701720394 with parameters: {'weight_decay': 0.0038693580022344256}.
+EPOCH= 15 , DCG@5=0.184:   5%|█▊                                   | 15/300 [00:08<02:37,  1.81it/s]
+[I 2020-03-18 21:01:54,206] Finished trial#3 resulted in value: 0.24627793547389315. Current best value is 0.24944746701720394 with parameters: {'weight_decay': 0.0038693580022344256}.
+EPOCH= 15 , DCG@5=0.232:   5%|█▊                                   | 15/300 [00:07<02:30,  1.89it/s]
+[I 2020-03-18 21:02:02,290] Finished trial#4 resulted in value: 0.2699585825671612. Current best value is 0.2699585825671612 with parameters: {'weight_decay': 0.027014955627986687}.
+EPOCH= 15 , DCG@5=0.183:   5%|█▊                                   | 15/300 [00:08<02:33,  1.86it/s]
+[I 2020-03-18 21:02:10,490] Finished trial#5 resulted in value: 0.24531254107874592. Current best value is 0.2699585825671612 with parameters: {'weight_decay': 0.027014955627986687}.
+EPOCH= 15 , DCG@5=0.217:   5%|█▊                                   | 15/300 [00:08<02:45,  1.72it/s]
+[I 2020-03-18 21:02:19,344] Finished trial#6 resulted in value: 0.26393715701742143. Current best value is 0.2699585825671612 with parameters: {'weight_decay': 0.027014955627986687}.
+EPOCH= 15 , DCG@5=0.264:   5%|█▊                                   | 15/300 [00:08<02:32,  1.87it/s]
+[I 2020-03-18 21:02:27,526] Finished trial#7 resulted in value: 0.2870404345254942. Current best value is 0.2870404345254942 with parameters: {'weight_decay': 0.05440865914692809}.
+EPOCH= 15 , DCG@5=0.183:   5%|█▊                                   | 15/300 [00:07<02:30,  1.89it/s]
+[I 2020-03-18 21:02:35,595] Finished trial#8 resulted in value: 0.24635105991550435. Current best value is 0.2870404345254942 with parameters: {'weight_decay': 0.05440865914692809}.
+EPOCH= 15 , DCG@5=0.184:   5%|█▊                                   | 15/300 [00:08<02:32,  1.87it/s]
+[I 2020-03-18 21:02:43,773] Finished trial#9 resulted in value: 0.24627793547389315. Current best value is 0.2870404345254942 with parameters: {'weight_decay': 0.05440865914692809}.
+EPOCH= 16 , DCG@5=0.276:   5%|█▉                                   | 16/300 [00:08<02:32,  1.87it/s]
+[I 2020-03-18 21:02:52,495] Finished trial#10 resulted in value: 0.2929771232693227. Current best value is 0.2929771232693227 with parameters: {'weight_decay': 0.06684654269428493}.
+EPOCH= 15 , DCG@5=0.265:   5%|█▊                                   | 15/300 [00:08<02:33,  1.86it/s]
+[I 2020-03-18 21:03:00,715] Finished trial#11 resulted in value: 0.28701677299582395. Current best value is 0.2929771232693227 with parameters: {'weight_decay': 0.06684654269428493}.
+EPOCH= 16 , DCG@5=0.279:   5%|█▉                                   | 16/300 [00:09<02:40,  1.77it/s]
+[I 2020-03-18 21:03:09,883] Finished trial#12 resulted in value: 0.29634172454500757. Current best value is 0.29634172454500757 with parameters: {'weight_decay': 0.07760807086309636}.
+EPOCH= 15 , DCG@5=0.198:   5%|█▊                                   | 15/300 [00:08<02:36,  1.82it/s]
+[I 2020-03-18 21:03:18,255] Finished trial#13 resulted in value: 0.2589851066244868. Current best value is 0.29634172454500757 with parameters: {'weight_decay': 0.07760807086309636}.
+EPOCH= 16 , DCG@5=0.281:   5%|█▉                                   | 16/300 [00:09<02:46,  1.71it/s]
+[I 2020-03-18 21:03:27,797] Finished trial#14 resulted in value: 0.29920022169126254. Current best value is 0.29920022169126254 with parameters: {'weight_decay': 0.08216575151637952}.
+EPOCH= 16 , DCG@5=0.283:   5%|█▉                                   | 16/300 [00:10<03:12,  1.47it/s]
+[I 2020-03-18 21:03:38,823] Finished trial#15 resulted in value: 0.3009119580847542. Current best value is 0.3009119580847542 with parameters: {'weight_decay': 0.09061183583912752}.
+EPOCH= 15 , DCG@5=0.19:   5%|█▉                                    | 15/300 [00:09<03:06,  1.53it/s]
+[I 2020-03-18 21:03:48,789] Finished trial#16 resulted in value: 0.2516413350829709. Current best value is 0.3009119580847542 with parameters: {'weight_decay': 0.09061183583912752}.
+EPOCH= 15 , DCG@5=0.228:   5%|█▊                                   | 15/300 [00:08<02:48,  1.69it/s]
+[I 2020-03-18 21:03:57,797] Finished trial#17 resulted in value: 0.2676439098113756. Current best value is 0.3009119580847542 with parameters: {'weight_decay': 0.09061183583912752}.
+EPOCH= 16 , DCG@5=0.285:   5%|█▉                                   | 16/300 [00:09<02:48,  1.68it/s]
+[I 2020-03-18 21:04:07,473] Finished trial#18 resulted in value: 0.30066115285165046. Current best value is 0.3009119580847542 with parameters: {'weight_decay': 0.09061183583912752}.
+EPOCH= 15 , DCG@5=0.21:   5%|█▉                                    | 15/300 [00:08<02:49,  1.68it/s]
+[I 2020-03-18 21:04:16,549] Finished trial#19 resulted in value: 0.2625728029575198. Current best value is 0.3009119580847542 with parameters: {'weight_decay': 0.09061183583912752}.
+EPOCH= 15 , DCG@5=0.243:   5%|█▊                                   | 15/300 [00:09<02:57,  1.60it/s]
+[I 2020-03-18 21:04:26,049] Finished trial#20 resulted in value: 0.27418902437221604. Current best value is 0.3009119580847542 with parameters: {'weight_decay': 0.09061183583912752}.
+EPOCH= 16 , DCG@5=0.285:   5%|█▉                                   | 16/300 [00:09<02:41,  1.76it/s]
+[I 2020-03-18 21:04:35,278] Finished trial#21 resulted in value: 0.3014321808047319. Current best value is 0.3014321808047319 with parameters: {'weight_decay': 0.09486669595632737}.
+EPOCH= 16 , DCG@5=0.283:   5%|█▉                                   | 16/300 [00:08<02:30,  1.89it/s]
+[I 2020-03-18 21:04:43,870] Finished trial#22 resulted in value: 0.30093179292092626. Current best value is 0.3014321808047319 with parameters: {'weight_decay': 0.09486669595632737}.
+EPOCH= 15 , DCG@5=0.245:   5%|█▊                                   | 15/300 [00:07<02:30,  1.89it/s]
+[I 2020-03-18 21:04:51,956] Finished trial#23 resulted in value: 0.2746465710909135. Current best value is 0.3014321808047319 with parameters: {'weight_decay': 0.09486669595632737}.
+EPOCH= 15 , DCG@5=0.195:   5%|█▊                                   | 15/300 [00:08<02:48,  1.69it/s]
+[I 2020-03-18 21:05:00,999] Finished trial#24 resulted in value: 0.2563515442248045. Current best value is 0.3014321808047319 with parameters: {'weight_decay': 0.09486669595632737}.
+EPOCH= 16 , DCG@5=0.283:   5%|█▉                                   | 16/300 [00:08<02:37,  1.80it/s]
+[I 2020-03-18 21:05:10,038] Finished trial#25 resulted in value: 0.30157855853133797. Current best value is 0.30157855853133797 with parameters: {'weight_decay': 0.09127645069079246}.
+EPOCH= 15 , DCG@5=0.257:   5%|█▊                                   | 15/300 [00:08<02:35,  1.84it/s]
+[I 2020-03-18 21:05:18,349] Finished trial#26 resulted in value: 0.2813105967230269. Current best value is 0.30157855853133797 with parameters: {'weight_decay': 0.09127645069079246}.
+EPOCH= 16 , DCG@5=0.286:   5%|█▉                                   | 16/300 [00:08<02:32,  1.86it/s]
+[I 2020-03-18 21:05:27,103] Finished trial#27 resulted in value: 0.3008134507959987. Current best value is 0.30157855853133797 with parameters: {'weight_decay': 0.09127645069079246}.
+EPOCH= 15 , DCG@5=0.21:   5%|█▉                                    | 15/300 [00:08<02:35,  1.83it/s]
+[I 2020-03-18 21:05:35,466] Finished trial#28 resulted in value: 0.2623854788985775. Current best value is 0.30157855853133797 with parameters: {'weight_decay': 0.09127645069079246}.
+EPOCH= 15 , DCG@5=0.183:   5%|█▊                                   | 15/300 [00:08<02:34,  1.85it/s]
+[I 2020-03-18 21:05:43,714] Finished trial#29 resulted in value: 0.2451626108419189. Current best value is 0.30157855853133797 with parameters: {'weight_decay': 0.09127645069079246}.
+EPOCH= 15 , DCG@5=0.185:   5%|█▊                                   | 15/300 [00:08<02:33,  1.86it/s]
+[I 2020-03-18 21:05:51,919] Finished trial#30 resulted in value: 0.2487272385655884. Current best value is 0.30157855853133797 with parameters: {'weight_decay': 0.09127645069079246}.
+EPOCH= 16 , DCG@5=0.283:   5%|█▉                                   | 16/300 [00:09<02:40,  1.77it/s]
+[I 2020-03-18 21:06:01,124] Finished trial#31 resulted in value: 0.3009082439035754. Current best value is 0.30157855853133797 with parameters: {'weight_decay': 0.09127645069079246}.
+EPOCH= 15 , DCG@5=0.262:   5%|█▊                                   | 15/300 [00:08<02:36,  1.83it/s]
+[I 2020-03-18 21:06:09,490] Finished trial#32 resulted in value: 0.2860777475656294. Current best value is 0.30157855853133797 with parameters: {'weight_decay': 0.09127645069079246}.
+EPOCH= 15 , DCG@5=0.183:   5%|█▊                                   | 15/300 [00:07<02:29,  1.90it/s]
+[I 2020-03-18 21:06:17,524] Finished trial#33 resulted in value: 0.2448069097543801. Current best value is 0.30157855853133797 with parameters: {'weight_decay': 0.09127645069079246}.
+EPOCH= 16 , DCG@5=0.284:   5%|█▉                                   | 16/300 [00:08<02:32,  1.86it/s]
+[I 2020-03-18 21:06:26,272] Finished trial#34 resulted in value: 0.30112231414223706. Current best value is 0.30157855853133797 with parameters: {'weight_decay': 0.09127645069079246}.
+EPOCH= 15 , DCG@5=0.235:   5%|█▊                                   | 15/300 [00:08<02:37,  1.81it/s]
+[I 2020-03-18 21:06:34,715] Finished trial#35 resulted in value: 0.2713448053491788. Current best value is 0.30157855853133797 with parameters: {'weight_decay': 0.09127645069079246}.
+EPOCH= 15 , DCG@5=0.257:   5%|█▊                                   | 15/300 [00:08<02:36,  1.82it/s]
+[I 2020-03-18 21:06:43,103] Finished trial#36 resulted in value: 0.28152295430043733. Current best value is 0.30157855853133797 with parameters: {'weight_decay': 0.09127645069079246}.
+EPOCH= 15 , DCG@5=0.219:   5%|█▊                                   | 15/300 [00:08<02:35,  1.83it/s]
+[I 2020-03-18 21:06:51,432] Finished trial#37 resulted in value: 0.2647435518720101. Current best value is 0.30157855853133797 with parameters: {'weight_decay': 0.09127645069079246}.
+EPOCH= 16 , DCG@5=0.273:   5%|█▉                                   | 16/300 [00:08<02:34,  1.83it/s]
+[I 2020-03-18 21:07:00,304] Finished trial#38 resulted in value: 0.2919709129058087. Current best value is 0.30157855853133797 with parameters: {'weight_decay': 0.09127645069079246}.
+EPOCH= 16 , DCG@5=0.286:   5%|█▉                                   | 16/300 [00:08<02:33,  1.85it/s]
+[I 2020-03-18 21:07:09,100] Finished trial#39 resulted in value: 0.30057349755729706. Current best value is 0.30157855853133797 with parameters: {'weight_decay': 0.09127645069079246}.
+EPOCH= 15 , DCG@5=0.185:   5%|█▊                                   | 15/300 [00:08<02:32,  1.87it/s]
+[I 2020-03-18 21:07:17,251] Finished trial#40 resulted in value: 0.24736967996099304. Current best value is 0.30157855853133797 with parameters: {'weight_decay': 0.09127645069079246}.
+EPOCH= 16 , DCG@5=0.284:   5%|█▉                                   | 16/300 [00:08<02:34,  1.84it/s]
+[I 2020-03-18 21:07:26,083] Finished trial#41 resulted in value: 0.3014321808047319. Current best value is 0.30157855853133797 with parameters: {'weight_decay': 0.09127645069079246}.
+EPOCH= 16 , DCG@5=0.273:   5%|█▉                                   | 16/300 [00:08<02:33,  1.86it/s]
+[I 2020-03-18 21:07:34,848] Finished trial#42 resulted in value: 0.2919709129058087. Current best value is 0.30157855853133797 with parameters: {'weight_decay': 0.09127645069079246}.
+EPOCH= 15 , DCG@5=0.256:   5%|█▊                                   | 15/300 [00:08<02:32,  1.87it/s]
+[I 2020-03-18 21:07:43,033] Finished trial#43 resulted in value: 0.28010516676618685. Current best value is 0.30157855853133797 with parameters: {'weight_decay': 0.09127645069079246}.
+EPOCH= 16 , DCG@5=0.273:   5%|█▉                                   | 16/300 [00:08<02:34,  1.84it/s]
+[I 2020-03-18 21:07:51,893] Finished trial#44 resulted in value: 0.2923344246026606. Current best value is 0.30157855853133797 with parameters: {'weight_decay': 0.09127645069079246}.
+EPOCH= 16 , DCG@5=0.285:   5%|█▉                                   | 16/300 [00:08<02:30,  1.89it/s]
+[I 2020-03-18 21:08:00,527] Finished trial#45 resulted in value: 0.3005457921291054. Current best value is 0.30157855853133797 with parameters: {'weight_decay': 0.09127645069079246}.
+EPOCH= 15 , DCG@5=0.26:   5%|█▉                                    | 15/300 [00:08<02:35,  1.83it/s]
+[I 2020-03-18 21:08:08,879] Finished trial#46 resulted in value: 0.28512329421605337. Current best value is 0.30157855853133797 with parameters: {'weight_decay': 0.09127645069079246}.
+EPOCH= 15 , DCG@5=0.228:   5%|█▊                                   | 15/300 [00:07<02:31,  1.89it/s]
+[I 2020-03-18 21:08:16,983] Finished trial#47 resulted in value: 0.2675744878847735. Current best value is 0.30157855853133797 with parameters: {'weight_decay': 0.09127645069079246}.
+EPOCH= 16 , DCG@5=0.279:   5%|█▉                                   | 16/300 [00:08<02:32,  1.86it/s]
+[I 2020-03-18 21:08:25,719] Finished trial#48 resulted in value: 0.29517399123004257. Current best value is 0.30157855853133797 with parameters: {'weight_decay': 0.09127645069079246}.
+EPOCH= 15 , DCG@5=0.24:   5%|█▉                                    | 15/300 [00:08<02:33,  1.85it/s]
+[I 2020-03-18 21:08:33,969] Finished trial#49 resulted in value: 0.2724258641122274. Current best value is 0.30157855853133797 with parameters: {'weight_decay': 0.09127645069079246}.
+{'weight_decay': 0.09127645069079246}
+{'DCG@5': 0.19146752619661625, 'Recall@5': 0.2576782489496094, 'MAP@5': 0.22896095988147397}
+EPOCH= 34 , DCG@5=0.275:  11%|████▏                                | 34/300 [00:03<00:27,  9.84it/s]
+[I 2020-03-18 21:08:46,372] Finished trial#0 resulted in value: 0.27567316202300535. Current best value is 0.27567316202300535 with parameters: {'weight_decay': 0.006986726519590246, 'weight': 1.534593593744151}.
+EPOCH= 39 , DCG@5=0.274:  13%|████▊                                | 39/300 [00:03<00:25, 10.34it/s]
+[I 2020-03-18 21:08:50,273] Finished trial#1 resulted in value: 0.2744966009548368. Current best value is 0.27567316202300535 with parameters: {'weight_decay': 0.006986726519590246, 'weight': 1.534593593744151}.
+EPOCH= 26 , DCG@5=0.274:   9%|███▏                                 | 26/300 [00:02<00:26, 10.21it/s]
+[I 2020-03-18 21:08:52,958] Finished trial#2 resulted in value: 0.27415705912948685. Current best value is 0.27567316202300535 with parameters: {'weight_decay': 0.006986726519590246, 'weight': 1.534593593744151}.
+EPOCH= 23 , DCG@5=0.286:   8%|██▊                                  | 23/300 [00:02<00:27, 10.02it/s]
+[I 2020-03-18 21:08:55,384] Finished trial#3 resulted in value: 0.2855556499530648. Current best value is 0.2855556499530648 with parameters: {'weight_decay': 0.0036568697271365464, 'weight': 4.767021018798675}.
+EPOCH= 27 , DCG@5=0.285:   9%|███▎                                 | 27/300 [00:02<00:27,  9.83it/s]
+[I 2020-03-18 21:08:58,264] Finished trial#4 resulted in value: 0.28436368115778005. Current best value is 0.2855556499530648 with parameters: {'weight_decay': 0.0036568697271365464, 'weight': 4.767021018798675}.
+EPOCH= 24 , DCG@5=0.285:   8%|██▉                                  | 24/300 [00:02<00:27,  9.95it/s]
+[I 2020-03-18 21:09:00,807] Finished trial#5 resulted in value: 0.284755920735002. Current best value is 0.2855556499530648 with parameters: {'weight_decay': 0.0036568697271365464, 'weight': 4.767021018798675}.
+EPOCH= 24 , DCG@5=0.288:   8%|██▉                                  | 24/300 [00:02<00:27,  9.86it/s]
+[I 2020-03-18 21:09:03,376] Finished trial#6 resulted in value: 0.28670437306678576. Current best value is 0.28670437306678576 with parameters: {'weight_decay': 0.00017263519473945295, 'weight': 4.348512941344866}.
+EPOCH= 17 , DCG@5=0.284:   6%|██                                   | 17/300 [00:01<00:28,  9.84it/s]
+[I 2020-03-18 21:09:05,237] Finished trial#7 resulted in value: 0.2835223488755174. Current best value is 0.28670437306678576 with parameters: {'weight_decay': 0.00017263519473945295, 'weight': 4.348512941344866}.
+EPOCH= 24 , DCG@5=0.286:   8%|██▉                                  | 24/300 [00:02<00:28,  9.85it/s]
+[I 2020-03-18 21:09:07,806] Finished trial#8 resulted in value: 0.2867728743463211. Current best value is 0.2867728743463211 with parameters: {'weight_decay': 0.0008811799500937993, 'weight': 4.191040301925094}.
+EPOCH= 27 , DCG@5=0.272:   9%|███▎                                 | 27/300 [00:02<00:27, 10.01it/s]
+[I 2020-03-18 21:09:10,636] Finished trial#9 resulted in value: 0.2724757044612661. Current best value is 0.2867728743463211 with parameters: {'weight_decay': 0.0008811799500937993, 'weight': 4.191040301925094}.
+EPOCH= 46 , DCG@5=0.289:  15%|█████▋                               | 46/300 [00:04<00:25, 10.11it/s]
+[I 2020-03-18 21:09:15,324] Finished trial#10 resulted in value: 0.28779714773473003. Current best value is 0.28779714773473003 with parameters: {'weight_decay': 0.0003532268806300401, 'weight': 21.043469259293335}.
+EPOCH= 41 , DCG@5=0.289:  14%|█████                                | 41/300 [00:04<00:25, 10.10it/s]
+[I 2020-03-18 21:09:19,520] Finished trial#11 resulted in value: 0.2891600530412025. Current best value is 0.2891600530412025 with parameters: {'weight_decay': 0.000505831490422746, 'weight': 20.105080075619306}.
+EPOCH= 16 , DCG@5=0.279:   5%|█▉                                   | 16/300 [00:01<00:29,  9.77it/s]
+[I 2020-03-18 21:09:21,294] Finished trial#12 resulted in value: 0.28135662777387627. Current best value is 0.2891600530412025 with parameters: {'weight_decay': 0.000505831490422746, 'weight': 20.105080075619306}.
+EPOCH= 38 , DCG@5=0.287:  13%|████▋                                | 38/300 [00:03<00:25, 10.20it/s]
+[I 2020-03-18 21:09:25,152] Finished trial#13 resulted in value: 0.2870632056103463. Current best value is 0.2891600530412025 with parameters: {'weight_decay': 0.000505831490422746, 'weight': 20.105080075619306}.
+EPOCH= 26 , DCG@5=0.289:   9%|███▏                                 | 26/300 [00:02<00:26, 10.15it/s]
+[I 2020-03-18 21:09:27,848] Finished trial#14 resulted in value: 0.2894585945776368. Current best value is 0.2894585945776368 with parameters: {'weight_decay': 0.00010443442293428756, 'weight': 15.003763042692137}.
+EPOCH= 22 , DCG@5=0.285:   7%|██▋                                  | 22/300 [00:02<00:27, 10.25it/s]
+[I 2020-03-18 21:09:30,127] Finished trial#15 resulted in value: 0.287156470237167. Current best value is 0.2894585945776368 with parameters: {'weight_decay': 0.00010443442293428756, 'weight': 15.003763042692137}.
+EPOCH= 28 , DCG@5=0.286:   9%|███▍                                 | 28/300 [00:02<00:26, 10.15it/s]
+[I 2020-03-18 21:09:33,025] Finished trial#16 resulted in value: 0.28567566538203043. Current best value is 0.2894585945776368 with parameters: {'weight_decay': 0.00010443442293428756, 'weight': 15.003763042692137}.
+EPOCH= 21 , DCG@5=0.289:   7%|██▌                                  | 21/300 [00:02<00:28,  9.90it/s]
+[I 2020-03-18 21:09:35,285] Finished trial#17 resulted in value: 0.2889961784917537. Current best value is 0.2894585945776368 with parameters: {'weight_decay': 0.00010443442293428756, 'weight': 15.003763042692137}.
+EPOCH= 43 , DCG@5=0.289:  14%|█████▎                               | 43/300 [00:04<00:25, 10.14it/s]
+[I 2020-03-18 21:09:39,665] Finished trial#18 resulted in value: 0.2900260378210673. Current best value is 0.2900260378210673 with parameters: {'weight_decay': 0.00023782883324530542, 'weight': 18.383689126831953}.
+EPOCH= 19 , DCG@5=0.284:   6%|██▎                                  | 19/300 [00:01<00:28,  9.90it/s]
+[I 2020-03-18 21:09:41,721] Finished trial#19 resulted in value: 0.2849348375095556. Current best value is 0.2900260378210673 with parameters: {'weight_decay': 0.00023782883324530542, 'weight': 18.383689126831953}.
+EPOCH= 25 , DCG@5=0.283:   8%|███                                  | 25/300 [00:02<00:27,  9.91it/s]
+[I 2020-03-18 21:09:44,381] Finished trial#20 resulted in value: 0.28375929850692033. Current best value is 0.2900260378210673 with parameters: {'weight_decay': 0.00023782883324530542, 'weight': 18.383689126831953}.
+EPOCH= 41 , DCG@5=0.29:  14%|█████▏                                | 41/300 [00:04<00:25, 10.15it/s]
+[I 2020-03-18 21:09:48,557] Finished trial#21 resulted in value: 0.28926317633461784. Current best value is 0.2900260378210673 with parameters: {'weight_decay': 0.00023782883324530542, 'weight': 18.383689126831953}.
+EPOCH= 17 , DCG@5=0.285:   6%|██                                   | 17/300 [00:01<00:28,  9.84it/s]
+[I 2020-03-18 21:09:50,425] Finished trial#22 resulted in value: 0.28461893017496914. Current best value is 0.2900260378210673 with parameters: {'weight_decay': 0.00023782883324530542, 'weight': 18.383689126831953}.
+EPOCH= 22 , DCG@5=0.289:   7%|██▋                                  | 22/300 [00:02<00:27, 10.25it/s]
+[I 2020-03-18 21:09:52,713] Finished trial#23 resulted in value: 0.2871317332745759. Current best value is 0.2900260378210673 with parameters: {'weight_decay': 0.00023782883324530542, 'weight': 18.383689126831953}.
+EPOCH= 16 , DCG@5=0.279:   5%|█▉                                   | 16/300 [00:01<00:28, 10.09it/s]
+[I 2020-03-18 21:09:54,434] Finished trial#24 resulted in value: 0.2803300612984778. Current best value is 0.2900260378210673 with parameters: {'weight_decay': 0.00023782883324530542, 'weight': 18.383689126831953}.
+EPOCH= 17 , DCG@5=0.283:   6%|██                                   | 17/300 [00:01<00:28, 10.10it/s]
+[I 2020-03-18 21:09:56,252] Finished trial#25 resulted in value: 0.2825557799785373. Current best value is 0.2900260378210673 with parameters: {'weight_decay': 0.00023782883324530542, 'weight': 18.383689126831953}.
+EPOCH= 25 , DCG@5=0.288:   8%|███                                  | 25/300 [00:02<00:26, 10.23it/s]
+[I 2020-03-18 21:09:58,832] Finished trial#26 resulted in value: 0.2872839367625881. Current best value is 0.2900260378210673 with parameters: {'weight_decay': 0.00023782883324530542, 'weight': 18.383689126831953}.
+EPOCH= 20 , DCG@5=0.285:   7%|██▍                                  | 20/300 [00:01<00:27, 10.06it/s]
+[I 2020-03-18 21:10:00,963] Finished trial#27 resulted in value: 0.2840599278159937. Current best value is 0.2900260378210673 with parameters: {'weight_decay': 0.00023782883324530542, 'weight': 18.383689126831953}.
+EPOCH= 17 , DCG@5=0.284:   6%|██                                   | 17/300 [00:01<00:29,  9.74it/s]
+[I 2020-03-18 21:10:02,844] Finished trial#28 resulted in value: 0.2831970609003916. Current best value is 0.2900260378210673 with parameters: {'weight_decay': 0.00023782883324530542, 'weight': 18.383689126831953}.
+EPOCH= 35 , DCG@5=0.291:  12%|████▎                                | 35/300 [00:03<00:26, 10.09it/s]
+[I 2020-03-18 21:10:06,457] Finished trial#29 resulted in value: 0.28936520755452655. Current best value is 0.2900260378210673 with parameters: {'weight_decay': 0.00023782883324530542, 'weight': 18.383689126831953}.
+EPOCH= 21 , DCG@5=0.282:   7%|██▌                                  | 21/300 [00:02<00:28,  9.77it/s]
+[I 2020-03-18 21:10:08,746] Finished trial#30 resulted in value: 0.28231491135427894. Current best value is 0.2900260378210673 with parameters: {'weight_decay': 0.00023782883324530542, 'weight': 18.383689126831953}.
+EPOCH= 27 , DCG@5=0.288:   9%|███▎                                 | 27/300 [00:02<00:27,  9.99it/s]
+[I 2020-03-18 21:10:11,586] Finished trial#31 resulted in value: 0.28850942755379205. Current best value is 0.2900260378210673 with parameters: {'weight_decay': 0.00023782883324530542, 'weight': 18.383689126831953}.
+EPOCH= 19 , DCG@5=0.281:   6%|██▎                                  | 19/300 [00:01<00:29,  9.54it/s]
+[I 2020-03-18 21:10:13,717] Finished trial#32 resulted in value: 0.28132419099838896. Current best value is 0.2900260378210673 with parameters: {'weight_decay': 0.00023782883324530542, 'weight': 18.383689126831953}.
+EPOCH= 48 , DCG@5=0.276:  16%|█████▉                               | 48/300 [00:04<00:24, 10.13it/s]
+[I 2020-03-18 21:10:18,592] Finished trial#33 resulted in value: 0.2763763332820256. Current best value is 0.2900260378210673 with parameters: {'weight_decay': 0.00023782883324530542, 'weight': 18.383689126831953}.
+EPOCH= 17 , DCG@5=0.283:   6%|██                                   | 17/300 [00:01<00:28,  9.86it/s]
+[I 2020-03-18 21:10:20,462] Finished trial#34 resulted in value: 0.282408901733521. Current best value is 0.2900260378210673 with parameters: {'weight_decay': 0.00023782883324530542, 'weight': 18.383689126831953}.
+EPOCH= 20 , DCG@5=0.287:   7%|██▍                                  | 20/300 [00:01<00:27, 10.05it/s]
+[I 2020-03-18 21:10:22,587] Finished trial#35 resulted in value: 0.2884733987289375. Current best value is 0.2900260378210673 with parameters: {'weight_decay': 0.00023782883324530542, 'weight': 18.383689126831953}.
+EPOCH= 40 , DCG@5=0.292:  13%|████▉                                | 40/300 [00:03<00:25, 10.27it/s]
+[I 2020-03-18 21:10:26,617] Finished trial#36 resulted in value: 0.29015692955377986. Current best value is 0.29015692955377986 with parameters: {'weight_decay': 0.00010072323812159704, 'weight': 18.009038665972252}.
+EPOCH= 19 , DCG@5=0.284:   6%|██▎                                  | 19/300 [00:01<00:27, 10.08it/s]
+[I 2020-03-18 21:10:28,639] Finished trial#37 resulted in value: 0.2853691620216664. Current best value is 0.29015692955377986 with parameters: {'weight_decay': 0.00010072323812159704, 'weight': 18.009038665972252}.
+EPOCH= 24 , DCG@5=0.288:   8%|██▉                                  | 24/300 [00:02<00:27,  9.97it/s]
+[I 2020-03-18 21:10:31,184] Finished trial#38 resulted in value: 0.288455665356201. Current best value is 0.29015692955377986 with parameters: {'weight_decay': 0.00010072323812159704, 'weight': 18.009038665972252}.
+EPOCH= 26 , DCG@5=0.288:   9%|███▏                                 | 26/300 [00:02<00:27,  9.97it/s]
+[I 2020-03-18 21:10:33,932] Finished trial#39 resulted in value: 0.2883110159648794. Current best value is 0.29015692955377986 with parameters: {'weight_decay': 0.00010072323812159704, 'weight': 18.009038665972252}.
+EPOCH= 20 , DCG@5=0.285:   7%|██▍                                  | 20/300 [00:02<00:31,  8.75it/s]
+[I 2020-03-18 21:10:36,357] Finished trial#40 resulted in value: 0.2861099979893229. Current best value is 0.29015692955377986 with parameters: {'weight_decay': 0.00010072323812159704, 'weight': 18.009038665972252}.
+EPOCH= 31 , DCG@5=0.289:  10%|███▊                                 | 31/300 [00:03<00:27,  9.78it/s]
+[I 2020-03-18 21:10:39,666] Finished trial#41 resulted in value: 0.2890397155468578. Current best value is 0.29015692955377986 with parameters: {'weight_decay': 0.00010072323812159704, 'weight': 18.009038665972252}.
+EPOCH= 37 , DCG@5=0.29:  12%|████▋                                 | 37/300 [00:03<00:26, 10.00it/s]
+[I 2020-03-18 21:10:43,509] Finished trial#42 resulted in value: 0.2891303868134161. Current best value is 0.29015692955377986 with parameters: {'weight_decay': 0.00010072323812159704, 'weight': 18.009038665972252}.
+EPOCH= 40 , DCG@5=0.289:  13%|████▉                                | 40/300 [00:04<00:26,  9.97it/s]
+[I 2020-03-18 21:10:47,667] Finished trial#43 resulted in value: 0.2893717110810913. Current best value is 0.29015692955377986 with parameters: {'weight_decay': 0.00010072323812159704, 'weight': 18.009038665972252}.
+EPOCH= 41 , DCG@5=0.289:  14%|█████                                | 41/300 [00:04<00:25, 10.02it/s]
+[I 2020-03-18 21:10:51,900] Finished trial#44 resulted in value: 0.28895723653949745. Current best value is 0.29015692955377986 with parameters: {'weight_decay': 0.00010072323812159704, 'weight': 18.009038665972252}.
+EPOCH= 16 , DCG@5=0.281:   5%|█▉                                   | 16/300 [00:01<00:28,  9.98it/s]
+[I 2020-03-18 21:10:53,638] Finished trial#45 resulted in value: 0.2810281515204502. Current best value is 0.29015692955377986 with parameters: {'weight_decay': 0.00010072323812159704, 'weight': 18.009038665972252}.
+EPOCH= 20 , DCG@5=0.286:   7%|██▍                                  | 20/300 [00:01<00:27, 10.17it/s]
+[I 2020-03-18 21:10:55,738] Finished trial#46 resulted in value: 0.28511234924717144. Current best value is 0.29015692955377986 with parameters: {'weight_decay': 0.00010072323812159704, 'weight': 18.009038665972252}.
+EPOCH= 33 , DCG@5=0.283:  11%|████                                 | 33/300 [00:03<00:25, 10.33it/s]
+[I 2020-03-18 21:10:59,069] Finished trial#47 resulted in value: 0.281980390810481. Current best value is 0.29015692955377986 with parameters: {'weight_decay': 0.00010072323812159704, 'weight': 18.009038665972252}.
+EPOCH= 25 , DCG@5=0.289:   8%|███                                  | 25/300 [00:02<00:27, 10.10it/s]
+[I 2020-03-18 21:11:01,682] Finished trial#48 resulted in value: 0.28845264595024706. Current best value is 0.29015692955377986 with parameters: {'weight_decay': 0.00010072323812159704, 'weight': 18.009038665972252}.
+EPOCH= 24 , DCG@5=0.287:   8%|██▉                                  | 24/300 [00:02<00:28,  9.85it/s]
+[I 2020-03-18 21:11:04,255] Finished trial#49 resulted in value: 0.2881669752669483. Current best value is 0.29015692955377986 with parameters: {'weight_decay': 0.00010072323812159704, 'weight': 18.009038665972252}.
+{'weight_decay': 0.00010072323812159704, 'weight': 18.009038665972252}
+{'DCG@5': 0.18672389381239599, 'Recall@5': 0.24992824533427616, 'MAP@5': 0.22172503876484356}
+             RelMF       BPR    ExpoMF       WMF
+DCG@5     0.192903  0.189603  0.191468  0.186724
+Recall@5  0.257995  0.255240  0.257678  0.249928
+MAP@5     0.231522  0.226614  0.228961  0.221725

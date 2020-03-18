@@ -12,6 +12,7 @@ Cython implementation of matrix-factorization based algorithms.
 - Bayesian Personlized Ranking (BPR) [[Steffen Rendle et al. 2009]](https://arxiv.org/pdf/1205.2618.pdf)
 - Weighted Matrix Factorization (WMF) [[Yifan Hu et al. 2008]](http://yifanhu.net/PUB/cf.pdf)
 - Exposure Matrix Factorization (ExpoMF) [[Dawen Liang et al. 2016]](https://arxiv.org/pdf/1510.07025.pdf)
+- Relevance Matrix Factorization (RelMF) [[Yuta Saito et al. 2019]](https://arxiv.org/pdf/1909.03601.pdf)
 
 ### Word Embeddings
 - GloVe [[Jeffrey Pennington et al. 2014]](https://nlp.stanford.edu/projects/glove/)

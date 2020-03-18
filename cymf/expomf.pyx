@@ -117,6 +117,8 @@ class ExpoMF(object):
         cdef double n_ui
         cdef double[:,::1] W = self.W
         cdef double[:,::1] H = self.H
+        cdef double[:,:] W_best = np.array(W).copy()
+        cdef double[:,:] H_best = np.array(H).copy()
 
         with tqdm(total=num_epochs, leave=True, ncols=100, disable=not verbose) as progress:
             for epoch in range(num_epochs):
@@ -135,16 +137,22 @@ class ExpoMF(object):
 
                 if self.valid_evaluator:
                     valid_dcg = self.valid_evaluator.evaluate(self.W, self.H)["DCG@5"]
-                    if self.early_stopping and self.valid_dcg > valid_dcg and count > 5:
+                    if self.early_stopping and self.valid_dcg > valid_dcg and count > 10:
                         break
                     elif self.early_stopping and self.valid_dcg > valid_dcg:
                         count += 1
                     else:
                         count = 0
                         self.valid_dcg = valid_dcg
+                        W_best = np.array(W).copy()
+                        H_best = np.array(H).copy()
 
                 progress.set_description(f"EPOCH={epoch+1:{len(str(num_epochs))}} {(', DCG@5=' + str(np.round(valid_dcg,3))) if self.valid_evaluator else ''}")
                 progress.update(1)
+
+        if self.valid_evaluator and self.early_stopping:
+            self.W = np.array(W_best).copy()
+            self.H = np.array(H_best).copy()
 
     @cython.boundscheck(False)
     @cython.wraparound(False)

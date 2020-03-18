@@ -126,6 +126,9 @@ class BPR(object):
 
         cdef double[:,::1] W = self.W
         cdef double[:,::1] H = self.H
+        cdef double[:,::1] W_best = np.array(W).copy()
+        cdef double[:,::1] H_best = np.array(H).copy()
+        
         cdef int N = users.shape[0]
         cdef int K = W.shape[1]
         cdef int U = X.shape[0]
@@ -169,14 +172,19 @@ class BPR(object):
 
                 if self.valid_evaluator:
                     valid_dcg = self.valid_evaluator.evaluate(self.W, self.H)["DCG@5"]
-                    if self.early_stopping and self.valid_dcg > valid_dcg and count > 5:
+                    if self.early_stopping and self.valid_dcg > valid_dcg and count > 10:
                         break
                     elif self.early_stopping and self.valid_dcg > valid_dcg:
                         count += 1
                     else:
                         count = 0
                         self.valid_dcg = valid_dcg
+                        W_best = np.array(W).copy()
+                        H_best = np.array(H).copy()
 
                 progress.set_description(f"EPOCH={epoch+1:{len(str(num_epochs))}} {(', DCG@5=' + str(np.round(valid_dcg,3))) if self.valid_evaluator else ''}")
                 progress.update(1)
 
+        if self.valid_evaluator and self.early_stopping:
+            self.W = np.array(W_best).copy()
+            self.H = np.array(H_best).copy()

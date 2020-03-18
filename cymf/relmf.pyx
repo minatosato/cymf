@@ -100,27 +100,29 @@ class RelMF(object):
         users = users.astype(np.int32)
         items = items.astype(np.int32)
         num_threads = min(num_threads, multiprocessing.cpu_count())
-        self._fit_wmf(users, 
-                      items,
-                      ratings,
-                      propensities,
-                      num_epochs,
-                      num_threads,
-                      verbose)
+        self._fit_relmf(users, 
+                        items,
+                        ratings,
+                        propensities,
+                        num_epochs,
+                        num_threads,
+                        verbose)
 
     @cython.boundscheck(False)
     @cython.wraparound(False)
-    def _fit_wmf(self,
-                 int[:] users,
-                 int[:] items,
-                 double[:] ratings,
-                 double[:] propensities,
-                 int num_epochs, 
-                 int num_threads,
-                 bool verbose):
+    def _fit_relmf(self,
+                   int[:] users,
+                   int[:] items,
+                   double[:] ratings,
+                   double[:] propensities,
+                   int num_epochs, 
+                   int num_threads,
+                   bool verbose):
 
         cdef double[:,:] W = self.W
         cdef double[:,:] H = self.H
+        cdef double[:,:] W_best = np.array(W).copy()
+        cdef double[:,:] H_best = np.array(H).copy()
 
         cdef int N = users.shape[0]
         cdef int K = W.shape[1]
@@ -157,13 +159,19 @@ class RelMF(object):
 
                 if self.valid_evaluator:
                     valid_dcg = self.valid_evaluator.evaluate(self.W, self.H)["DCG@5"]
-                    if self.early_stopping and self.valid_dcg > valid_dcg and count > 5:
+                    if self.early_stopping and self.valid_dcg > valid_dcg and count > 10:
                         break
                     elif self.early_stopping and self.valid_dcg > valid_dcg:
                         count += 1
                     else:
                         count = 0
                         self.valid_dcg = valid_dcg
+                        W_best = np.array(W).copy()
+                        H_best = np.array(H).copy()
 
                 progress.set_description(f"EPOCH={epoch+1:{len(str(num_epochs))}} {(', DCG@5=' + str(np.round(valid_dcg,3))) if self.valid_evaluator else ''}")
                 progress.update(1)
+        
+        if self.valid_evaluator and self.early_stopping:
+            self.W = np.array(W_best).copy()
+            self.H = np.array(H_best).copy()
