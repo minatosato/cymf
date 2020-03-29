@@ -10,7 +10,6 @@
 # distutils: language=c++
 
 import cython
-import multiprocessing
 import numpy as np
 import pandas as pd
 from scipy import sparse
@@ -24,11 +23,16 @@ from libcpp.vector cimport vector
 from libcpp.string cimport string
 from libcpp.unordered_map cimport unordered_map
 
+from .math cimport UniformGenerator
 from .model cimport RelMfModel
 from .optimizer cimport Optimizer
 from .optimizer cimport Sgd
 from .optimizer cimport AdaGrad
 from .optimizer cimport Adam
+
+cdef extern from "util.h" namespace "cymf" nogil:
+    cdef int threadid()
+    cdef int cpucount()
 
 class RelMF(object):
     """
@@ -89,20 +93,8 @@ class RelMF(object):
         if self.H is None:
             self.H = np.random.uniform(low=-0.1, high=0.1, size=(X.shape[1], self.num_components)) / self.num_components
 
-        tmp = pd.DataFrame(X).stack().reset_index()
-        tmp.columns = ("user", "item", "rating")
-        users = tmp["user"].values
-        items = tmp["item"].values
-        ratings = tmp["rating"].values
-
-        users, items, ratings = utils.shuffle(users, items, ratings)
-
-        users = users.astype(np.int32)
-        items = items.astype(np.int32)
-        num_threads = min(num_threads, multiprocessing.cpu_count())
-        self._fit_relmf(users, 
-                        items,
-                        ratings,
+        num_threads = num_threads if num_threads > 0 else cpucount()
+        self._fit_relmf(X,
                         propensities,
                         num_epochs,
                         num_threads,
@@ -110,10 +102,9 @@ class RelMF(object):
 
     @cython.boundscheck(False)
     @cython.wraparound(False)
+    @cython.cdivision(True) 
     def _fit_relmf(self,
-                   int[:] users,
-                   int[:] items,
-                   double[:] ratings,
+                   double[:,:] X,
                    double[:] propensities,
                    int num_epochs, 
                    int num_threads,
@@ -124,17 +115,17 @@ class RelMF(object):
         cdef double[:,:] W_best = np.array(W).copy()
         cdef double[:,:] H_best = np.array(H).copy()
 
-        cdef int N = users.shape[0]
+        cdef long U = W.shape[0], I = H.shape[0]
         cdef int K = W.shape[1]
-        cdef int u, i, j, k, l, epoch
-        cdef double[:] prediction = np.zeros(N)
-        cdef double[:] w_uk = np.zeros(N)
-        cdef double[:] l2_norm = np.zeros(N)
-        cdef double[:] diff = np.zeros(N)
+        cdef long N = U * I
+        cdef int u, i, l, epoch
+        cdef long random
         cdef double[:] loss = np.zeros(N)
         cdef double accum_loss
 
         cdef double M = self.clip_value
+
+        cdef UniformGenerator gen = UniformGenerator(0, U*I, seed=1234)
 
         cdef Optimizer optimizer
         if self.optimizer == "adam":
@@ -149,11 +140,14 @@ class RelMF(object):
 
         with tqdm(total=num_epochs, leave=True, ncols=100, disable=not verbose) as progress:
             for epoch in range(num_epochs):
-                accum_loss = 0.0
                 for l in prange(N, nogil=True, num_threads=num_threads):
-                    loss[l] = relmf_model.forward(users[l], items[l], ratings[l], propensities[items[l]], M)
-                    relmf_model.backward(users[l], items[l], ratings[l], propensities[items[l]], M)
+                    random = gen.generate()
+                    u = random / I
+                    i = random % I
+                    loss[l] = relmf_model.forward(u, i, X[u, i], propensities[i], M)
+                    relmf_model.backward(u, i, X[u, i], propensities[i], M)
 
+                accum_loss = 0.0
                 for l in range(N):                
                     accum_loss += loss[l]
 
