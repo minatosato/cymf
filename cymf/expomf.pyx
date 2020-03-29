@@ -91,9 +91,9 @@ class ExpoMF(object):
                 
         if self.W is None:
             np.random.seed(4321)
-            self.W = np.random.uniform(low=-0.1, high=0.1, size=(X.shape[0], self.num_components)) / self.num_components
+            self.W = np.random.randn(X.shape[0], self.num_components) * 0.01
         if self.H is None:
-            self.H = np.random.uniform(low=-0.1, high=0.1, size=(X.shape[1], self.num_components)) / self.num_components
+            self.H = np.random.randn(X.shape[1], self.num_components) * 0.01
         self._fit_als(X, num_epochs, num_threads, verbose)
 
     @cython.boundscheck(False)
@@ -114,24 +114,30 @@ class ExpoMF(object):
         cdef double[:] mu = np.ones(I) * 0.01
         cdef double lam_y = self.lam_y
         cdef int u, i
-        cdef double n_ui
         cdef double[:,::1] W = self.W
         cdef double[:,::1] H = self.H
         cdef double[:,:] W_best = np.array(W).copy()
         cdef double[:,:] H_best = np.array(H).copy()
+        cdef np.ndarray[double, ndim=2] n_ui
+        cdef np.ndarray[double, ndim=2] A
 
         with tqdm(total=num_epochs, leave=True, ncols=100, disable=not verbose) as progress:
             for epoch in range(num_epochs):
-                for u in range(U):
-                    for i in range(I):
-                        if _X[u, i] == 1.0:
-                            Exposure[u, i] = 1.0
-                        else:
-                            n_ui = (lam_y / sqrt(2.0*M_PI)) * exp(- square(dot(W[u], H[i])) * square(lam_y))
-                            Exposure[u, i] = n_ui / (n_ui + (1 - mu[i]) / (mu[i]+1e-8))
+                # for u in range(U):
+                #     for i in range(I):
+                #         if _X[u, i] == 1.0:
+                #             Exposure[u, i] = 1.0
+                #         else:
+                #             n_ui = sqrt(lam_y / 2.0*M_PI) * exp(- square(lam_y) * square(dot(W[u], H[i])) / 2.)
+                #             Exposure[u, i] = (n_ui+1e-8) / (n_ui+1e-8 + (1 - mu[i]) / mu[i])
+                
+                n_ui = sqrt(lam_y / 2.0*M_PI) * np.exp(-lam_y * np.dot(W, H.T)**2 / 2.)
+                A = (n_ui + 1e-8) / (n_ui + 1e-8 + (1 - np.array(mu)) / np.array(mu))
+                A[X.nonzero()] = 1.0
+                Exposure = A
 
-                self._als(X.indptr, X.indices, Exposure, self.W, self.H, lam_y, num_threads)
-                self._als(X.T.tocsr().indptr, X.T.tocsr().indices, Exposure.T, self.H, self.W, lam_y, num_threads)
+                self._als(X.indptr, X.indices, Exposure, self.W, self.H, num_threads)
+                self._als(X.T.tocsr().indptr, X.T.tocsr().indices, Exposure.T, self.H, self.W, num_threads)
 
                 mu = (alpha_1 + np.array(Exposure).sum(axis=0) - 1.) / (alpha_1 + alpha_2 + U - 2.)
 
@@ -156,12 +162,13 @@ class ExpoMF(object):
 
     @cython.boundscheck(False)
     @cython.wraparound(False)
-    def _als(self, int[:] indptr, int[:] indices, double[:,:] Exposure, double[:,:] X, double[:,:] Y, double lam_y, int num_threads):
+    def _als(self, int[:] indptr, int[:] indices, double[:,:] Exposure, double[:,:] X, double[:,:] Y, int num_threads):
         cdef int K = X.shape[1]
         cdef int i, ptr
         cdef int index
         cdef int k, k2, j
-        cdef double[:,:] _A = self.weight_decay * np.eye(K).astype(np.float64)
+        cdef double lam_y = self.lam_y
+        cdef double[:,:] _A = (self.weight_decay/self.lam_y) * np.eye(K).astype(np.float64)
         cdef double[:,:] _b = np.zeros((K, 1)).astype(np.float64)
         cdef double* A
         cdef double* b

@@ -62,7 +62,7 @@ class MovieLens(ImplicitFeedbackDataset):
         df_all = df_all[df_all["rating"] >= self.min_rating]
         df_all["rating"] = 1.0
 
-        self.df_train, self.df_test = train_test_split(df_all, test_size=0.5, random_state=12345)
+        self.df_train, self.df_test = train_test_split(df_all, test_size=0.1, random_state=12345)
         self.df_train, self.df_valid = train_test_split(self.df_train, test_size=0.1, random_state=12345)
 
         self.train = self.to_matrix(self.df_train)
