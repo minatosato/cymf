@@ -8,7 +8,6 @@
 
 # cython: language_level=3
 # distutils: language=c++
-# distutils: extra_compile_args = -std=c++11
 
 import cython
 import numpy as np
@@ -21,10 +20,11 @@ from tqdm import tqdm
 cimport numpy as np
 from libcpp cimport bool
 from libcpp.vector cimport vector
-from libcpp.set cimport set
+from libcpp.string cimport string
+from libcpp.unordered_map cimport unordered_map
 
 from .math cimport UniformGenerator
-from .model cimport BprModel
+from .model cimport RelMfModel
 from .optimizer cimport Optimizer
 from .optimizer cimport Sgd
 from .optimizer cimport AdaGrad
@@ -34,28 +34,27 @@ cdef extern from "util.h" namespace "cymf" nogil:
     cdef int threadid()
     cdef int cpucount()
 
-class BPR(object):
+class RelMF(object):
     """
-    Bayesian Personalized Ranking (BPR)
-    https://arxiv.org/pdf/1205.2618.pdf
-    
-    Attributes:
-        num_components (int): A dimensionality of latent vector
-        learning_rate (double): A learning rate
-        optimizer (str): Optimizers. e.g. 'adam', 'sgd'
-        weight_decay (double): A coefficient of weight decay
-        W (np.ndarray[double, ndim=2]): User latent vectors
-        H (np.ndarray[double, ndim=2]): Item latent vectors
+    Relevance Matrix Factorization (Rel-MF) Prototype
+    https://arxiv.org/pdf/1909.03601.pdf
     """
-    def __init__(self, int num_components = 20, double learning_rate = 0.001, str optimizer = "adam", double weight_decay = 0.01):
+    def __init__(self, int num_components = 20,
+                       double clip_value = 0.1,
+                       double learning_rate = 0.001,
+                       str optimizer = "adam",
+                       double weight_decay = 0.01):
         """
         Args:
             num_components (int): A dimensionality of latent vector
+            clip_value (double): clip
             learning_rate (double): A learning rate
             optimizer (str): Optimizers. e.g. 'adam', 'sgd'
             weight_decay (double): A coefficient of weight decay
+            weight (double): A weight for positive feedbacks.
         """
         self.num_components = num_components
+        self.clip_value = clip_value
         self.learning_rate = learning_rate
         self.optimizer = optimizer
         self.weight_decay = weight_decay
@@ -65,10 +64,9 @@ class BPR(object):
         if self.optimizer not in ("sgd", "adagrad", "adam"):
             raise Exception(f"{self.optimizer} is invalid.")
 
-    def fit(self, X, int num_epochs = 10, int num_threads = 1, valid_evaluator = None, bool early_stopping = False, bool verbose = True):
+    def fit(self, X, int num_epochs = 10, int num_threads = 1, valid_evaluator = None, bool early_stopping = False, bool verbose = False):
         """
-        Training BPR model with Gradient Descent.
-
+        Training WMF model with Gradient Descent.
         Args:
             X: A user-item interaction matrix.
             num_epochs (int): A number of epochs.
@@ -78,21 +76,16 @@ class BPR(object):
         if X is None:
             raise ValueError()
 
-        if sparse.isspmatrix(X):
-            X = X.tocsr()
-        elif isinstance(X, np.ndarray):
-            X = sparse.csr_matrix(X)
-        else:
-            raise ValueError()
+        if isinstance(X, (sparse.lil_matrix, sparse.csr_matrix, sparse.csc_matrix)):
+            X = X.toarray()
         X = X.astype(np.float64)
-        
+
         self.valid_evaluator = valid_evaluator
         self.valid_dcg = - np.inf
         self.count = 0
         self.early_stopping = early_stopping
 
-        if early_stopping and self.valid_evaluator is None:
-            raise ValueError()
+        propensities = np.maximum(X.mean(axis=0)/X.mean(axis=0).max(), 1e-5)**0.5
         
         if self.W is None:
             np.random.seed(4321)
@@ -101,51 +94,40 @@ class BPR(object):
             self.H = np.random.uniform(low=-0.1, high=0.1, size=(X.shape[1], self.num_components)) / self.num_components
 
         num_threads = num_threads if num_threads > 0 else cpucount()
-        users, positives = utils.shuffle(*(X.nonzero()))
-
-        return self._fit_bpr(users.astype(np.int32), 
-                             positives.astype(np.int32),
-                             X,
-                             num_epochs,
-                             self.learning_rate,
-                             self.weight_decay,
-                             num_threads,
-                             verbose)
+        self._fit_relmf(X,
+                        propensities,
+                        num_epochs,
+                        num_threads,
+                        verbose)
 
     @cython.boundscheck(False)
     @cython.wraparound(False)
-    def _fit_bpr(self,
-                 int[:] users,
-                 int[:] positives,
-                 X,
-                 int num_epochs, 
-                 double learning_rate,
-                 double weight_decay,
-                 int num_threads,
-                 bool verbose):
+    @cython.cdivision(True) 
+    def _fit_relmf(self,
+                   double[:,:] X,
+                   double[:] propensities,
+                   int num_epochs, 
+                   int num_threads,
+                   bool verbose):
 
-        cdef double[:,::1] W = self.W
-        cdef double[:,::1] H = self.H
-        cdef double[:,::1] W_best = np.array(W).copy()
-        cdef double[:,::1] H_best = np.array(H).copy()
-        
-        cdef int N = users.shape[0]
+        cdef double[:,:] W = self.W
+        cdef double[:,:] H = self.H
+        cdef double[:,:] W_best = np.array(W).copy()
+        cdef double[:,:] H_best = np.array(H).copy()
+
+        cdef long U = W.shape[0], I = H.shape[0]
         cdef int K = W.shape[1]
-        cdef int U = X.shape[0]
-        cdef int I = X.shape[1]
-        cdef int u, l, epoch
+        cdef long N = U * I
+        cdef int u, i, l, epoch
+        cdef long random
+        cdef double[:] loss = np.zeros(N)
         cdef double accum_loss
 
-        cdef int user, positive, negative
-        cdef vector[set[int]] user_positives = []
-        cdef UniformGenerator gen = UniformGenerator(0, I, seed=1234)
+        cdef double M = self.clip_value
+
+        cdef UniformGenerator gen = UniformGenerator(0, U*I, seed=1234)
 
         cdef Optimizer optimizer
-        cdef BprModel bpr_model
-
-        for u in range(U):
-            user_positives.push_back({*X[u].nonzero()[1]})
-
         if self.optimizer == "adam":
             optimizer = Adam(self.learning_rate)
         elif self.optimizer == "adagrad":
@@ -154,21 +136,20 @@ class BPR(object):
             optimizer = Sgd(self.learning_rate)
 
         optimizer.set_parameters(W, H)
-        bpr_model= BprModel(W, H, optimizer, weight_decay, num_threads)
+        cdef RelMfModel relmf_model = RelMfModel(W, H, optimizer, self.weight_decay, num_threads)
 
-        with tqdm(total=num_epochs, leave=True, ncols=120, disable=not verbose) as progress:
+        with tqdm(total=num_epochs, leave=True, ncols=100, disable=not verbose) as progress:
             for epoch in range(num_epochs):
-                accum_loss = 0.0
-                for l in prange(N, nogil=True, num_threads=num_threads, schedule="guided"):
-                    user = users[l]
-                    positive = positives[l]
-                    negative = gen.generate()
-                    if user_positives[user].find(negative) != user_positives[user].end():
-                        continue
-                    accum_loss += bpr_model.forward(user, positive, negative)
-                    bpr_model.backward(user, positive, negative)
+                for l in prange(N, nogil=True, num_threads=num_threads):
+                    random = gen.generate()
+                    u = random / I
+                    i = random % I
+                    loss[l] = relmf_model.forward(u, i, X[u, i], propensities[i], M)
+                    relmf_model.backward(u, i, X[u, i], propensities[i], M)
 
-                accum_loss /= N
+                accum_loss = 0.0
+                for l in range(N):                
+                    accum_loss += loss[l]
 
                 if self.valid_evaluator:
                     valid_dcg = self.valid_evaluator.evaluate(self.W, self.H)["DCG@5"]
@@ -184,7 +165,7 @@ class BPR(object):
 
                 progress.set_description(f"EPOCH={epoch+1:{len(str(num_epochs))}} {(', DCG@5=' + str(np.round(valid_dcg,3))) if self.valid_evaluator else ''}")
                 progress.update(1)
-
+        
         if self.valid_evaluator and self.early_stopping:
             self.W = np.array(W_best).copy()
             self.H = np.array(H_best).copy()

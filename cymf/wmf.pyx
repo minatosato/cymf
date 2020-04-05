@@ -56,7 +56,7 @@ class WMF(object):
         self.W = None
         self.H = None
 
-    def fit(self, X, int num_epochs = 5, int num_threads = 1, bool verbose = True):
+    def fit(self, X, int num_epochs = 5, int num_threads = 1, valid_evaluator = None, bool early_stopping = False, bool verbose = True):
         """
         Training WMF model with ALS.
 
@@ -76,7 +76,15 @@ class WMF(object):
         else:
             raise ValueError()
         X = X.astype(np.float64)
-        
+
+        self.valid_evaluator = valid_evaluator
+        self.valid_dcg = - np.inf
+        self.count = 0
+        self.early_stopping = early_stopping
+
+        if early_stopping and self.valid_evaluator is None:
+            raise ValueError()
+                
         if self.W is None:
             np.random.seed(4321)
             self.W = np.random.uniform(low=-0.1, high=0.1, size=(X.shape[0], self.num_components)) / self.num_components
@@ -95,12 +103,33 @@ class WMF(object):
         cdef int U = X.shape[0]
         cdef int I = X.shape[1]
 
+        cdef double[:,:] W_best = np.array(self.W).copy()
+        cdef double[:,:] H_best = np.array(self.H).copy()
+
         with tqdm(total=num_epochs, leave=True, ncols=100, disable=not verbose) as progress:
             for epoch in range(num_epochs):
                 self._als(X.indptr, X.indices, self.W, self.H, num_threads)
                 self._als(X.T.tocsr().indptr, X.T.tocsr().indices, self.H, self.W, num_threads)
-                progress.set_description(f"EPOCH={epoch+1:{len(str(num_epochs))}}")
+
+                if self.valid_evaluator:
+                    valid_dcg = self.valid_evaluator.evaluate(self.W, self.H)["DCG@5"]
+                    if self.early_stopping and self.valid_dcg > valid_dcg and count > 10:
+                        break
+                    elif self.early_stopping and self.valid_dcg > valid_dcg:
+                        count += 1
+                    else:
+                        count = 0
+                        self.valid_dcg = valid_dcg
+                        W_best = np.array(self.W).copy()
+                        H_best = np.array(self.H).copy()
+
+
+                progress.set_description(f"EPOCH={epoch+1:{len(str(num_epochs))}} {(', DCG@5=' + str(np.round(valid_dcg,3))) if self.valid_evaluator else ''}")
                 progress.update(1)
+
+        if self.valid_evaluator and self.early_stopping:
+            self.W = np.array(W_best).copy()
+            self.H = np.array(H_best).copy()
 
     @cython.boundscheck(False)
     @cython.wraparound(False)

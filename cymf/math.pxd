@@ -44,6 +44,12 @@ cdef inline double square(double x) nogil:
 cdef inline floating sigmoid(floating x) nogil:
     return 1.0 / (1.0 + exp(-x))
 
+cdef inline double dmax(double x1, double x2) nogil:
+    if x1 >= x2:
+        return x1
+    else:
+        return x2
+
 cdef class UniformGenerator(object):
     cdef mt19937 rng
     cdef uniform_int_distribution[long] uniform

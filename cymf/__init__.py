@@ -1,5 +1,6 @@
 from .bpr import BPR
 from .wmf import WMF
+from .relmf import RelMF
 from .glove import GloVe
 from .expomf import ExpoMF
 from . import dataset
